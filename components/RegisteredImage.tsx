@@ -23,12 +23,18 @@ export default function RegisteredImage({
   alt,
   className = '',
   sizes = '(max-width: 900px) 100vw, 33vw',
+  srcSet,
   priority = false,
 }: {
   src: string;
   alt: string;
   className?: string;
   sizes?: string;
+  /* Without this, `sizes` was decoration: a sizes attribute with no
+     srcset beside it tells the browser nothing, so every tile was handed
+     the single full-size file whatever the screen. The two only work as
+     a pair. */
+  srcSet?: string;
   priority?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -57,6 +63,7 @@ export default function RegisteredImage({
       {near && (
         <img
           src={src}
+          srcSet={srcSet}
           alt={alt}
           sizes={sizes}
           loading={priority ? 'eager' : 'lazy'}

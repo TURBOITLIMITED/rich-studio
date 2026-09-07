@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import RegisteredImage from './RegisteredImage';
 import { useDropTransition } from './DropTransition';
-import type { WorkItem } from '@/lib/work';
+import { thumbSet, type WorkItem } from '@/lib/work';
 
 /**
  * A uniform two-up grid of work.
@@ -43,6 +43,10 @@ export default function WorkGrid({ items }: { items: WorkItem[] }) {
             >
               <RegisteredImage
                 src={w.thumb}
+                srcSet={thumbSet(w.thumb)}
+                /* Two up above 560px, one up below — so the tile is half
+                   the measure on desktop and the whole of it on a phone. */
+                sizes="(max-width: 560px) 100vw, 50vw"
                 alt={`${w.client} — ${w.title}`}
                 className="work-thumb"
                 /* Nothing here is above the fold on a phone. Eagerly

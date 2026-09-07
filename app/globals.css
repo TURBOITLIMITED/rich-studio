@@ -888,7 +888,12 @@ a {
 .cs-hero {
   position: relative;
   z-index: 1;
-  height: 100svh;
+  /* Not the full screen. The client's own reference for this page is a
+     hero at roughly 60% with the project name and its facts visible in
+     the same view — you arrive at a case study, not at a photograph you
+     have to scroll past to find out whose it is. Clamped so it stays a
+     hero on a short laptop and does not become a banner on a tall one. */
+  height: clamp(360px, 62svh, 760px);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1247,32 +1252,14 @@ a {
    sit on top of real captions, so it retires rather than collides. */
 
 
-/* The hero caption sits over an image that is, by design, chaotic at rest.
-   A scrim is the only way it stays readable through the whole scrub. */
-.cs-hero-caption::before {
-  content: '';
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 340px;
-  background: linear-gradient(to top, rgba(10, 10, 10, 0.82), rgba(10, 10, 10, 0));
-  z-index: -1;
-  pointer-events: none;
-}
 
-.cs-hero-caption { isolation: isolate; }
 
-/* The nav and HUD sit over the hero photograph, which can be light or dark
-   at the top edge depending on the shot. A top scrim guarantees the
-   furniture stays readable on every case study. */
-.cs-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 190px;
-  background: linear-gradient(to bottom, rgba(10, 10, 10, 0.55), rgba(10, 10, 10, 0));
-  z-index: 1;
-  pointer-events: none;
-}
+/* No scrim over the photograph. There used to be a 190px black wash
+   across the top of every hero so the margin HUD and the transparent nav
+   stayed readable on top of it. The HUD is gone and the nav paints its
+   own paper ground, so the only thing that wash still did was darken the
+   top of every one of Rich's images. */
+
 
 /* On a case study the furniture always sits on the photograph, never on
    the act ground, so it is always paper-coloured there. */

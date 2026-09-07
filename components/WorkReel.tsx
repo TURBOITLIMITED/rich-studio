@@ -5,7 +5,7 @@ import Link from 'next/link';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useDropTransition } from './DropTransition';
-import type { WorkItem } from '@/lib/work';
+import { thumbSet, type WorkItem } from '@/lib/work';
 
 /**
  * THE REEL.
@@ -158,6 +158,10 @@ export default function WorkReel({ items }: { items: WorkItem[] }) {
                   <div className="reel-frame">
                     <img
                       src={w.thumb}
+                      srcSet={thumbSet(w.thumb)}
+                      /* The fill is 128% of a card that is 32vw, so it
+                         paints about 41vw of the screen on desktop. */
+                      sizes="(max-width: 900px) 90vw, 41vw"
                       alt={`${w.client} — ${w.title}`}
                       className="reel-fill"
                       loading="lazy"

@@ -29,6 +29,30 @@ const items = raw as unknown as WorkItem[];
 
 export const ALL_WORK: WorkItem[] = items;
 
+/**
+ * The candidate list for a tile image.
+ *
+ * Every `thumb.webp` has a `thumb-900.webp` beside it — the coverage is
+ * asserted when they are generated, so this convention holds for all 31
+ * projects. Do not point this at a variant that might not exist: the
+ * browser picks a candidate by width and simply fails if that file 404s,
+ * rather than falling back to `src`.
+ *
+ * The full plate is 1600x1067. A tile is 693 CSS px on desktop, which is
+ * 1386 device px on a retina screen — which is why 720px thumbs read as
+ * soft on exactly the machines the client and Rich both use.
+ */
+export function thumbSet(thumb: string | undefined): string | undefined {
+  /* Only the plates that were actually regenerated carry the -1600 name,
+     and only those have a -900 sibling. Three projects still run their
+     original 720px thumb because the high-resolution asset for them is a
+     DIFFERENT photograph, not a bigger copy of the same one — swapping
+     them would change what those tiles show. They get no srcset rather
+     than a candidate list that lies about its widths. */
+  if (!thumb || !thumb.includes('-1600.webp')) return undefined;
+  return `${thumb.replace('-1600.webp', '-900.webp')} 900w, ${thumb} 1600w`;
+}
+
 /** The nine that carry the homepage, in the order they should be met. */
 export const FEATURED: WorkItem[] = items
   .filter((w) => typeof w.featured === 'number')
