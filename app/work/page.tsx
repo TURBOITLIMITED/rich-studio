@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import DepthCorridor from '@/components/DepthCorridor';
 import WorkGrid from '@/components/WorkGrid';
 import SiteFooter from '@/components/SiteFooter';
 import { ALL_WORK } from '@/lib/work';
@@ -17,18 +18,14 @@ export default function WorkIndex() {
           eyebrow label, no standfirst, no category index, no filters.
           The count is real, so it reads (31) rather than the reference's
           (10); that is content, not design. */}
-      <header className="page-head sheet">
-        {/* The count sits BESIDE the h1, not inside it. lib/motion.ts runs
-            SplitText over [data-split], and a nested <sup> came back
-            duplicated — one empty copy plus the real one — with its
-            vertical-align pushing the line box past the mask SplitText
-            wraps each line in, which clipped the type. The split target
-            stays pure text; the count is positioned here instead. */}
-        <div className="page-shout-row">
-          <h1 className="t-display page-shout" data-split>ALL WORK</h1>
-          <span className="page-count">({ALL_WORK.length})</span>
-        </div>
-      </header>
+      {/* The corridor IS the page head — it carries the h1 and grows it
+          while the archive flies past, so the page gets one held moment
+          rather than a corridor and then a title under it.
+
+          Its title is deliberately NOT [data-split]: SplitText mangles a
+          nested element, and the count inside this one would come back
+          duplicated with its line box pushed past the mask. */}
+      <DepthCorridor items={ALL_WORK} count={ALL_WORK.length} />
 
       <WorkGrid items={ALL_WORK} />
 

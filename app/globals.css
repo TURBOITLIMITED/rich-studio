@@ -2711,3 +2711,95 @@ button:disabled,
 }
 
 .reel-facet { opacity: 0.72; }
+
+/* ---------- 3. THE CORRIDOR ----------
+   The archive comes at you. Plates on a ring, receding, flown past the
+   camera while the page title grows through them.
+
+   The slabs are opacity 0 here and only ever lit by the component, so the
+   reduced-motion path — where the component returns before creating
+   anything — shows the title alone on paper rather than a frozen heap of
+   plates stacked on the centre point. */
+.corridor {
+  position: relative;
+  z-index: 1;
+  height: 320svh;
+  background: var(--paper);
+}
+
+.cor-pin {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+  perspective: 1200px;
+  display: grid;
+  place-items: center;
+}
+
+.cor-deck {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* Centred on the pin by margin, not by translate(-50%,-50%): GSAP owns
+   x/y/z on these and a centring translate in the same transform would be
+   overwritten the first time it sets one. */
+.cor-slab {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22vw;
+  height: 27.5vw;
+  margin: -13.75vw 0 0 -11vw;
+  overflow: hidden;
+  background: var(--paper-2);
+  opacity: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.cor-fill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cor-cap {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  color: var(--paper);
+  mix-blend-mode: difference;
+  opacity: 0.9;
+}
+
+.cor-title {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  /* Same 7.07 divisor as the case-study masthead: the longest word in the
+     archive set against the page measure. */
+  font-size: min(calc((100vw - 2 * var(--margin)) / 7.07), 9rem);
+  line-height: 0.92;
+  will-change: transform;
+}
+
+.cor-count {
+  font-size: 0.26em;
+  font-weight: 500;
+  vertical-align: super;
+  opacity: 0.55;
+  margin-left: 0.1em;
+}
+
+@media (max-width: 900px) {
+  .corridor { height: 260svh; }
+  .cor-slab {
+    width: 42vw;
+    height: 52.5vw;
+    margin: -26.25vw 0 0 -21vw;
+  }
+}
