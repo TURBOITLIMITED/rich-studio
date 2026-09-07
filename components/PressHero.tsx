@@ -977,21 +977,53 @@ export default function PressHero({
                it fades, which carries the eye through the difference
                instead of presenting it as a jump cut.
 
-               Two frames, then the hold: one to let the route commit and
-               one to let the new page paint, so the fade is a crossfade
-               onto something that is actually there rather than onto
-               whatever the browser has managed so far. */
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              window.setTimeout(() => {
-                gsap.to(el, {
-                  opacity: 0,
-                  scale: 1.045,
-                  duration: 0.62,
-                  ease: 'power2.inOut',
-                  onComplete: () => { el.remove(); if (cineEl === el) cineEl = null; },
-                });
-              }, 260);
-            }));
+               WAIT FOR THE DESTINATION, DO NOT GUESS AT IT.
+
+               This used to be two frames plus a flat 260ms, on the theory
+               that the route would have committed and painted by then. It
+               had not. Traced at 60fps: the overlay was already down to
+               0.30 opacity while `.cs-hero` still did not exist, so for
+               about 360ms the thing dissolving revealed the HOMEPAGE
+               behind it — the rail, the books — before the case study
+               finally appeared underneath. That is the flash of "two
+               pages" and no amount of re-timing the guess fixes it,
+               because how long Next takes to commit a route is not a
+               constant.
+
+               So it polls for the real condition — the hero element
+               present AND its image decoded — and only then starts the
+               fade. A gate like this needs a failure state or it can hang
+               forever, so there is a 1200ms backstop: past that it fades
+               regardless and the visitor gets the old behaviour rather
+               than a frozen overlay. */
+            let faded = false;
+            const startFade = () => {
+              if (faded) return;
+              faded = true;
+              gsap.to(el, {
+                opacity: 0,
+                scale: 1.045,
+                duration: 0.62,
+                ease: 'power2.inOut',
+                onComplete: () => { el.remove(); if (cineEl === el) cineEl = null; },
+              });
+            };
+
+            const waitStart = performance.now();
+            const whenReady = () => {
+              if (faded || !document.body.contains(el)) return;
+              const hero = document.querySelector<HTMLImageElement>('.cs-hero-img');
+              const painted =
+                !!document.querySelector('.cs-hero') &&
+                !!hero && hero.complete && hero.naturalWidth > 0;
+              /* A short floor as well as a ceiling: arriving instantly
+                 would cut rather than settle. */
+              const waited = performance.now() - waitStart;
+              if (painted && waited > 120) { startFade(); return; }
+              if (waited > 1200) { startFade(); return; }
+              requestAnimationFrame(whenReady);
+            };
+            requestAnimationFrame(() => requestAnimationFrame(whenReady));
         };
         zoom.onfinish = onZoomDone;
         // Never strand the overlay if the timeline is interrupted.
