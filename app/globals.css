@@ -1003,6 +1003,107 @@ a {
 
 .cs-plate-num { position: absolute; top: 8px; left: 8px; opacity: 0.6; mix-blend-mode: difference; color: var(--paper); }
 
+/* ---------- THE PRESS BED ----------
+   One plate held on the bed while the sheets and the brief run past it.
+   Columns 1-7 carry the plate, 9-12 the run — column 8 IS the space
+   between them, so both edges land on the grid instead of on a chosen gap. */
+.cs-bed {
+  align-items: start;
+  row-gap: clamp(28px, 5vh, 64px);
+  padding-block: clamp(36px, 6vh, 92px);
+}
+
+.cs-bed-plate { grid-column: 1 / span 7; position: relative; min-width: 0; }
+
+.cs-bed-run {
+  grid-column: 9 / -1;
+  min-width: 0;
+  /* So the brief can be sized off the width it actually HAS. The display
+     scale that suits a full-width statement sets ~60px type in a 436px
+     measure, which reads as a mistake rather than as emphasis. */
+  container-type: inline-size;
+}
+
+.cs-bed-img { width: 100%; aspect-ratio: 3 / 2; }
+
+.cs-bed-folio {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  opacity: 0.6;
+  mix-blend-mode: difference;
+  color: var(--paper);
+}
+
+/* The picker. Four to a row, so a 31-image study still reads as a run of
+   sheets rather than as a contact sheet. */
+.cs-bed-sheets {
+  list-style: none;
+  margin: 0 0 clamp(26px, 4.5vh, 52px);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gutter);
+}
+
+.cs-bed-sheet { min-width: 0; }
+
+.cs-bed-pick {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  /* Held back until chosen — a sheet that has not been pulled onto the bed
+     has not been pulled true yet. */
+  opacity: 0.42;
+  transition: opacity 220ms ease;
+}
+
+.cs-bed-pick:hover,
+.cs-bed-pick:focus-visible { opacity: 0.78; }
+
+.cs-bed-pick[aria-current='true'] { opacity: 1; }
+
+.cs-bed-thumb { width: 100%; aspect-ratio: 1 / 1; }
+
+.cs-bed-thumb-num {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  opacity: 0.75;
+  mix-blend-mode: difference;
+  color: var(--paper);
+}
+
+/* The sheet on the bed is trapped to its marks. */
+.cs-bed-pick[aria-current='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  outline: var(--rule) solid currentColor;
+  outline-offset: 3px;
+  pointer-events: none;
+}
+
+/* Sized in cqw against .cs-bed-run, so the brief holds the same optical
+   weight whatever the column measures. The clamp floor keeps it readable
+   when the column goes full width on mobile. */
+.cs-bed-copy {
+  max-width: none;
+  font-size: clamp(1.05rem, 5.4cqw, 1.9rem);
+  line-height: 1.14;
+}
+
+@media (max-width: 900px) {
+  /* No bed below 900px: the plate and the run stack, and the pin is never
+     created (see CasePlates), so the page simply scrolls. */
+  .cs-bed-plate,
+  .cs-bed-run { grid-column: 1 / -1; }
+}
+
 .cs-nav {
   position: relative;
   z-index: 1;

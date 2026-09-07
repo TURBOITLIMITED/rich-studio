@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import RegistrationHero from '@/components/RegistrationHero';
-import RegisteredImage from '@/components/RegisteredImage';
+import CasePlates from '@/components/CasePlates';
 import SiteFooter from '@/components/SiteFooter';
 import ActGround from '@/components/ActGround';
 import { ALL_WORK, getWork, neighbours } from '@/lib/work';
@@ -48,7 +48,7 @@ export default async function CaseStudy({
   if (!work) notFound();
 
   const { prev, next } = neighbours(slug);
-  const [hero, ...rest] = work.images;
+  const [hero] = work.images;
   const meta = [...work.disciplines, ...work.industries].join('  /  ');
 
   return (
@@ -64,38 +64,14 @@ export default async function CaseStudy({
         meta={meta}
       />
 
-      <section className="cs-brief sheet">
-        <span className="t-mono cs-label">
-          <span className="target" aria-hidden="true" /> BRIEF
-        </span>
-        <p className="t-statement cs-copy" data-split>{work.description}</p>
-      </section>
-
-      {rest.length > 0 && (
-        <section className="cs-plates sheet">
-          <ul className="cs-plate-grid grid12" data-reveal="stagger">
-            {rest.map((img, i) => (
-              <li
-                key={img.src}
-                className="cs-plate"
-                /* Alternating wide/narrow so the run of images has rhythm
-                   instead of reading as a contact sheet. */
-                style={{ ['--span' as string]: i % 3 === 0 ? 12 : 6 }}
-              >
-                <RegisteredImage
-                  src={img.src}
-                  alt={`${work.client} — plate ${String(i + 2).padStart(2, '0')}`}
-                  className="cs-plate-img"
-                  sizes={i % 3 === 0 ? '100vw' : '50vw'}
-                />
-                <span className="t-mono cs-plate-num">
-                  {String(i + 2).padStart(2, '0')}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      {/* The bed: one plate held while the sheets and the brief run past.
+          Carries the FULL run including the hero image, so the sheet in the
+          masthead can be pulled back onto the bed. */}
+      <CasePlates
+        images={work.images}
+        client={work.client}
+        description={work.description}
+      />
 
       <nav className="cs-nav sheet" aria-label="Case studies" data-reveal>
         {prev && (
