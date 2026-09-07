@@ -28,14 +28,20 @@ export const PRESS_PROJECTS: PressProject[] = [
   { slug: 'silverstone', title: 'REBRAND FOR SILVERSTONE RACECOURSE', client: 'SILVERSTONE',  tone: '#223549', kind: 4, words: ['HOME OF', 'RACING'],          art: '/press/silverstone.webp', hero: '/work/silverstone/00.webp' },
   { slug: 'hellmanns',   title: "HELLMANN'S AD CAMPAIGN",             client: "HELLMANN'S",   tone: '#c6a675', kind: 3, words: ['REAL', 'FOOD'],              art: '/press/hellmanns.webp', hero: '/work/hellmanns/00.webp' },
   { slug: 'walls',       title: "WALL'S MAKES IT HAPPIER",            client: "WALL'S",       tone: '#e1251a', kind: 0, words: ['TASTE', 'HAPPIER', 'TODAY'], art: '/press/walls.webp', hero: '/work/walls/00.webp' },
+  /* POSITION IS DELIBERATE. PRESS_START centres the rail on
+     floor((N-1)/2), which with seven books is index 3 — this slot. The
+     rail then drifts at 0.17 sheets/sec, so a book at the END of the list
+     is about 18 seconds of waiting away and is effectively invisible to
+     anyone who does not drag it. Black Ink sits on the opening frame
+     instead of behind three other books.
+
+     tone is the ground sampled from the artwork, the same way the others
+     are. kind only picks a GENERATED sheet for a project with no art, and
+     this one has art, so it never renders. */
+  { slug: 'black-ink',   title: 'BRAND IDENTITY FOR BLACK INK',       client: 'BLACK INK',    tone: '#85F7D1', kind: 3, words: ['WEALTH', 'DONE RIGHT'],      art: '/press/black-ink.webp', hero: '/work/black-ink/00.webp' },
   { slug: 'absolut',     title: 'ABSOLUT HALLOWEEN',                  client: 'ABSOLUT',      tone: '#d66511', kind: 1, words: ['ABSOLUT'],                   art: '/press/absolut.webp', hero: '/work/absolut/00.webp' },
   { slug: 'networkrail', title: 'CREATIVE RETOUCH FOR NETWORK RAIL',  client: 'NETWORK RAIL', tone: '#533123', kind: 5, words: ['EVERY', 'JOURNEY'],          art: '/press/networkrail.webp', hero: '/work/networkrail/00.webp' },
   { slug: 'strongbow',   title: 'AD CAMPAIGN FOR STRONGBOW',          client: 'STRONGBOW',    tone: '#592e62', kind: 2, words: ['CRISP', 'GOLD'],             art: '/press/strongbow.webp', hero: '/work/strongbow/00.webp' },
-  /* tone is the ground sampled from the artwork, the same way the others
-     are: #85F7D1 is the spring green Black Ink runs its chapters on. kind
-     only picks a GENERATED sheet layout for a project with no art, and
-     this one has art, so it is a fallback that never renders. */
-  { slug: 'black-ink',   title: 'BRAND IDENTITY FOR BLACK INK',       client: 'BLACK INK',    tone: '#85F7D1', kind: 3, words: ['WEALTH', 'DONE RIGHT'],      art: '/press/black-ink.webp', hero: '/work/black-ink/00.webp' },
 ];
 
 /* Attach each capture from the manifest rather than naming it inline. */
