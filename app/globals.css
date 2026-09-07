@@ -20,8 +20,8 @@
   --color-magenta: #ec008c;
   --color-yellow: #fff200;
 
-  --font-display: "Archivo", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-wordmark: "HelveticaCondensed", "Archivo", "Helvetica Neue", sans-serif;
+  --font-display: "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-wordmark: "HelveticaCondensed", "Switzer", "Helvetica Neue", sans-serif;
   --font-mono: "SpaceMono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
@@ -30,8 +30,68 @@
    file carried over from his WordPress install; it is one weight
    only, so it is reserved for the wordmark and never used for
    display copy that needs weight range.
+
+   SWITZER is the display face, chosen off the reference the client
+   settled on. Indian Type Foundry, served free for commercial use via
+   Fontshare — which is worth stating plainly, because the Helvetica
+   Condensed beside it is a DESKTOP licence being used as a webfont and
+   that is a real exposure. Six static weights rather than a variable
+   file: the reference uses 400 through 900 as discrete steps and the
+   whole set is 106KB, against 90KB for the one Archivo variable it
+   replaces.
    ============================================================ */
 
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/switzer-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/switzer-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/switzer-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/switzer-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/switzer-800.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Switzer";
+  src: url("/fonts/switzer/switzer-900.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Kept: the footer sign-off measures itself against a real face, and
+   .rc-mark's fallback path still names it. Retire it once every
+   Archivo reference in this file has been re-measured against Switzer. */
 @font-face {
   font-family: "Archivo";
   src: url("/fonts/Archivo-Variable.woff2") format("woff2-variations");
@@ -792,11 +852,17 @@ a {
    Last thing on the page, the full width of it, rising out of its own
    mask as you reach the bottom.
 
-   11.58cqw is not a guess: "THAT'S ALL F**KS" set in Archivo 800 at
-   -0.028em measures 8.63x its own font size, so width / 8.63 fills the
-   line exactly. Re-measure if the string or the face changes. The mask
-   clips, so a fallback face while Archivo loads trims rather than
-   pushing out a horizontal scrollbar. */
+   12.55cqw is not a guess: "THAT'S ALL F**KS" set in SWITZER 800 at
+   -0.028em measures 7.968x its own font size, so width / 7.968 fills the
+   line exactly. Re-measure if the string or the face changes — which is
+   exactly what happened: the previous 11.58cqw was derived against
+   Archivo 800 at 8.63x, and on Switzer that left the sign-off 104px
+   short of the measure at a 1348px stage. Measured with a Range over the
+   text node, because the mask's overflow:hidden makes scrollWidth report
+   the container width and agree with whatever you already believed.
+
+   The mask clips, so a fallback face while Switzer loads trims rather
+   than pushing out a horizontal scrollbar. */
 .footer-shout-mask {
   overflow: hidden;
   margin-top: clamp(24px, 5vh, 56px);
@@ -805,7 +871,7 @@ a {
 .footer-shout {
   margin: 0;
   opacity: 0.16;
-  font-size: 11.58cqw;
+  font-size: 12.55cqw;
   line-height: 0.86;
   white-space: nowrap;
 }

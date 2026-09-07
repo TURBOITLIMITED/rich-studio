@@ -51,9 +51,20 @@ export default function RootLayout({
           type="font/woff"
           crossOrigin="anonymous"
         />
+        {/* Switzer ships as discrete weights, so preloading it means naming
+            the ones above the fold rather than one variable file: 800 for
+            display, 400 for the copy beneath it. Together they are 35KB
+            against the 90KB Archivo variable they replace. */}
         <link
           rel="preload"
-          href="/fonts/Archivo-Variable.woff2"
+          href="/fonts/switzer/switzer-800.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/switzer/switzer-400.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
