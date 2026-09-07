@@ -19,12 +19,18 @@ export default function RegistrationHero({
   title,
   client,
   meta,
+  caption = true,
 }: {
   src: string;
   alt: string;
   title: string;
   client: string;
   meta: string;
+  /* The reference carries a bare full-bleed plate and sets the project
+     name BELOW it, at size, beside the labelled facts. Pass false to get
+     the plate alone — the h1 then lives in the masthead under it, so the
+     page still has exactly one. */
+  caption?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -197,11 +203,13 @@ export default function RegistrationHero({
           <canvas ref={canvasRef} className="cs-hero-canvas" aria-hidden="true" />
         </div>
 
-        <div className="cs-hero-caption sheet">
-          <span className="t-mono cs-hero-client">{client}</span>
-          <h1 className="t-display cs-hero-title">{title}</h1>
-          <span className="t-mono cs-hero-meta">{meta}</span>
-        </div>
+        {caption && (
+          <div className="cs-hero-caption sheet">
+            <span className="t-mono cs-hero-client">{client}</span>
+            <h1 className="t-display cs-hero-title">{title}</h1>
+            <span className="t-mono cs-hero-meta">{meta}</span>
+          </div>
+        )}
       </div>
     </div>
   );

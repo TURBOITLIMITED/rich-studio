@@ -62,7 +62,30 @@ export default async function CaseStudy({
         title={work.title}
         client={work.client}
         meta={meta}
+        caption={false}
       />
+
+      {/* The name at size on the left, the facts labelled on the right.
+          No YEAR row: there is no year on a WorkItem and inventing one
+          would be putting words in the client's mouth. */}
+      <section className="cs-masthead sheet grid12">
+        <h1 className="t-display cs-masthead-title">{work.title}</h1>
+
+        <div className="cs-masthead-meta">
+          <div className="cs-fact">
+            <span className="t-mono cs-fact-label">CLIENT</span>
+            <span className="cs-fact-value">{work.client}</span>
+          </div>
+          <div className="cs-fact">
+            <span className="t-mono cs-fact-label">DISCIPLINE</span>
+            <span className="cs-fact-value">{work.disciplines.join('  /  ')}</span>
+          </div>
+          <div className="cs-fact">
+            <span className="t-mono cs-fact-label">INDUSTRY</span>
+            <span className="cs-fact-value">{work.industries.join('  /  ')}</span>
+          </div>
+        </div>
+      </section>
 
       {/* The bed: one plate held while the sheets and the brief run past.
           Carries the FULL run including the hero image, so the sheet in the

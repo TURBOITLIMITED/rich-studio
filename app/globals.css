@@ -1062,6 +1062,70 @@ a {
 
 .cs-hero-meta { opacity: 0.7; }
 
+/* THE CASE-STUDY MASTHEAD
+   The reference sets the project name at size on the left and the facts
+   labelled on the right, under a bare full-bleed plate. The two halves
+   meet on the same column line the work grid's two tiles do — 6 and 6 —
+   so a case study and the index it came from are cut to one measure. */
+.cs-masthead {
+  position: relative;
+  z-index: 1;
+  align-items: start;
+  padding-block: clamp(40px, 7vh, 104px);
+  row-gap: clamp(24px, 4vh, 48px);
+}
+
+.cs-masthead-title {
+  grid-column: 1 / span 6;
+  margin: 0;
+  /* Sized off the COLUMN it sits in, not the viewport, and by the longest
+     word in the archive rather than by eye — .t-display sizes on vw, which
+     cannot know either the column or the face's cap width, and at 121px it
+     set SILVERSTONE 799px wide inside a 693px column and straight through
+     the facts beside it.
+
+     A 6-of-12 span reduces to (100vw - 2*margin)/2 - 0.5*gutter; verified
+     693 at a 1440 stage, against 693 measured. The longest unbreakable run
+     across all 31 titles is RECRUITMENT, which measures 7.07x its own font
+     size in Switzer 800 at -0.028em. Dividing the column by that means no
+     title can reach the facts. Re-measure if the face, the tracking or the
+     archive changes.
+
+     These titles are SENTENCES, not the single words the reference sets —
+     the longest is 53 characters — so they wrap, and the divisor only has
+     to hold the longest WORD. Fitting the longest whole title on one line
+     would mean 21px type. */
+  font-size: min(
+    calc(((100vw - 2 * var(--margin)) / 2 - 0.5 * var(--gutter)) / 7.07),
+    10rem
+  );
+  line-height: 0.92;
+  text-wrap: balance;
+}
+
+.cs-masthead-meta {
+  grid-column: 7 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vh, 32px);
+  min-width: 0;
+}
+
+.cs-fact { display: flex; flex-direction: column; gap: 6px; }
+.cs-fact-label { opacity: 0.5; }
+.cs-fact-value { max-width: 42ch; }
+
+@media (max-width: 900px) {
+  .cs-masthead-title,
+  .cs-masthead-meta { grid-column: 1 / -1; }
+
+  /* Full width now, so the column is the whole measure and the divisor
+     works against that instead of a half. */
+  .cs-masthead-title {
+    font-size: min(calc((100vw - 2 * var(--margin)) / 7.07), 10rem);
+  }
+}
+
 .cs-brief {
   position: relative;
   z-index: 1;
