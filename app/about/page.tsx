@@ -29,7 +29,7 @@ export default function About() {
     <>
       <header className="page-head sheet">
         <span className="t-mono page-label">
-          <span className="target" aria-hidden="true" /> ABOUT
+          ABOUT
         </span>
         <h1 className="t-display page-shout-sm" data-split>
           A TEAM OF CREATIVE CREATURES.

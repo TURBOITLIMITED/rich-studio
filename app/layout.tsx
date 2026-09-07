@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import PressChrome from '@/components/PressChrome';
 import SmoothScroll from '@/components/SmoothScroll';
 import SiteNav from '@/components/SiteNav';
 import MotionProvider from '@/components/MotionProvider';
@@ -75,9 +74,8 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        {/* Fixed furniture must sit outside #smooth-content, or
+        {/* The fixed nav must sit outside #smooth-content, or
             ScrollSmoother's transform drags it up the page. */}
-        <PressChrome />
         <SiteNav />
         <MotionProvider />
 

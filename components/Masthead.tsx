@@ -56,9 +56,14 @@ export default function Masthead() {
         {/* No hard breaks. They forced three lines at every width, which
             was most of the band's height — it now wraps to its own
             measure, which is two lines wide and one narrow. */}
-        <p className="t-statement masthead-strap" data-split>
+        {/* An h1, not a p. The homepage had NO h1 at all — the industry
+            index that used to close it labelled its section with a span —
+            so the document outline started at nothing. This line IS the
+            page's heading, so it carries the tag. Same classes, so nothing
+            moves. */}
+        <h1 className="t-statement masthead-strap" data-split>
           BRANDING / DESIGN / CREATIVE PRODUCTION STUDIO
-        </p>
+        </h1>
 
         <div className="masthead-feature" aria-live="polite" aria-atomic="true">
           <span className="t-mono">FEATURED</span>

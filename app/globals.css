@@ -312,25 +312,7 @@ a {
 
 /* The visible column rules — Swiss grid made literal, held down the
    whole page. Sits behind content, never intercepts pointer events. */
-.column-rules {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  padding-inline: var(--margin);
-  display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: var(--gutter);
-  opacity: 0.5;
-}
 
-.column-rules span {
-  border-left: var(--rule) solid var(--ink-12);
-}
-
-.column-rules span:last-child {
-  border-right: var(--rule) solid var(--ink-12);
-}
 
 @media (max-width: 900px) {
   :root {
@@ -343,173 +325,37 @@ a {
    Colour bars appear only at act transitions.
    ============================================================ */
 
-.furniture {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  mix-blend-mode: multiply;
-}
-
-.crop {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-}
-
-.crop::before,
-.crop::after {
-  content: "";
-  position: absolute;
-  background: var(--act-ink);
-  opacity: 0.55;
-}
-
-/* horizontal arm */
-.crop::before {
-  height: var(--rule);
-  width: 22px;
-}
-
-/* vertical arm */
-.crop::after {
-  width: var(--rule);
-  height: 22px;
-}
-
-.crop-tl { top: 14px; left: 14px; }
-.crop-tr { top: 14px; right: 14px; }
-.crop-bl { bottom: 14px; left: 14px; }
-.crop-br { bottom: 14px; right: 14px; }
-
-.crop-tr::before, .crop-br::before { right: 0; }
-.crop-tr::after,  .crop-br::after  { right: 0; }
-.crop-bl::before, .crop-br::before { bottom: 0; }
-.crop-bl::after,  .crop-br::after  { bottom: 0; }
-
-/* The HUD — a press sheet's slug line. */
-.hud {
-  position: fixed;
-  z-index: 61;
-  pointer-events: none;
-  color: var(--act-ink);
-  opacity: 0.72;
-  transition: color var(--t-act) var(--ease-in-out);
-}
-
-/* Aligned to the page margin, not to 46px. That literal WAS the margin —
-   3.2vw resolved to 46.08px at a 1440 stage — so it tracked the content
-   edge by coincidence rather than by reference, and fell out of register
-   with it the moment the margin changed. */
-.hud-l { top: 16px; left: var(--margin); }
-.hud-r { top: 16px; right: var(--margin); text-align: right; }
-.hud-b { bottom: 16px; left: var(--margin); }
-.hud-br { bottom: 16px; right: var(--margin); text-align: right; }
-
-@media (max-width: 640px) {
-  .hud-b, .hud-br { display: none; }
-}
-
-/* Registration target — the ⊕ mark. Drawn, not an image. */
-.target {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: var(--rule) solid currentColor;
-  position: relative;
-  display: inline-block;
-  opacity: 0.6;
-}
-
-.target::before,
-.target::after {
-  content: "";
-  position: absolute;
-  background: currentColor;
-}
-
-.target::before {
-  left: 50%;
-  top: -4px;
-  bottom: -4px;
-  width: var(--rule);
-  transform: translateX(-50%);
-}
-
-.target::after {
-  top: 50%;
-  left: -4px;
-  right: -4px;
-  height: var(--rule);
-  transform: translateY(-50%);
-}
 
 /* ============================================================
-   REGISTRATION — the signature move.
-   A CSS-only fallback for browsers with no WebGL: the plates are
-   three stacked copies of the image, offset and blended. The
-   WebGL path replaces this with true halftone separation.
+   CONTENT IMAGES
+
+   One crisp source image, full opacity at rest and on hover.
+
+   This was the registration effect: three stacked copies of the image,
+   offset and multiply-blended, arriving out of register and pulling true
+   under the cursor. The client has settled on a reference whose images
+   are simply sharp, so the plates are gone from both the markup and here.
+
+   NOT the same system as the wordmark and creature mark (.wm-* / .cr-*),
+   which still print in four plates. That is his logo and it stays.
    ============================================================ */
 
 .reg {
   position: relative;
   overflow: hidden;
   background: var(--paper-2);
-  /* p = registration progress, 0 = fully out of register, 1 = true */
-  --p: 0.15;
 }
 
-.reg canvas,
 .reg img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* CSS fallback plates */
-.reg-fallback .reg-plate {
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: multiply;
-  will-change: transform;
-  transition: transform var(--t-release) var(--ease-out);
-}
-
-.reg-fallback .reg-plate-c {
-  transform: translate3d(calc((1 - var(--p)) * -11px), calc((1 - var(--p)) * 5px), 0);
-}
-.reg-fallback .reg-plate-m {
-  transform: translate3d(calc((1 - var(--p)) * 9px), calc((1 - var(--p)) * -7px), 0);
-}
-.reg-fallback .reg-plate-y {
-  transform: translate3d(calc((1 - var(--p)) * 2px), calc((1 - var(--p)) * 10px), 0);
-}
-
-.reg:hover,
-.reg:focus-within {
-  --p: 1;
-}
-
-.reg:hover .reg-plate,
-.reg:focus-within .reg-plate {
-  transition-duration: var(--t-snap);
-}
-
-/* The base plate carries the real image and the alt text; the three
-   colour plates ride on top of it, multiplied. */
+/* Named in the markup, so it keeps a rule of its own rather than relying
+   on the element selector above. */
 .reg-base {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: calc(0.25 + 0.75 * var(--p));
-  transition: opacity var(--t-release) var(--ease-out);
-}
-
-.reg:hover .reg-base,
-.reg:focus-within .reg-base {
-  transition-duration: var(--t-snap);
+  display: block;
 }
 
 /* Skip link — visible the moment it takes focus, never before. */
@@ -530,15 +376,6 @@ a {
 
 /* Grain. One tileable SVG turbulence, multiplied over everything.
    Cheap, and it is what makes the paper read as paper. */
-.grain {
-  position: fixed;
-  inset: 0;
-  z-index: 55;
-  pointer-events: none;
-  opacity: 0.28;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
-}
 
 /* ============================================================
    SMOOTH SCROLL — ScrollSmoother requires this exact wrapper
@@ -571,13 +408,7 @@ a {
     --p: 1 !important;
   }
 
-  .reg-fallback .reg-plate {
-    transform: none !important;
-  }
 
-  .grain {
-    opacity: 0.18;
-  }
 }
 
 /* ============================================================
@@ -730,45 +561,6 @@ a {
   padding-block: clamp(56px, 11vh, 140px);
 }
 
-.work-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(16px, 3vw, 48px);
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: clamp(20px, 3vh, 40px);
-}
-
-.work-head h2 { margin: 0; }
-
-.facets { display: flex; gap: clamp(16px, 3vw, 44px); flex-wrap: wrap; }
-
-.facet { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; max-width: 40ch; }
-
-.facet legend { opacity: 0.5; padding: 0; margin-bottom: 4px; }
-
-.facet-btn {
-  background: none;
-  border: 0;
-  border-bottom: var(--rule) solid transparent;
-  padding: 4px 0;
-  cursor: pointer;
-  color: inherit;
-  opacity: 0.5;
-  transition: opacity 200ms var(--ease-out), border-color 200ms var(--ease-out);
-  min-height: 32px;
-}
-
-.facet-btn:hover { opacity: 0.85; }
-
-.facet-btn.is-on {
-  opacity: 1;
-  border-bottom-color: currentColor;
-}
-
-.work-count { opacity: 0.45; margin-bottom: 14px; }
-
-.work-empty { opacity: 0.4; padding-block: 40px; }
 
 /* Two up, every tile the same. The reference runs a uniform pair with a
    13px row gap rather than a varied span rhythm — measured 693 + 15 + 693
@@ -907,52 +699,125 @@ a {
   .hold-roll { transform: none !important; }
 }
 
-/* ---------- NAV ---------- */
+/* ---------- NAV ----------
+   A solid 58px bar: mark left, links and a filled square CTA right, both
+   ends on the page margin. Measured off the reference — 58px tall, CTA
+   padding 8px 14px, border-radius 0.
 
+   It used to be centred, transparent, and hid its mark until 70% past the
+   hero. Solid now, because with the crop marks and the HUD gone there is
+   no furniture layer left to separate it from the page, and on a case
+   study it sits over a full-bleed plate. */
 .site-nav {
   position: fixed;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0 0 auto 0;
   z-index: 62;
+  height: 58px;
   display: flex;
   align-items: center;
-  gap: clamp(10px, 2vw, 26px);
-  color: var(--act-ink);
-  transition: color var(--t-act) var(--ease-in-out);
+  justify-content: space-between;
+  gap: 16px;
+  padding-inline: var(--margin);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
 }
 
 .site-nav-mark {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 320ms var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   white-space: nowrap;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
-.site-nav-mark.is-shown { opacity: 0.9; pointer-events: auto; }
+.site-nav-right {
+  display: flex;
+  align-items: center;
+  gap: clamp(14px, 2vw, 28px);
+}
 
 .site-nav-links {
   display: flex;
-  gap: clamp(10px, 1.8vw, 24px);
+  align-items: center;
+  gap: clamp(12px, 1.8vw, 24px);
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .site-nav-link {
-  opacity: 0.55;
+  /* 14px/500 uppercase with the reference's tight tracking. */
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
   transition: opacity 200ms var(--ease-out);
-  /* 44px touch target without changing the 11px visual size */
+  /* 44px touch target without changing the visual size */
   display: inline-flex;
   align-items: center;
   min-height: 44px;
 }
 
 .site-nav-link:hover, .site-nav-link.is-on { opacity: 1; }
-
 .site-nav-link.is-on { text-decoration: underline; text-underline-offset: 4px; }
+
+/* The filled square. Ink block, paper type, no radius. */
+.site-nav-cta,
+.cta-square {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  transition: opacity 200ms var(--ease-out);
+}
+
+.site-nav-cta:hover,
+.cta-square:hover { opacity: 0.82; }
+
+/* The homepage button through to the archive, on the same margin as the
+   grid above it. */
+.home-cta-row { padding-block: clamp(28px, 5vh, 64px); }
+
+/* The count beside the archive title, raised like the reference's (10).
+   A flex sibling of the h1 rather than a <sup> inside it: SplitText owns
+   the inside of [data-split] and mangled the nested element. Raised with
+   align-self here, so nothing has to survive the split. */
+.page-shout-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.1em;
+}
+
+.page-count {
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2.2vw, 1.9rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  opacity: 0.55;
+  /* Sits on the cap line rather than the baseline. */
+  padding-top: 0.35em;
+  white-space: nowrap;
+}
 
 @media (max-width: 640px) {
   .site-nav { gap: 10px; }
-  .site-nav-mark { display: none; }
+  .site-nav-mark { font-size: 13px; }
+  .site-nav-link { font-size: 12px; }
+  .site-nav-cta { font-size: 12px; padding: 8px 10px; }
+  .site-nav-right { gap: 10px; }
 }
 
 /* ---------- SHARED PAGE HEAD ---------- */
@@ -964,7 +829,6 @@ a {
   padding-bottom: clamp(20px, 4vh, 50px);
 }
 
-.page-label { display: flex; align-items: center; gap: 10px; opacity: 0.5; margin-bottom: clamp(12px, 2vh, 24px); }
 
 .page-shout { margin: 0; }
 
@@ -1037,16 +901,6 @@ a {
    canvas paints over once the shader is confirmed working. */
 .cs-hero-img { width: 100%; height: 100%; object-fit: cover; }
 
-.cs-hero-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 240ms var(--ease-out);
-}
-
-.cs-hero-canvas.is-live { opacity: 1; }
 
 .cs-hero-caption {
   position: relative;
@@ -1340,14 +1194,6 @@ a {
   }
 }
 
-/* ---------- MOBILE HUD / NAV COLLISION ----------
-   At narrow widths the left HUD block and the centred nav overlap. The
-   HUD is furniture; the nav is navigation, so the HUD gives way. */
-@media (max-width: 860px) {
-  .hud-l, .hud-r { display: none; }
-  .site-nav { top: 12px; }
-}
-
 @media (max-width: 640px) {
   .masthead { padding-top: 64px; }
 }
@@ -1399,14 +1245,7 @@ a {
 
 /* The bottom HUD belongs to the masthead. Once the page scrolls it would
    sit on top of real captions, so it retires rather than collides. */
-.hud-b, .hud-br {
-  transition: opacity 320ms var(--ease-out), visibility 320ms;
-}
 
-.hud-b.is-retired, .hud-br.is-retired {
-  opacity: 0;
-  visibility: hidden;
-}
 
 /* The hero caption sits over an image that is, by design, chaotic at rest.
    A scrim is the only way it stays readable through the whole scrub. */
@@ -1447,9 +1286,6 @@ a {
    ============================================================ */
 
 /* Small mono furniture was #7d8083 on paper = 3.48:1. */
-.facet legend,
-.facet-btn,
-.work-count,
 .work-num,
 .work-facet,
 .about-label,
@@ -1457,7 +1293,6 @@ a {
 .hold-label,
 .cs-label { opacity: 0.72; }
 
-.hud { opacity: 0.8; }
 .site-nav-link { opacity: 0.72; }
 .feature-client { opacity: 0.78; }
 .footer-meta { opacity: 0.78; }
@@ -1778,7 +1613,6 @@ a {
 
 /* The two bottom HUD blocks only ever appear over this band (they retire
    on scroll), so they read as paper too. */
-.hud-b, .hud-br { color: var(--paper); }
 
 /* The foot band goes on the 12-column grid rather than being sized in ch.
    The strap holds columns 1-7, the featured block columns 9-12, so both
@@ -2170,7 +2004,6 @@ a {
 }
 
 
-
 /* ---------- the ink band under the stage ---------- */
 
 .hero-band {
@@ -2422,9 +2255,6 @@ a {
 .cine-title { font-size: clamp(1.2rem, 4.6vw, 4rem); line-height: 0.94; }
 .cine-client { opacity: 0.85; }
 
-@media (prefers-reduced-motion: reduce) {
-}
-
 /* ============================================================
    MOTION LAYER
    Primitives applied by data attribute across every page, so the whole
@@ -2548,35 +2378,9 @@ a:focus-visible .roll > span,
   --head-ground: #f9f8f8;
 }
 
-.head-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--head-h);
-  z-index: 59;
-  pointer-events: none;
-  /* Solid behind the type, dissolving over the last few pixels. The type
-     ends at 58px, so it always sits on solid ground; the fade only spans
-     the empty strip below it, which means no hard edge against the paper
-     sections or the black band either. */
-  background: linear-gradient(
-    to bottom,
-    var(--head-ground) 0,
-    var(--head-ground) calc(var(--head-h) - 14px),
-    transparent 100%
-  );
-}
 
-/* A fixed ground means fixed ink. These must stop following --act, or
-   they will invert against a header that no longer changes. */
-.hud-l,
-.hud-r,
-.site-nav,
-.site-nav-link,
-.site-nav-mark {
-  color: var(--ink);
-}
+/* The nav sets its own ground and ink in the NAV block above, so it no
+   longer needs rescuing from --act here. */
 
 /* Everything pressable gets the hand. The browser's own pointing hand,
    not a drawn one: a bitmap at cursor size reads as an image stuck to the
@@ -2603,119 +2407,6 @@ button:disabled,
    sheets are there to say what is behind the word.
    ============================================================ */
 
-.cats {
-  padding: clamp(48px, 8vh, 96px) var(--margin) clamp(32px, 5vh, 64px);
-  background: var(--paper);
-  /* So the names can be sized off the space they actually have. */
-  container-type: inline-size;
-}
-
-.cats-head { margin-bottom: clamp(24px, 4vh, 48px); }
-
-.cats-stage {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 60svh;
-}
-
-.cats-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-
-.cats-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 14px;
-  background: none;
-  border: 0;
-  padding: 2px 0;
-  color: var(--ink-22);
-  /* The DISPLAY face, not the wordmark one. --font-wordmark is
-     HelveticaCondensed and only ships a Regular weight, and body sets
-     font-synthesis-weight: none, so asking it for bold got nothing: the
-     category names came out light while every other heading on the site
-     is 800. Archivo is variable and actually has the weight. */
-  font-family: var(--font-display, sans-serif);
-  font-weight: 800;
-  font-stretch: 88%;
-
-  /* Big, but it has to hold PROFESSIONAL SERVICES — 21 characters — and
-     clear a 260px sheet on each side. Sized in cqw off this section's own
-     content box, NOT vw (which ignores the scrollbar) and NOT a percentage
-     (which in font-size resolves against the parent's font size, not its
-     width — that silently pinned every name to the 24px floor). */
-  font-size: clamp(20px, 4.85cqw, 66px);
-  line-height: 1.04;
-  letter-spacing: -0.01em;
-  transition: color 260ms var(--ease-out);
-}
-
-/* The live line is the one being read; the rest step back so the stack
-   still scans as a list rather than seven competing headlines. */
-.cats-item:hover,
-.cats-item:focus-visible,
-.cats-item.is-on {
-  color: var(--ink);
-}
-
-.cats-count {
-  font-size: 0.2em;
-  color: var(--ink-45);
-  letter-spacing: 0.08em;
-}
-
-/* ---- the flanking sheets ---- */
-.cats-plate {
-  position: absolute;
-  top: 50%;
-  width: clamp(150px, 17vw, 260px);
-  aspect-ratio: 3 / 4;
-  transform: translateY(-50%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.cats-plate-l { left: 0; }
-.cats-plate-r { right: 0; }
-
-.cats-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  /* A press sheet, not a floating photograph. */
-  box-shadow: 0 18px 44px rgb(10 10 10 / 0.16);
-  transition: opacity 420ms var(--ease-out), transform 620ms var(--ease-out);
-}
-
-.cats-plate-l .cats-img { transform: translate3d(-14px, 0, 0) rotate(-1.4deg); }
-.cats-plate-r .cats-img { transform: translate3d(14px, 0, 0) rotate(1.4deg); }
-
-.cats-img.is-live {
-  opacity: 1;
-  transform: translate3d(0, 0, 0) rotate(0deg);
-}
-
-/* Below the point where a 260px sheet and the longest name can share a
-   line, the sheets would sit on the type. The names are the content and
-   they stay. */
-@media (max-width: 1024px) {
-  .cats-plate { display: none; }
-  .cats-stage { min-height: 0; }
-  .cats-item { font-size: clamp(22px, 7vw, 44px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cats-img { transition: opacity 1ms; transform: none !important; }
-}
 
 /* ---------- CONTACT, IN THE FOOT ----------
    It used to be a full section of its own repeated above the footer on
@@ -2787,18 +2478,7 @@ button:disabled,
 
 /* The slug line doubles as the way home. It is furniture, so it keeps its
    weight — but it has to answer a pointer and a keyboard like any link. */
-.hud-home {
-  pointer-events: auto;
-  color: inherit;
-  transition: opacity 200ms var(--ease-out);
-}
 
-.hud-home:hover { opacity: 1; }
-
-.hud-home:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-}
 
 /* ---------- /contact ---------- */
 .contact-page {

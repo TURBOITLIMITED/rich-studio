@@ -149,7 +149,7 @@ export default function StatementHold() {
     <div ref={root} className="hold">
       <div className="sheet hold-inner">
         <span className="t-mono hold-label">
-          <span className="target" aria-hidden="true" /> STATEMENT OF PRACTICE
+          STATEMENT OF PRACTICE
         </span>
 
         {/* Verbatim from his site. */}

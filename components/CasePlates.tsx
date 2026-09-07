@@ -86,8 +86,8 @@ export default function CasePlates({
     <div className="pin-host">
       <section ref={section} className="cs-bed sheet grid12">
         <div ref={plate} className="cs-bed-plate">
-          {/* Keyed on src so swapping a sheet mounts a new set of ink
-              plates rather than re-registering the old ones in place. */}
+          {/* Keyed on src so swapping a sheet mounts a fresh image rather
+              than leaving the browser to swap it under a live element. */}
           <RegisteredImage
             key={current.src}
             src={current.src}
@@ -103,7 +103,7 @@ export default function CasePlates({
 
         <div ref={run} className="cs-bed-run">
           <span className="t-mono cs-label">
-            <span className="target" aria-hidden="true" /> SHEETS
+            SHEETS
           </span>
 
           {/* A radiogroup, not a list of links: pressing one changes what is
@@ -133,7 +133,7 @@ export default function CasePlates({
           </ul>
 
           <span className="t-mono cs-label cs-bed-brief-label">
-            <span className="target" aria-hidden="true" /> BRIEF
+            BRIEF
           </span>
           <p className="t-statement cs-copy cs-bed-copy" data-split>
             {description}

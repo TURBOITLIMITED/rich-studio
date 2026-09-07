@@ -3,16 +3,20 @@
 import { useEffect, useRef, useState } from 'react';
 
 /**
- * A grid tile that arrives out of register and resolves under the cursor.
+ * One crisp image, mounted only once it is near the viewport.
  *
- * This is the CSS path — three stacked copies of the image, offset and
- * multiply-blended. It is used for every thumbnail because a page of 30
- * WebGL contexts would blow the browser's context limit (~16) and drop
- * tiles silently. The shader path is reserved for heroes, where there is
- * only ever one on screen.
+ * This used to stack three offset, multiply-blended copies so a tile
+ * arrived out of register and pulled true under the cursor. The client has
+ * settled on a reference where images are simply sharp, so the colour
+ * plates are gone and the base image carries the whole thing.
  *
- * Registration is driven by hover AND focus-within, so keyboard users get
- * the same behaviour rather than a dead image.
+ * The IntersectionObserver stays and matters more than it did: with one
+ * <img> per tile rather than four, it is the only thing keeping a 31-tile
+ * archive from firing 31 requests on load.
+ *
+ * NOTE: the plate treatment on the WORDMARK and the creature mark is a
+ * different system (.wm-* / .cr-* in globals.css) and is deliberately
+ * untouched — that is his logo, not page furniture.
  */
 export default function RegisteredImage({
   src,
@@ -49,43 +53,16 @@ export default function RegisteredImage({
   }, [near]);
 
   return (
-    <div ref={ref} className={`reg reg-fallback ${className}`}>
+    <div ref={ref} className={`reg ${className}`}>
       {near && (
-        <>
-          {/* Base plate carries the alt text; the colour plates are decorative. */}
-          <img
-            src={src}
-            alt={alt}
-            sizes={sizes}
-            loading={priority ? 'eager' : 'lazy'}
-            decoding="async"
-            className="reg-base"
-          />
-          <img
-            src={src}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-            className="reg-plate reg-plate-c"
-          />
-          <img
-            src={src}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-            className="reg-plate reg-plate-m"
-          />
-          <img
-            src={src}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            decoding="async"
-            className="reg-plate reg-plate-y"
-          />
-        </>
+        <img
+          src={src}
+          alt={alt}
+          sizes={sizes}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          className="reg-base"
+        />
       )}
     </div>
   );

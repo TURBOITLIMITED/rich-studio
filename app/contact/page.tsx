@@ -15,7 +15,7 @@ export default function Contact() {
     <>
       <header className="page-head sheet">
         <span className="t-mono page-label">
-          <span className="target" aria-hidden="true" /> CONTACT
+          CONTACT
         </span>
         <h1 className="t-wordmark page-shout" data-split>
           GET &#174;RICH QUICK.
