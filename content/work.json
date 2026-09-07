@@ -2337,5 +2337,53 @@
   "thumb": "/work/ridings-engineered-to-perfection/thumb-1600.webp",
   "ground": "#463932",
   "groundInk": "#f0f0ef"
+ },
+ {
+  "slug": "black-ink",
+  "title": "BLACK INK",
+  "client": "Black Ink",
+  "disciplines": [
+   "BRANDING"
+  ],
+  "industries": [
+   "PROFESSIONAL SERVICES"
+  ],
+  "description": "BRAND IDENTITY AND SITE FOR BLACK INK, AN INDEPENDENT FEE-ONLY WEALTH MANAGEMENT PRACTICE. A BLACK GROUND, A LIQUID INK MARK AND A SINGLE SPRING GREEN, SET ON A STRICT GRID SO THE NUMBERS AND THE CASE STUDIES CARRY THE PAGE INSTEAD OF DECORATION.",
+  "images": [
+   {
+    "src": "/work/black-ink/00.webp",
+    "w": 1600,
+    "h": 780
+   },
+   {
+    "src": "/work/black-ink/01.webp",
+    "w": 1600,
+    "h": 1067
+   },
+   {
+    "src": "/work/black-ink/02.webp",
+    "w": 1600,
+    "h": 1067
+   },
+   {
+    "src": "/work/black-ink/03.webp",
+    "w": 1600,
+    "h": 1067
+   },
+   {
+    "src": "/work/black-ink/04.webp",
+    "w": 1600,
+    "h": 1067
+   },
+   {
+    "src": "/work/black-ink/05.webp",
+    "w": 1600,
+    "h": 1067
+   }
+  ],
+  "thumb": "/work/black-ink/thumb-1600.webp",
+  "ground": "#85F7D1",
+  "groundInk": "#0a0a0a",
+  "featured": 10
  }
 ]

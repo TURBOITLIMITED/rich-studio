@@ -28,9 +28,13 @@ import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+/* Must stay in step with PRESS_PROJECTS in components/PressHero.tsx — a
+   book with no capture here opens onto its bare hero instead of onto the
+   page it is about to take you to. */
 const SLUGS = [
   'silverstone', 'hellmanns', 'walls',
   'absolut', 'networkrail', 'strongbow',
+  'black-ink',
 ];
 const ORIGIN = process.env.ORIGIN ?? 'http://localhost:4325';
 const OUT = 'public/press/spread';

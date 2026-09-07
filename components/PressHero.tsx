@@ -31,6 +31,11 @@ export const PRESS_PROJECTS: PressProject[] = [
   { slug: 'absolut',     title: 'ABSOLUT HALLOWEEN',                  client: 'ABSOLUT',      tone: '#d66511', kind: 1, words: ['ABSOLUT'],                   art: '/press/absolut.webp', hero: '/work/absolut/00.webp' },
   { slug: 'networkrail', title: 'CREATIVE RETOUCH FOR NETWORK RAIL',  client: 'NETWORK RAIL', tone: '#533123', kind: 5, words: ['EVERY', 'JOURNEY'],          art: '/press/networkrail.webp', hero: '/work/networkrail/00.webp' },
   { slug: 'strongbow',   title: 'AD CAMPAIGN FOR STRONGBOW',          client: 'STRONGBOW',    tone: '#592e62', kind: 2, words: ['CRISP', 'GOLD'],             art: '/press/strongbow.webp', hero: '/work/strongbow/00.webp' },
+  /* tone is the ground sampled from the artwork, the same way the others
+     are: #85F7D1 is the spring green Black Ink runs its chapters on. kind
+     only picks a GENERATED sheet layout for a project with no art, and
+     this one has art, so it is a fallback that never renders. */
+  { slug: 'black-ink',   title: 'BRAND IDENTITY FOR BLACK INK',       client: 'BLACK INK',    tone: '#85F7D1', kind: 3, words: ['WEALTH', 'DONE RIGHT'],      art: '/press/black-ink.webp', hero: '/work/black-ink/00.webp' },
 ];
 
 /* Attach each capture from the manifest rather than naming it inline. */
