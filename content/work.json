@@ -2352,8 +2352,8 @@
   "images": [
    {
     "src": "/work/black-ink/00.webp",
-    "w": 1600,
-    "h": 780
+    "w": 1366,
+    "h": 768
    },
    {
     "src": "/work/black-ink/01.webp",
@@ -2381,7 +2381,7 @@
     "h": 1067
    }
   ],
-  "thumb": "/work/black-ink/thumb-1600.webp",
+  "thumb": "/work/black-ink/thumb-1152.webp",
   "ground": "#85F7D1",
   "groundInk": "#0a0a0a",
   "featured": 10

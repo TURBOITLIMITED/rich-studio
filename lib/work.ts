@@ -49,8 +49,20 @@ export function thumbSet(thumb: string | undefined): string | undefined {
      DIFFERENT photograph, not a bigger copy of the same one — swapping
      them would change what those tiles show. They get no srcset rather
      than a candidate list that lies about its widths. */
-  if (!thumb || !thumb.includes('-1600.webp')) return undefined;
-  return `${thumb.replace('-1600.webp', '-900.webp')} 900w, ${thumb} 1600w`;
+  if (!thumb) return undefined;
+
+  /* The width is READ OFF THE FILENAME rather than assumed, so a
+     descriptor can never claim a resolution the file does not have — which
+     is the one way a srcset actively makes things worse: the browser
+     trusts the number, picks that candidate, and paints an upscale.
+     Black Ink's plate is 1152 wide because the source is 1366 and we do
+     not invent pixels; it is named for what it is. */
+  const m = thumb.match(/-(\d+)\.webp$/);
+  if (!m) return undefined;
+
+  const full = Number(m[1]);
+  if (full <= 900) return undefined; // one candidate is not a choice
+  return `${thumb.replace(`-${m[1]}.webp`, '-900.webp')} 900w, ${thumb} ${full}w`;
 }
 
 /** The nine that carry the homepage, in the order they should be met. */
