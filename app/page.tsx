@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Masthead from '@/components/Masthead';
 import StatementHold from '@/components/StatementHold';
+import ExpandPlate from '@/components/ExpandPlate';
 import WorkGrid from '@/components/WorkGrid';
 import SiteFooter from '@/components/SiteFooter';
 import { FEATURED } from '@/lib/work';
@@ -20,12 +21,13 @@ export default function Home() {
           is the bug we fixed this morning. */}
       <StatementHold />
 
-      {/* The reference runs a uniform two-up of featured work under the
-          statement, then a filled square button through to the archive.
-          This replaces the industry index that used to sit here — the
-          reference has no category list, and that index was the only thing
-          linking to ?industry=, whose sole reader has been removed. */}
-      <WorkGrid items={FEATURED} />
+      {/* The lead project comes on press: held, and opening from a small
+          sheet to the full bleed as you scroll through it. */}
+      <ExpandPlate item={FEATURED[0]} />
+
+      {/* The rest of the featured work as the uniform two-up. FEATURED[0]
+          is dropped — it has just had a full screen to itself. */}
+      <WorkGrid items={FEATURED.slice(1)} />
 
       <div className="sheet home-cta-row">
         <Link href="/work" className="cta-square">

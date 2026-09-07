@@ -2528,3 +2528,95 @@ button:disabled,
 
 .contact-desk:hover,
 .contact-desk:focus-visible { border-bottom-color: currentColor; }
+
+/* ============================================================
+   SCROLL SET PIECES
+   Three held sections, built from the scroll study the client
+   settled on. Each renders its FINISHED state in CSS and is
+   put back to its start by its own component before it
+   animates, so prefers-reduced-motion simply never runs the
+   trigger and lands on the frame the animation ends on.
+   ============================================================ */
+
+/* ---------- 1. THE PLATE COMING ON PRESS ----------
+   The runway is the section's own height: 100svh of .exp-run is the held
+   frame, the rest is the distance the growth is scrubbed across. */
+.exp-run {
+  position: relative;
+  z-index: 1;
+  height: 260svh;
+  background: var(--paper);
+}
+
+.exp-pin {
+  position: relative;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.exp-plate {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-2);
+  /* OPEN. ExpandPlate sets the closed size before it animates. */
+  width: 100vw;
+  height: 100svh;
+}
+
+/* The caption sits on the plate, so it needs a ground of its own. Ink
+   from the foot, since the plate can be any photograph. */
+.exp-plate::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 46%;
+  background: linear-gradient(to top, rgb(10 10 10 / 0.74), rgb(10 10 10 / 0));
+  pointer-events: none;
+  /* Above the image, below the caption. As ::after it is the last child in
+     paint order, so without this it covers the very type it exists to make
+     readable. */
+  z-index: 1;
+}
+
+.exp-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.exp-cap {
+  position: absolute;
+  inset: auto 0 clamp(26px, 6vh, 68px) 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--paper);
+  pointer-events: none;
+}
+
+.exp-cap > * { pointer-events: auto; }
+.exp-client { opacity: 0.82; }
+
+.exp-title {
+  margin: 0;
+  /* Sized off the page measure and the longest word in the archive, the
+     same 7.07 divisor the case-study masthead is derived from. */
+  font-size: min(calc((100vw - 2 * var(--margin)) / 7.07), 9rem);
+  line-height: 0.92;
+}
+
+/* Inverted against the plate: paper block, ink type. */
+.exp-cta {
+  margin-top: 10px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+@media (max-width: 900px) {
+  .exp-run { height: 220svh; }
+}

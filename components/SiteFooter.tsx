@@ -69,7 +69,7 @@ export default function SiteFooter({
       {/* His sign-off, last thing on the page and the full width of it.
           The mask is what it rises out of — data-rise animates the child,
           so the two elements are not interchangeable. */}
-      <div className="footer-shout-mask" data-rise>
+      <div className="footer-shout-mask" data-rise="scale">
         <p className="t-display footer-shout">THAT&#39;S ALL F**KS</p>
       </div>
     </footer>

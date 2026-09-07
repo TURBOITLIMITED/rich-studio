@@ -105,14 +105,21 @@ export function initMotion(): () => void {
       const inner = el.firstElementChild as HTMLElement | null;
       if (!inner) return;
       if (reduced) {
-        gsap.set(inner, { yPercent: 0 });
+        gsap.set(inner, { yPercent: 0, scale: 1 });
         return;
       }
+
+      /* data-rise="scale" also grows it into place from its own bottom
+         left, so the sign-off reads as coming towards you rather than
+         only up. Same trigger, so it is one movement and not two. */
+      const grows = el.dataset.rise === 'scale';
+
       gsap.fromTo(
         inner,
-        { yPercent: 100 },
+        { yPercent: 100, ...(grows ? { scale: 0.87 } : null) },
         {
           yPercent: 0,
+          ...(grows ? { scale: 1, transformOrigin: 'left bottom' } : null),
           ease: 'none',
           scrollTrigger: {
             trigger: el,
