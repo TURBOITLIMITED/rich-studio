@@ -17,9 +17,10 @@ import type { WorkItem } from '@/lib/work';
  * with aria-pressed rather than the plugin's div soup.
  */
 
-/* A repeating span pattern that breaks the grid without randomising it —
-   randomness reflows on every render and looks accidental rather than set. */
-const SPANS = [7, 5, 4, 8, 6, 6, 5, 7, 4, 8, 6, 6];
+/* The tiles used to run a repeating span pattern — [7,5,4,8,6,6,...] — so
+   the grid broke without randomising. The reference the client settled on
+   sets every tile the same width and lets the WORK carry the rhythm, so
+   the pattern is gone and the span lives in CSS as a plain half. */
 
 export default function WorkGrid({
   items,
@@ -108,11 +109,7 @@ export default function WorkGrid({
       ) : (
         <ul className="work-grid grid12" data-reveal="stagger">
           {filtered.map((w, i) => (
-            <li
-              key={w.slug}
-              className="work-tile"
-              style={{ ['--span' as string]: SPANS[i % SPANS.length] }}
-            >
+            <li key={w.slug} className="work-tile">
               <Link
                 href={`/work/${w.slug}`}
                 className="work-link"

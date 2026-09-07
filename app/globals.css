@@ -150,10 +150,19 @@
   --act: var(--paper);
   --act-ink: var(--ink);
 
-  /* grid: 12 columns, gutter, and the page margin the crop marks sit in */
+  /* grid: 12 columns, gutter, and the page margin the crop marks sit in.
+
+     Margin and gutter are measured off the reference the client settled
+     on, not chosen: at a 1440 stage it sets a flat 20px margin either
+     side, a 15px gap between the two columns of its work grid and a 13px
+     row gap — 20 + 693 + 15 + 693 + 20 = 1441. The old 3.2vw margin gave
+     46px here, and that difference is most of why its images read so
+     much larger than ours did. The 12-column system stays underneath;
+     this only changes what it is inset by. */
   --cols: 12;
-  --gutter: clamp(12px, 1.4vw, 24px);
-  --margin: clamp(16px, 3.2vw, 56px);
+  --gutter: clamp(10px, 1.05vw, 15px);
+  --margin: clamp(16px, 1.4vw, 20px);
+  --row-gap: clamp(10px, 0.9vw, 13px);
   --rule: 1px;
 
   /* motion — the named durations. Nothing ships outside these. */
@@ -388,15 +397,17 @@ a {
   transition: color var(--t-act) var(--ease-in-out);
 }
 
-.hud-l { top: 16px; left: 46px; }
-.hud-r { top: 16px; right: 46px; text-align: right; }
-.hud-b { bottom: 16px; left: 46px; }
-.hud-br { bottom: 16px; right: 46px; text-align: right; }
+/* Aligned to the page margin, not to 46px. That literal WAS the margin —
+   3.2vw resolved to 46.08px at a 1440 stage — so it tracked the content
+   edge by coincidence rather than by reference, and fell out of register
+   with it the moment the margin changed. */
+.hud-l { top: 16px; left: var(--margin); }
+.hud-r { top: 16px; right: var(--margin); text-align: right; }
+.hud-b { bottom: 16px; left: var(--margin); }
+.hud-br { bottom: 16px; right: var(--margin); text-align: right; }
 
 @media (max-width: 640px) {
   .hud-b, .hud-br { display: none; }
-  .hud-l { left: 40px; }
-  .hud-r { right: 40px; }
 }
 
 /* Registration target — the ⊕ mark. Drawn, not an image. */
@@ -759,23 +770,27 @@ a {
 
 .work-empty { opacity: 0.4; padding-block: 40px; }
 
-.work-grid { list-style: none; row-gap: clamp(28px, 5vh, 72px); }
+/* Two up, every tile the same. The reference runs a uniform pair with a
+   13px row gap rather than a varied span rhythm — measured 693 + 15 + 693
+   inside a 20px margin at a 1440 stage, which is exactly six of twelve
+   columns each once the gutter is 15. */
+.work-grid { list-style: none; row-gap: var(--row-gap); }
 
-.work-tile { grid-column: span var(--span, 6); min-width: 0; }
-
-@media (max-width: 900px) {
-  /* On 6 columns the desktop spans overflow; clamp every tile to half. */
-  .work-tile { grid-column: span 3; }
-}
+.work-tile { grid-column: span 6; min-width: 0; }
 
 @media (max-width: 560px) {
-  .work-tile { grid-column: span 6; }
+  /* One up on a phone: two 4:3 plates side by side on 375 gives a 170px
+     tile, which is smaller than the caption under it. */
+  .work-tile { grid-column: 1 / -1; }
 }
 
 .work-link { display: block; }
 
 .work-thumb {
-  aspect-ratio: 4 / 3;
+  /* 3:2, not 4:3. The reference measures 693x471 (1.471); 3:2 is 1.5 and
+     is a real photographic ratio rather than a copied oddity, so the
+     plates crop the way a press sheet would. */
+  aspect-ratio: 3 / 2;
   width: 100%;
   margin-bottom: 10px;
 }
