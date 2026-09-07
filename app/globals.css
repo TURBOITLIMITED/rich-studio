@@ -2620,3 +2620,94 @@ button:disabled,
 @media (max-width: 900px) {
   .exp-run { height: 220svh; }
 }
+
+/* ---------- 2. THE REEL ----------
+   Two modes, and which one is live is decided by the component, not by a
+   media query here: WorkReel stamps data-reel-pinned onto the section only
+   once it has actually created the pin. If the trigger is never made — a
+   phone, a coarse pointer, reduced motion — the row stays a native
+   scroll-snap swipe and nothing has hijacked the gesture. */
+.reel {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+}
+
+.reel-pin {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.reel-track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gutter);
+  padding-inline: var(--margin);
+  will-change: transform;
+}
+
+/* Unpinned: swipe it. */
+.reel:not([data-reel-pinned]) .reel-pin {
+  min-height: 0;
+  padding-block: clamp(28px, 6vh, 72px);
+}
+
+.reel:not([data-reel-pinned]) .reel-track {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.reel:not([data-reel-pinned]) .reel-track::-webkit-scrollbar { display: none; }
+.reel:not([data-reel-pinned]) .reel-card { scroll-snap-align: start; }
+
+.reel-card {
+  flex: 0 0 auto;
+  width: clamp(240px, 32vw, 520px);
+  min-width: 0;
+}
+
+.reel-link { display: block; }
+
+.reel-frame {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 2;
+  background: var(--paper-2);
+}
+
+/* Wider than its frame so the drift never exposes an edge: inset -14%
+   makes it 128% of the frame, and the tween moves it +/-8% of THAT, which
+   is +/-10.2% of the frame. */
+.reel-fill {
+  position: absolute;
+  inset: 0 -14%;
+  width: 128%;
+  /* The global `img { max-width: 100% }` at the top of this file silently
+     caps that 128% back to the frame width, and the drift then pulls the
+     image off its own right edge — measured 70px of bare frame showing.
+     Every oversized image in here has to opt out of that reset. */
+  max-width: none;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.reel-cap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 10px;
+}
+
+.reel-num { opacity: 0.72; }
+
+.reel-title {
+  font-size: clamp(0.95rem, 1.4vw, 1.35rem);
+  line-height: 1.05;
+}
+
+.reel-facet { opacity: 0.72; }

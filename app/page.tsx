@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Masthead from '@/components/Masthead';
 import StatementHold from '@/components/StatementHold';
 import ExpandPlate from '@/components/ExpandPlate';
-import WorkGrid from '@/components/WorkGrid';
+import WorkReel from '@/components/WorkReel';
 import SiteFooter from '@/components/SiteFooter';
 import { FEATURED } from '@/lib/work';
 
@@ -25,9 +25,10 @@ export default function Home() {
           sheet to the full bleed as you scroll through it. */}
       <ExpandPlate item={FEATURED[0]} />
 
-      {/* The rest of the featured work as the uniform two-up. FEATURED[0]
-          is dropped — it has just had a full screen to itself. */}
-      <WorkGrid items={FEATURED.slice(1)} />
+      {/* The rest of the featured work runs sideways while the page is
+          held. FEATURED[0] is dropped — it has just had a full screen to
+          itself in the plate above. */}
+      <WorkReel items={FEATURED.slice(1)} />
 
       <div className="sheet home-cta-row">
         <Link href="/work" className="cta-square">
