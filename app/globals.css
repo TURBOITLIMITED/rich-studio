@@ -150,47 +150,95 @@ body {
   display: none;
 }
 
-/* The wordmark sits above the imagery, not behind it — work
-   scrolls underneath and is clipped by nothing. z-index only,
-   no blend mode: magenta over photography goes muddy. */
+/* Z-ORDER IS THE POINT.
+   On the reference the imagery passes IN FRONT of the wordmark — a plate
+   slides up and takes a bite out of "MAISON AUGE" — while the small copy
+   passes BEHIND it. So the wordmark is not a top layer and it is not a
+   bottom one; it sits between the two. Sections must stay transparent or
+   they would paint over it. */
 .wordmark-layer {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 400;
+  z-index: 40;
   padding-top: 0.9vh;
   text-align: center;
   pointer-events: none;
   color: var(--color-ink);
-  mix-blend-mode: normal;
 }
 
+/* Rich's RSC monogram, in the slot the reference gives its house mark.
+   Bigger than theirs on purpose: theirs is a flat circle that reads at
+   32px, his is three interlocking rings with letters inside them and it
+   turns to mush at that size. Above everything, because it is furniture. */
 .mark-layer {
   position: fixed;
-  left: clamp(10px, 1.4vw, 22px);
+  left: clamp(14px, 2vw, 34px);
   top: 50%;
   transform: translateY(-50%);
-  z-index: 500;
-  width: clamp(26px, 2.4vw, 40px);
+  z-index: 70;
+  width: clamp(46px, 4.4vw, 74px);
+  display: block;
+  /* viewBox is 332.3 x 304.6 */
+  aspect-ratio: 332.3 / 304.6;
+}
+
+/* The mark itself: his export used as a mask, so the shape can take a
+   colour. Ink by default; paper while it sits over the showreel. */
+.mark-shape {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-ink);
+  transition: background-color 0.35s ease;
+  -webkit-mask-image: url("/brand/rsc-mark.svg");
+  mask-image: url("/brand/rsc-mark.svg");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.mark-layer.on-dark .mark-shape {
+  background: var(--color-paper);
+}
+
+/* No mask support means the span would paint as a solid ink block, which
+   is worse than no mark at all — so hide it rather than ship a smudge. */
+@supports not ((-webkit-mask-image: url("#")) or (mask-image: url("#"))) {
+  .mark-layer {
+    display: none;
+  }
 }
 
 /* The footer is the last thing in the scroll container, so it carries the
    clearance for the fixed ticker rather than every page shipping a spacer. */
 footer {
   padding-bottom: clamp(70px, 10vh, 110px);
+  position: relative;
+  z-index: 50;
 }
 
+/* No plate and no rule — just the text moving across the page, and it
+   fades up only once you have started scrolling, so the opening screen
+   is the caption alone. */
 .ticker-layer {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 450;
-  border-top: 1px solid var(--color-rule);
-  background: var(--color-paper);
+  z-index: 60;
+  background: transparent;
   overflow: hidden;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.ticker-layer.is-on {
+  opacity: 1;
 }
 
 @keyframes ticker-run {
@@ -266,6 +314,8 @@ footer {
 .frame {
   overflow: hidden;
   background: var(--color-rule);
+  position: relative;
+  z-index: 50; /* in front of the wordmark — see .wordmark-layer */
 }
 
 .collage img {

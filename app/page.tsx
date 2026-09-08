@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import HeroReveal from '@/components/HeroReveal';
 import ProjectSection from '@/components/ProjectSection';
 import Block from '@/components/Block';
 import { homeProjects, indexProjects } from '@/lib/projects';
@@ -16,48 +17,15 @@ export default function Home() {
 
   return (
     <>
-      {/* ---------- Hero: his showreel, under the fixed wordmark ---------- */}
-      <section
-        aria-label="Showreel"
-        style={{
-          minHeight: '100svh',
-          display: 'grid',
-          gridTemplateRows: '1fr auto',
-          paddingTop: 'calc(var(--wordmark-size) * 0.92)',
-          paddingInline: PAD,
-          paddingBottom: 'clamp(48px, 8vh, 96px)',
-        }}
-      >
-        <div style={{ position: 'relative', width: '100%' }}>
-          <video
-            src="/video/reel.mp4"
-            poster="/video/reel-poster.jpg"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-label="Rich Colvill Studio showreel"
-            style={{
-              display: 'block',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              maxHeight: '62vh',
-            }}
-          />
-        </div>
-
-        {/* The page's real heading. The wordmark above is fixed furniture
+      {/* ---------- Hero: the curtain opens on his showreel ---------- */}
+      <HeroReveal>
+        {/* The page's real heading. The wordmark is fixed furniture
             repeated on every route and hidden from assistive tech, so it
             cannot carry the h1. */}
-        <h1
-          className="t-label"
-          style={{ textAlign: 'center', marginTop: 'clamp(20px, 4vh, 44px)', marginBottom: 0 }}
-        >
+        <h1 className="t-label" style={{ margin: 0 }}>
           Branding / Design / Creative Production
         </h1>
-      </section>
+      </HeroReveal>
 
       {/* ---------- What the studio does. His words, justified. ---------- */}
       <section

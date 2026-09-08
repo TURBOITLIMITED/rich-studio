@@ -1,32 +1,68 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useRef } from 'react';
 
 /**
- * Rich's RSC monogram, fixed at the left edge — the slot the
- * reference gives its circular house mark.
+ * Rich's RSC monogram — the three interlocking rings — fixed at the left
+ * edge, in the slot the reference gives its house mark.
  *
- * His own Illustrator export, inlined verbatim rather than
- * redrawn: the three rings sit on a clip path that a hand-built
- * approximation gets subtly wrong. Two edits only — the fixed hex
- * became currentColor so it takes the ink token, and every id and
- * class was namespaced, because Illustrator calls every export
- * "Layer_1" and the wordmark lockup ships on the same pages.
+ * Painted as a CSS MASK over his untouched Illustrator export rather
+ * than inlined as markup. Inlining meant namespacing the ids, because
+ * Illustrator names every export "Layer_1" and the footer lockup ships
+ * on the same pages; that renaming broke the file's internal clip-path
+ * reference and the mark rendered as nothing at all — the DOM reported a
+ * 57x52 path with a solid fill and the pixels were blank. A mask uses
+ * the file's rendered alpha and cares about none of that.
  *
- * It goes in through dangerouslySetInnerHTML because the export
- * carries `class` attributes and its own <style> block, neither of
- * which survives JSX untouched. The input is a build-time file in
- * this repo, not anything user-supplied.
+ * Colour is switched, not blended. `mix-blend-mode: difference` was the
+ * obvious answer for "dark on paper, light on the showreel" and it does
+ * not work here: the mark is position:fixed with a z-index, which makes
+ * its own stacking context, so the blend isolates against nothing and
+ * the mark stays white on the paper. Instead this asks the one real
+ * question — is a dark surface behind the mark right now — by testing
+ * the hero frame's rect against the mark's centre.
  */
-const MARK = "<svg id=\"rsc-Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\" viewBox=\"0 0 332.3 304.6\" style=\"width:100%;height:auto;display:block\" role=\"img\" aria-hidden=\"true\"> <defs> <style> .rsc-st0 { fill: none; } .rsc-st1 { fill: currentColor; } .rsc-st2 { clip-path: url(#rsc-clippath); } </style> <clipPath id=\"rsc-clippath\"> <rect class=\"rsc-st0\" x=\"26\" y=\"21.4\"/> </clipPath> </defs> <g class=\"rsc-st2\"> <path class=\"rsc-st1\" d=\"M126,217.6c-3.8-13.1-20-12.2-30.7-16.1-4.7-1.7-8.1-5-6.1-10.1,2.8-7,17.4-6.6,21.8-1.2,2.1,2.5,1.4,5.8,5.2,6.6,9.4,1.9,9.8-3.4,5.8-9.8-4.8-7.7-15.9-10.4-24.7-9.6-11.9,1-21.4,7.9-20.1,20.3,1.4,13.1,18.5,13.7,28.6,16.9,3.2,1,8.1,2.3,9,6,3.3,14.3-22.1,15.2-27.3,5.1-2.7-5.3-.7-7.1-9.1-6.3-4.8.4-3.5,4.6-2.3,7.9,8.4,23,57.4,16.5,49.9-9.6M183.4,81.1c0,4.9-2.9,8.7-8.2,9.3-5.8.7-13.1-.2-19-.2-.4-.3-.8-.6-1.1-1.1-1.1-1.9-1.1-13.9,0-15.8.3-.5.9-1.1,1.4-1.2,8.9.9,27-4.4,26.8,9.1M191.3,99.5c-1-1.5-3.8-3.7-3.8-5s4.1-4.6,5.2-6.7c5.8-10.7-.2-22.4-12.6-24.4-7.3-1.2-25.5-1.2-33.1-.5-3,.3-3.5,1.4-3.8,4.1-1.6,16.8,1.3,35.9,0,52.9-1.3,5.3,9.7,5,10.9,2.7,1.2-2.4,0-15.2.3-19,.2-2.5.4-4.2,3.3-4.5,4.2-.5,16.5-.4,20.1,1.4,8.5,4.2,3.3,19.1,7.2,22.6,1.7,1.5,10.3,1.8,10.6-.9.1-1.2-1.5-6.7-1.7-8.6-.6-5.1.5-9.1-2.6-13.9M227.5,226c-11.8-14.4-3-46.9,20.3-38.8,5.9,2.1,6,5.4,9.1,9.3,2,2.5,10.9,3.1,11-1,.1-7.5-9.7-14.9-16.5-16.9-29.8-8.3-48.4,20.7-37.2,45.6,7.6,16.9,31.6,23.1,46.1,10.4,3.5-3,8-10.6,8-15.1,0-4.2-8.4-3.9-10.2-2.2-.9.9-2.2,5.9-3.4,7.7-5.9,9.6-20.3,9.4-27.2.9M299.3,229.6c-18.5,56.4-102.3,55.3-119.4-1.3-11.5-38.1,12.6-78,55.1-81,47.4-3.3,78.1,40.2,64.3,82.3M229.9,113.2c-16.7,53.2-94.2,57.1-116.9,6.4-16.8-37.6,6-84.4,50.3-88,48.4-3.9,80.4,37.9,66.6,81.5M157.6,236c-23.9,51.9-103,45.1-117.6-9.9-9.9-37.7,14.4-76,56-78.8,50.3-3.3,81.3,45.9,61.6,88.7M168.8,179.1c-.7-.8-6.8-11.1-7-11.8-.2-.8-.5-1.8.5-2.1l16.5.3c.3.4.2.9.1,1.4-.1.6-5.9,10.2-6.7,11.2-.9,1.2-2.2,2.5-3.5.9M314.4,202.8c-2.3-33.2-32.8-62.7-67.4-65.1-2.3-.2-15.2.4-15.8-.5-.2-.7,0-1.4.1-2.1.9-2.5,4.9-7.5,6.5-10.6,16.9-34.2,3.7-75-30.6-93.5C141.6-4.4,68.6,64.5,105,128.5c1.1,1.9,7,8.4,3,9.2-3.8.7-10.1-.3-14.3,0-52.9,3.5-84.2,61.6-58.6,106,26.7,46.3,95,50.3,126.8,6.7,1.3-1.8,7.1-11.9,8-12.1,1.9-.4,5.2,6.9,6.2,8.5,42.4,63.9,143.5,31.7,138.2-44\"/> </g> </svg>";
-
 export default function RscMark() {
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    const root = document.querySelector('[data-scroll-root]');
+    if (!el) return;
+
+    const update = () => {
+      const dark = document.querySelector('[data-dark]');
+      if (!dark) {
+        el.classList.remove('on-dark');
+        return;
+      }
+      const m = el.getBoundingClientRect();
+      const d = dark.getBoundingClientRect();
+      const cx = m.left + m.width / 2;
+      const cy = m.top + m.height / 2;
+      const over = cx >= d.left && cx <= d.right && cy >= d.top && cy <= d.bottom;
+      el.classList.toggle('on-dark', over);
+    };
+
+    update();
+    root?.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      root?.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
   return (
-    <div className="mark-layer">
-      <Link
-        href="/"
-        aria-label="Rich Colvill Studio — home"
-        style={{ display: 'block', pointerEvents: 'auto', color: 'var(--color-ink)' }}
-        dangerouslySetInnerHTML={{ __html: MARK }}
-      />
-    </div>
+    <Link
+      href="/"
+      aria-label="Rich Colvill Studio — home"
+      className="mark-layer"
+      title="Rich Colvill Studio"
+      ref={ref}
+    >
+      <span className="mark-shape" aria-hidden="true" />
+    </Link>
   );
 }
