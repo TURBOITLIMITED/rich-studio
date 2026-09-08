@@ -13,7 +13,7 @@ export const metadata: Metadata = {
    come from lib/contact.ts so there is only ever one copy — an earlier
    build shipped an invented hello@ address. */
 
-const PAD = 'clamp(14px, 4vw, 64px)';
+const PAD = 'var(--gutter)';
 
 export default function Contact() {
   return (

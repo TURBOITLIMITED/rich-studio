@@ -26,7 +26,7 @@ export default function ProjectSection({
         <header
           className="project-head"
           style={{
-            paddingInline: 'clamp(14px, 4vw, 64px)',
+            paddingInline: 'var(--gutter)',
             marginBottom: 'clamp(26px, 4vh, 56px)',
             display: 'grid',
             gridTemplateColumns: 'repeat(12, 1fr)',
@@ -34,7 +34,10 @@ export default function ProjectSection({
             alignItems: 'start',
           }}
         >
-          <div style={{ gridColumn: '1 / span 4' }}>
+          {/* Starts at column 2, not 1: the RSC mark is pinned at the left
+              edge, vertically centred, and a label in column 1 collided
+              with it. Theirs sits at 8.4vw for the same reason. */}
+          <div style={{ gridColumn: '2 / span 3' }}>
             <p className="t-meta m-0" style={{ marginBottom: 6 }}>
               {String(index + 1).padStart(2, '0')}
             </p>
@@ -51,7 +54,7 @@ export default function ProjectSection({
             </p>
           </div>
 
-          <div style={{ gridColumn: '6 / span 6' }}>
+          <div style={{ gridColumn: '5 / span 7' }}>
             <p className="t-body m-0">{project.summary}</p>
           </div>
         </header>

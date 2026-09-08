@@ -60,14 +60,24 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        {/* Fixed furniture sits OUTSIDE the scroll container. That is the
-            whole trick of the layout: these three never move, and they
-            need no scroll listener to stay put. */}
-        <Wordmark text="Rich Colvill" />
+        {/* The mark and the band are furniture that stays on top of
+            everything, so they sit outside the scroll container. */}
         <RscMark />
         <Ticker />
 
         <ScrollRoot>
+          {/* The masthead is fixed too, but it has to live INSIDE the
+              scroll container. .scroll-root is position:fixed, and a
+              fixed element forms its own stacking context whatever its
+              z-index — so while the masthead was a body-level sibling it
+              painted over every frame on the page and no z-index on the
+              frames could reach it. The order Rich asked for, imagery in
+              front of the name and copy behind it, was inert. In here it
+              is a sibling of the frames and the z-indexes compare.
+              Lenis scrolls this container by scrollTop rather than by a
+              transform, so position:fixed still resolves to the
+              viewport and the masthead stays pinned. */}
+          <Wordmark text="Rich Colvill" />
           <main id="main">{children}</main>
           <SiteFooter />
         </ScrollRoot>

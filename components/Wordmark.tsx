@@ -1,40 +1,42 @@
 'use client';
 
 /**
- * The fixed masthead. The reference splits its wordmark into one
- * span per character and keeps a duplicate of each — that rig is
- * for a hover swap we do not need, but the per-character split is
- * worth keeping: it is what lets the letters stagger on load
- * without a layout pass per frame.
+ * The fixed masthead.
  *
- * Sized in vw so it fills the viewport edge to edge. "RICH
- * COLVILL" is 12 characters against the reference's 11, so the
- * ceiling in --wordmark-size is a little tighter than theirs.
+ * Set edge to edge, not centred. Measured on the reference at 1700x887:
+ * the type is 230.8px (13.58vw) at line-height 1.0 with normal tracking,
+ * and the rendered glyphs of "maison auge" only measure ~1342px — yet the
+ * word spans 1620px of the viewport. The difference is distribution: one
+ * flex item per character, spread with space-between across the gutters.
+ * That is why this is a flex row rather than centred nowrap text, and why
+ * the space character keeps its own span — it takes a share of the spread
+ * and gives the two words their gap.
  *
- * It is deliberately NOT an <h1>. It is identical on every route
- * and hidden from assistive tech, so using a heading here left
- * /work, /about and /contact with no accessible heading at all
- * and gave each case study two.
+ * Line-height matters more than it looks. At 0.82 the negative half-leading
+ * pulled the glyph tops above the line box and the caps were sliced off by
+ * the top of the viewport.
+ *
+ * It is deliberately NOT an <h1>. It is identical on every route and hidden
+ * from assistive tech, so using a heading here left /work, /about and
+ * /contact with no accessible heading at all and gave each case study two.
  */
 export default function Wordmark({ text = 'Rich Colvill' }: { text?: string }) {
   const chars = [...text];
 
   return (
     <div className="wordmark-layer" aria-hidden="true">
-      <div className="t-wordmark" role="presentation">
+      <div className="t-wordmark wordmark-row" role="presentation">
         {/* His mark is "®RICH COLVILL", not "RICH COLVILL" — the ® is part
-            of the name and it is on his showreel title card and his logo
-            lockup. Set small and raised rather than at cap height, or a
-            216px glyph would eat the R beside it. */}
+            of the name, on his showreel title card and his logo lockup.
+            Set small and raised rather than at cap height, or a 230px
+            glyph would eat the R beside it. */}
         <span
           aria-hidden="true"
           style={{
             display: 'inline-block',
             fontSize: '0.26em',
-            verticalAlign: 'top',
-            transform: 'translateY(0.42em)',
-            marginRight: '0.04em',
-            letterSpacing: 0,
+            transform: 'translateY(0.5em)',
+            flex: '0 0 auto',
           }}
         >
           ®
@@ -45,6 +47,7 @@ export default function Wordmark({ text = 'Rich Colvill' }: { text?: string }) {
             style={{
               display: 'inline-block',
               whiteSpace: 'pre',
+              flex: '0 0 auto',
               animation: 'wm-in 0.9s cubic-bezier(0.22,1,0.36,1) both',
               animationDelay: `${0.04 * i}s`,
             }}

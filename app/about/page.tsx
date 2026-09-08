@@ -24,7 +24,7 @@ const SECTORS = [
   'PROFESSIONAL SERVICES', 'AUTOMOTIVE',
 ];
 
-const PAD = 'clamp(14px, 4vw, 64px)';
+const PAD = 'var(--gutter)';
 
 export default function About() {
   return (

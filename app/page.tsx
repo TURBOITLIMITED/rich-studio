@@ -9,7 +9,7 @@ import { STUDIO_EMAIL } from '@/lib/contact';
    reference site's register — "own the beauty" — belongs to a French
    luxury house and would be a costume on him. */
 
-const PAD = 'clamp(14px, 4vw, 64px)';
+const PAD = 'var(--gutter)';
 
 export default function Home() {
   const featured = homeProjects();
@@ -22,7 +22,7 @@ export default function Home() {
         {/* The page's real heading. The wordmark is fixed furniture
             repeated on every route and hidden from assistive tech, so it
             cannot carry the h1. */}
-        <h1 className="t-label" style={{ margin: 0 }}>
+        <h1 className="t-hero-caption" style={{ margin: 0 }}>
           Branding / Design / Creative Production
         </h1>
       </HeroReveal>

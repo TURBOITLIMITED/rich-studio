@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     'Branding, packaging, campaign and creative production work from ®Rich Colvill Studio.',
 };
 
-const PAD = 'clamp(14px, 4vw, 64px)';
+const PAD = 'var(--gutter)';
 
 /**
  * The index is a list, not a grid of thumbnails. At 11px type

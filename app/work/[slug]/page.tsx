@@ -5,7 +5,7 @@ import Collage from '@/components/Collage';
 import Block from '@/components/Block';
 import { getProject, projectSlugs } from '@/lib/projects';
 
-const PAD = 'clamp(14px, 4vw, 64px)';
+const PAD = 'var(--gutter)';
 
 /* output: 'export' means every route is built ahead of time, so the
    slug list has to be exhaustive — there is no fallback renderer. */

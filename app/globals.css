@@ -41,11 +41,23 @@
 
   --font-display: "NimbusSans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  /* The wordmark is sized to fill the viewport width. 13.4vw is
-     measured off the reference at 1200/1600/1920 — but their string
-     is 11 characters and "RICH COLVILL" is 12, so the ch-based
-     divisor below does the real work and the vw is the ceiling. */
-  --wordmark-size: min(13.4vw, 22.5vh);
+  /* Measured off the reference at 1700x887: 230.8px = 13.58vw = 26vh,
+     line-height 1.0, letter-spacing normal. The old 22.5vh ceiling was
+     clamping ours to 199px — a fifth smaller than theirs and the single
+     biggest reason the masthead did not read the same. The vh term is
+     kept only as a bail-out for very short windows. */
+  /* 13.5vw matched their glyph height but overran the right gutter:
+     "RICH COLVILL" is 12 characters plus the ®, against their 11, and the
+     run measures 7.193 x the font size. The reference sets its word to
+     fill ~83% of the gutter-to-gutter box and distributes the remaining
+     17% between the letters. Ours is set to fill ~90% — a little tighter
+     than theirs, because matching their ratio exactly on a longer name
+     would have cost a fifth of the cap height. 0.90 x 1610 / 7.193 at
+     1700 wide = 201px = 11.9vw. */
+  --wordmark-size: min(11.9vw, 30vh);
+
+  /* The page gutter. Theirs is 45px at 1700 wide. */
+  --gutter: clamp(14px, 2.65vw, 48px);
 }
 
 :root {
@@ -77,10 +89,30 @@ body {
 
 .t-wordmark {
   font-size: var(--wordmark-size);
-  line-height: 0.82;
-  letter-spacing: -0.022em;
+  /* Theirs is line-height 1.0 with normal tracking. At 0.82 the glyph
+     tops overflowed the line box and the masthead was sliced off by the
+     top of the viewport — that was the "logo at the top is a mess". */
+  line-height: 1;
+  letter-spacing: normal;
   text-transform: uppercase;
   font-weight: 700;
+  white-space: nowrap;
+}
+
+/* The masthead is set edge to edge, not centred: one flex item per
+   character, spread with space-between across the gutters. That is how
+   the reference makes an 11-character word fill 1620 of 1700px — the
+   glyphs alone only measure ~1342. */
+.wordmark-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-inline: var(--gutter);
+  /* Set in em so it tracks the type. Nimbus Sans puts its cap top much
+     closer to the top of the line box than Neue Montreal does, so at
+     line-height 1 the caps sat 7px from the viewport edge and read as
+     sliced off. Theirs clears by ~34px; 0.115em restores that. */
+  padding-top: 0.115em;
   white-space: nowrap;
 }
 
@@ -113,14 +145,40 @@ body {
 /* The justified all-caps statement block, with em-dash separators.
    This is the single most recognisable element of the reference. */
 .t-statement {
-  font-size: clamp(0.875rem, 1.35vw, 1.375rem);
-  line-height: 1.28;
-  letter-spacing: 0.005em;
+  /* 35.7px at 1700 = 2.1vw, set solid. Ours was 22px at 1.28 leading,
+     which read as body copy rather than as the manifesto it is. */
+  font-size: clamp(1.05rem, 2.1vw, 2.25rem);
+  line-height: 1.02;
+  letter-spacing: normal;
   text-transform: uppercase;
   font-weight: 700;
   text-align: justify;
   text-justify: inter-word;
   hyphens: none;
+}
+
+/* The running band. 19.55px, weight 700, NO letter-spacing and NO
+   uppercasing: theirs reads "2026 MAISON AUGE own the beauty" — caps
+   for the name, lowercase for the line. Ours was 10px tracked-out
+   uppercase, which is why it read as a legal footer instead of a band. */
+.t-ticker {
+  font-size: clamp(13px, 1.15vw, 21px);
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+/* The line under the hero panel. Theirs ("OWN THE BEAUTY") is set at the
+   same weight and scale as the running band, not at caption size — ours
+   was 11px and read as a strapline rather than as part of the opening. */
+.t-hero-caption {
+  font-size: clamp(13px, 1.15vw, 21px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .t-quote {
@@ -156,14 +214,21 @@ body {
    passes BEHIND it. So the wordmark is not a top layer and it is not a
    bottom one; it sits between the two. Sections must stay transparent or
    they would paint over it. */
+/* This lives INSIDE .scroll-root. It has to: .scroll-root is
+   position:fixed, and a fixed element forms its own stacking context
+   whatever its z-index, so while the masthead sat outside it as a body
+   child at z-index 40 it painted over every frame in the page no matter
+   what z-index the frames carried. The whole "images in front, copy
+   behind" order was inert. As a fixed child of the same container it is
+   a sibling of the frames and the z-indexes finally compare. Fixed
+   positioning still resolves against the viewport — Lenis drives this
+   container by scrollTop, not by a transform. */
 .wordmark-layer {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 40;
-  padding-top: 0.9vh;
-  text-align: center;
   pointer-events: none;
   color: var(--color-ink);
 }
@@ -229,7 +294,8 @@ footer {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  /* Theirs sits 32px clear of the bottom edge, not flush to it. */
+  bottom: clamp(14px, 3.6vh, 38px);
   z-index: 60;
   background: transparent;
   overflow: hidden;

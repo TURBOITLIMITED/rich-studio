@@ -12,7 +12,7 @@ export default function SiteFooter() {
   return (
     <footer
       style={{
-        paddingInline: 'clamp(14px, 4vw, 64px)',
+        paddingInline: 'var(--gutter)',
         paddingTop: 'clamp(60px, 12vh, 150px)',
         paddingBottom: 'clamp(70px, 10vh, 110px)',
         borderTop: '1px solid var(--color-rule)',
