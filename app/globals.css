@@ -435,18 +435,25 @@ footer {
     grid-column: 1 / -1 !important;
   }
 
-  .ticker-layer .t-meta {
-    font-size: 0.5625rem;
+  /* The pair-stagger is a desktop device: once every figure is full
+     width the drop is just a hole in the page. */
+  .collage > figure {
+    margin-top: 0 !important;
   }
 }
 
 /* The mark is decorative furniture — below 520px it competes with
    the content for the left margin, so it steps out of the way. */
+/* The mark is decorative furniture — below 520px it competes with the
+   content for the left margin, so it steps down to the corner. It has to
+   clear the running band, which is itself 14-38px off the bottom and
+   about 20px tall: at 42px the two were printing on top of each other. */
 @media (max-width: 520px) {
   .mark-layer {
     top: auto;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 42px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
     transform: none;
+    width: clamp(38px, 11vw, 52px);
   }
 }
 
