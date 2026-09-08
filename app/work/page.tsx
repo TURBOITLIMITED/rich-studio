@@ -23,10 +23,10 @@ export default function Work() {
   );
 
   return (
-    <>
+    <div className="reads-in-front">
       <section
         style={{
-          paddingTop: 'calc(var(--wordmark-size) * 1.15)',
+          marginTop: 'calc(var(--wordmark-size) * 1.15)',
           paddingInline: PAD,
           paddingBottom: 'clamp(40px, 8vh, 90px)',
         }}
@@ -37,7 +37,17 @@ export default function Work() {
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(80px, 14vh, 180px)' }}>
-        <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+        {/* The RSC mark is pinned at the left edge, vertically centred, so
+            the list is inset past it or the project titles run underneath
+            the rings. */}
+        <ul
+          style={{
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+            paddingLeft: 'clamp(0px, 5.2vw, 88px)',
+          }}
+        >
           {projects.map((p, i) => (
             <Block as="li" key={p.slug}>
               <Link
@@ -67,6 +77,6 @@ export default function Work() {
         </ul>
       </section>
 
-    </>
+    </div>
   );
 }

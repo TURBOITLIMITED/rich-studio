@@ -315,6 +315,30 @@ footer {
   will-change: transform;
 }
 
+/* On the home page the small copy passing BEHIND the masthead is the
+   effect Rich asked for — the name is the loudest thing on the screen and
+   the writing slides under it. On the index, the about page and the
+   contact page the copy IS the page: the project list scrolled under a
+   200px black "RICH COLVILL" and became unreadable. These routes put
+   their content on the same layer as the imagery instead, so it passes in
+   front of the name like a plate does. */
+.reads-in-front {
+  position: relative;
+  z-index: 50;
+}
+
+/* ...and they are opaque, so they knock the name out rather than setting
+   black type on black type. A row crossing the R of RICH was legible in
+   neither direction. Each section is a paper plate sliding up over the
+   masthead — the same move the imagery makes on the home page — and the
+   masthead is left fully visible above the first one, which is why the
+   first section on these routes clears it with a margin rather than with
+   padding it would then paint over. */
+.reads-in-front > section {
+  background: var(--color-paper);
+  position: relative;
+}
+
 .link-underline {
   position: relative;
   display: inline-block;

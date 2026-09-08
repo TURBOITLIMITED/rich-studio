@@ -17,10 +17,10 @@ const PAD = 'var(--gutter)';
 
 export default function Contact() {
   return (
-    <>
+    <div className="reads-in-front">
       <section
         style={{
-          paddingTop: 'calc(var(--wordmark-size) * 1.15)',
+          marginTop: 'calc(var(--wordmark-size) * 1.15)',
           paddingInline: PAD,
           paddingBottom: 'clamp(50px, 10vh, 120px)',
         }}
@@ -92,6 +92,6 @@ export default function Contact() {
         </ul>
       </section>
 
-    </>
+    </div>
   );
 }
