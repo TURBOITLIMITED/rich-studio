@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Reveal from '@/components/Reveal';
+import Block from '@/components/Block';
 import { allProjects } from '@/lib/projects';
 
 export const metadata: Metadata = {
@@ -31,15 +31,15 @@ export default function Work() {
           paddingBottom: 'clamp(40px, 8vh, 90px)',
         }}
       >
-        <Reveal>
+        <Block>
           <h1 className="t-meta m-0">Index — {projects.length} projects</h1>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(80px, 14vh, 180px)' }}>
         <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
           {projects.map((p, i) => (
-            <Reveal as="li" key={p.slug} delay={Math.min(i, 8) * 40}>
+            <Block as="li" key={p.slug}>
               <Link
                 href={`/work/${p.slug}`}
                 style={{
@@ -62,12 +62,11 @@ export default function Work() {
                   {String(p.images.length).padStart(2, '0')}
                 </span>
               </Link>
-            </Reveal>
+            </Block>
           ))}
         </ul>
       </section>
 
-      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Reveal from '@/components/Reveal';
+import Block from '@/components/Block';
 import { STUDIO_EMAIL } from '@/lib/contact';
 
 export const metadata: Metadata = {
@@ -36,32 +36,32 @@ export default function About() {
           paddingBottom: 'clamp(50px, 10vh, 120px)',
         }}
       >
-        <Reveal>
+        <Block>
           <p className="t-meta m-0">About</p>
-        </Reveal>
-        <Reveal delay={100}>
+        </Block>
+        <Block>
           <h1
             className="t-wordmark m-0"
             style={{ fontSize: 'clamp(1.9rem, 6.4vw, 5.4rem)', lineHeight: 0.92, marginTop: 18 }}
           >
             A team of creative creatures.
           </h1>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
-        <Reveal>
+        <Block>
           <p className="t-statement" style={{ maxWidth: '70ch' }}>
             We help businesses stand out through creative production. — Rich
             Colvill® is a team of creative creatures focussed on executing high
             end branding, visuals and roll-out. — With over 25 years industry
             experience, working across a variety of brands.
           </p>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
-        <Reveal>
+        <Block>
           <p className="t-meta" style={{ marginBottom: 18 }}>
             Sectors
           </p>
@@ -81,11 +81,11 @@ export default function About() {
               </li>
             ))}
           </ul>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
-        <Reveal>
+        <Block>
           <p className="t-meta" style={{ marginBottom: 18 }}>
             Selected clients
           </p>
@@ -105,18 +105,17 @@ export default function About() {
               </li>
             ))}
           </ul>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
-        <Reveal>
+        <Block>
           <a href={`mailto:${STUDIO_EMAIL}`} className="t-label link-underline" style={{ color: 'var(--color-magenta)' }}>
             Get ®Rich quick.
           </a>
-        </Reveal>
+        </Block>
       </section>
 
-      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import ProjectSection from '@/components/ProjectSection';
-import Reveal from '@/components/Reveal';
+import Block from '@/components/Block';
 import { homeProjects, indexProjects } from '@/lib/projects';
 import { STUDIO_EMAIL } from '@/lib/contact';
 
@@ -64,24 +64,24 @@ export default function Home() {
         aria-label="What we do"
         style={{ paddingInline: PAD, paddingBlock: 'clamp(80px, 16vh, 220px)' }}
       >
-        <Reveal>
+        <Block>
           <p className="t-meta" style={{ textAlign: 'center', marginBottom: 'clamp(24px, 4vh, 48px)' }}>
             What we do
           </p>
-        </Reveal>
-        <Reveal delay={120}>
+        </Block>
+        <Block>
           <p className="t-statement" style={{ maxWidth: '78ch', marginInline: 'auto' }}>
             We help businesses stand out through creative production. — A team of
             creative creatures focussed on executing high end branding, visuals and
             roll-out. — Over 25 years working with Silverstone, Absolut, Odeon,
             Wall’s, Vivienne Westwood, Molton Brown and more.
           </p>
-        </Reveal>
+        </Block>
       </section>
 
       {/* ---------- The outlined pull-quote. His line, not a written one. ---------- */}
       <section aria-label="Get in touch" style={{ paddingInline: PAD, paddingBottom: 'clamp(60px, 12vh, 160px)' }}>
-        <Reveal>
+        <Block>
           <div
             style={{
               border: '1.5px solid var(--color-ink)',
@@ -101,7 +101,7 @@ export default function Home() {
               </a>
             </p>
           </div>
-        </Reveal>
+        </Block>
       </section>
 
       {/* ---------- The work ---------- */}
@@ -118,7 +118,7 @@ export default function Home() {
           textAlign: 'center',
         }}
       >
-        <Reveal>
+        <Block>
           <p className="t-meta" style={{ marginBottom: 18 }}>
             {rest.length} more projects
           </p>
@@ -127,11 +127,9 @@ export default function Home() {
               See the work
             </Link>
           </p>
-        </Reveal>
+        </Block>
       </section>
 
-      {/* Clears the fixed ticker so the last line is never sat under it. */}
-      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

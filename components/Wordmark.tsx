@@ -22,6 +22,23 @@ export default function Wordmark({ text = 'Rich Colvill' }: { text?: string }) {
   return (
     <div className="wordmark-layer" aria-hidden="true">
       <div className="t-wordmark" role="presentation">
+        {/* His mark is "®RICH COLVILL", not "RICH COLVILL" — the ® is part
+            of the name and it is on his showreel title card and his logo
+            lockup. Set small and raised rather than at cap height, or a
+            216px glyph would eat the R beside it. */}
+        <span
+          aria-hidden="true"
+          style={{
+            display: 'inline-block',
+            fontSize: '0.26em',
+            verticalAlign: 'top',
+            transform: 'translateY(0.42em)',
+            marginRight: '0.04em',
+            letterSpacing: 0,
+          }}
+        >
+          ®
+        </span>
         {chars.map((c, i) => (
           <span
             key={`${c}-${i}`}

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Project } from '@/lib/projects';
 import Collage from './Collage';
-import Reveal from './Reveal';
+import Block from './Block';
 
 /**
  * One homepage project: a small metadata stack at the left, then
@@ -22,7 +22,7 @@ export default function ProjectSection({
       aria-labelledby={`${project.slug}-title`}
       style={{ paddingBlock: 'clamp(90px, 14vh, 200px) 0' }}
     >
-      <Reveal>
+      <Block>
         <header
           className="project-head"
           style={{
@@ -55,7 +55,7 @@ export default function ProjectSection({
             <p className="t-body m-0">{project.summary}</p>
           </div>
         </header>
-      </Reveal>
+      </Block>
 
       <Collage
         images={project.images}

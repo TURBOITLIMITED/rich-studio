@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Collage from '@/components/Collage';
-import Reveal from '@/components/Reveal';
+import Block from '@/components/Block';
 import { getProject, projectSlugs } from '@/lib/projects';
 
 const PAD = 'clamp(14px, 4vw, 64px)';
@@ -72,11 +72,11 @@ export default async function ProjectPage({
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(50px, 10vh, 120px)' }}>
-        <Reveal>
+        <Block>
           <p className="t-body" style={{ maxWidth: '52ch' }}>
             {project.summary}
           </p>
-        </Reveal>
+        </Block>
       </section>
 
       <Collage images={project.images} altBase={project.title} softenLarge={project.slug === 'ces-enfants'} />
@@ -88,14 +88,13 @@ export default async function ProjectPage({
           textAlign: 'center',
         }}
       >
-        <Reveal>
+        <Block>
           <Link href="/work" className="t-label link-underline">
             All work
           </Link>
-        </Reveal>
+        </Block>
       </section>
 
-      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

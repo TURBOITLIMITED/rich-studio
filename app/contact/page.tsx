@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Reveal from '@/components/Reveal';
+import Block from '@/components/Block';
 import { DESKS, HOURS, STUDIO_EMAIL } from '@/lib/contact';
 
 export const metadata: Metadata = {
@@ -25,28 +25,28 @@ export default function Contact() {
           paddingBottom: 'clamp(50px, 10vh, 120px)',
         }}
       >
-        <Reveal>
+        <Block>
           <p className="t-meta m-0">Contact</p>
-        </Reveal>
-        <Reveal delay={100}>
+        </Block>
+        <Block>
           <h1
             className="t-wordmark m-0"
             style={{ fontSize: 'clamp(2rem, 7vw, 6rem)', lineHeight: 0.92, marginTop: 18 }}
           >
             Get ®Rich quick.
           </h1>
-        </Reveal>
-        <Reveal delay={180}>
+        </Block>
+        <Block>
           <p className="t-body" style={{ marginTop: 'clamp(22px, 4vh, 44px)' }}>
             Let’s get together, over e-mail, WhatsApp, Zoom, phone or even better
             over a beer, have a chat and see how we can take your brief to the
             next level.
           </p>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(60px, 12vh, 150px)' }}>
-        <Reveal>
+        <Block>
           <p className="t-meta" style={{ marginBottom: 10 }}>
             Email to arrange a time
           </p>
@@ -65,7 +65,7 @@ export default function Contact() {
           <p className="t-meta" style={{ marginTop: 16 }}>
             {HOURS}
           </p>
-        </Reveal>
+        </Block>
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
@@ -80,19 +80,18 @@ export default function Contact() {
           }}
         >
           {DESKS.map((d, i) => (
-            <Reveal as="li" key={d.email} delay={i * 80}>
+            <Block as="li" key={d.email}>
               <span className="t-meta" style={{ display: 'block', marginBottom: 8 }}>
                 {d.role}
               </span>
               <a href={`mailto:${d.email.toLowerCase()}`} className="t-label link-underline">
                 {d.email}
               </a>
-            </Reveal>
+            </Block>
           ))}
         </ul>
       </section>
 
-      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import ScrollRoot from '@/components/ScrollRoot';
+import ScrollMotion from '@/components/ScrollMotion';
 import Wordmark from '@/components/Wordmark';
 import RscMark from '@/components/RscMark';
 import Ticker from '@/components/Ticker';
+import SiteFooter from '@/components/SiteFooter';
 
 /* Copy here is Rich's own, verbatim from richcolvill.com — not invented.
    An earlier build shipped a made-up strapline and a hello@ address that
@@ -67,7 +69,12 @@ export default function RootLayout({
 
         <ScrollRoot>
           <main id="main">{children}</main>
+          <SiteFooter />
         </ScrollRoot>
+
+        {/* Drives the scale-settle and in-frame parallax on every
+            [data-parallax] figure. One rAF loop for the whole page. */}
+        <ScrollMotion />
       </body>
     </html>
   );

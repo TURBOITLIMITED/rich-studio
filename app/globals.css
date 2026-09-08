@@ -175,6 +175,12 @@ body {
   width: clamp(26px, 2.4vw, 40px);
 }
 
+/* The footer is the last thing in the scroll container, so it carries the
+   clearance for the fixed ticker rather than every page shipping a spacer. */
+footer {
+  padding-bottom: clamp(70px, 10vh, 110px);
+}
+
 .ticker-layer {
   position: fixed;
   left: 0;
@@ -201,24 +207,6 @@ body {
   width: max-content;
   animation: ticker-run 46s linear infinite;
   will-change: transform;
-}
-
-/* ------------------------------------------------------------
-   Reveals. Kept deliberately cheap — opacity and a short rise,
-   nothing that fights Lenis for the compositor.
-   ------------------------------------------------------------ */
-
-.rise {
-  opacity: 0;
-  transform: translate3d(0, 22px, 0);
-  transition:
-    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
-}
-.rise.is-in {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
 }
 
 .link-underline {
@@ -270,12 +258,33 @@ body {
 
 .collage figure {
   position: relative;
+  margin: 0;
+}
+
+/* The clipped frame. The image inside is scaled past the box by
+   ScrollMotion, and this is what stops it spilling over its neighbours. */
+.frame {
+  overflow: hidden;
+  background: var(--color-rule);
 }
 
 .collage img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  /* Matches ScrollMotion's settled state, so the first paint is not a
+     jump from unscaled to scaled before the loop's first frame. */
+  transform: translate3d(0, 0, 0) scale(1.1);
+  will-change: transform;
+}
+
+/* With motion off the overscale is pointless cropping, so drop it. */
+@media (prefers-reduced-motion: reduce) {
+  .collage img {
+    transform: none;
+    will-change: auto;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -328,11 +337,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ticker-track {
     animation: none;
-  }
-  .rise {
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
   html {
     scroll-behavior: auto;

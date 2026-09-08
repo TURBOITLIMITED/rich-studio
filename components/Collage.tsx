@@ -1,5 +1,4 @@
 import type { ProjectImage } from '@/lib/projects';
-import Reveal from './Reveal';
 
 /**
  * The scattered editorial layout.
@@ -15,6 +14,16 @@ import Reveal from './Reveal';
  *
  * The pattern repeats every 7, which is long enough that a
  * ten-image project never reads as a loop.
+ *
+ * Each figure is a CLIPPED FRAME holding an oversized image — that is
+ * what ScrollMotion animates against. The frame owns the layout box;
+ * the image inside is 10% larger and drifts within it as you scroll.
+ * Without the clip you would just see the image jitter at the edges.
+ *
+ * There is deliberately no fade here. The reference's images sit at
+ * opacity 1.00 through their whole reveal — the entrance is a scale
+ * settle from 1.2 to 1.1, nothing more. Fading them in reads as a
+ * different site.
  */
 
 type Slot = { span: number; start: number; bleed?: boolean };
@@ -69,30 +78,29 @@ export default function Collage({
           start = start > 4 ? 4 : 3;
           bleed = false;
         }
+        const ratio = img.w && img.h ? `${img.w} / ${img.h}` : '3 / 2';
         return (
-          <Reveal
+          <figure
             key={img.src}
-            as="figure"
-            delay={(i % 3) * 90}
-            className="m-0"
+            data-parallax
+            className="frame"
             style={{
               gridColumn: `${start} / span ${span}`,
               marginInline: bleed ? 'calc(-1 * clamp(14px, 4vw, 64px))' : undefined,
+              aspectRatio: ratio,
             }}
           >
-            <div>
-              <img
-                src={img.src}
-                srcSet={`${img.sm} 900w, ${img.src} 2000w`}
-                sizes={bleed ? '100vw' : `${Math.round((span / 12) * 100)}vw`}
-                width={img.w}
-                height={img.h}
-                alt={`${altBase} — image ${i + 1} of ${images.length}`}
-                loading={i === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-              />
-            </div>
-          </Reveal>
+            <img
+              src={img.src}
+              srcSet={`${img.sm} 900w, ${img.src} 2000w`}
+              sizes={bleed ? '100vw' : `${Math.round((span / 12) * 100)}vw`}
+              width={img.w}
+              height={img.h}
+              alt={`${altBase} — image ${i + 1} of ${images.length}`}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </figure>
         );
       })}
     </div>
