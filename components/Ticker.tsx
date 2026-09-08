@@ -1,48 +1,29 @@
-'use client';
-
-import { useEffect, useRef } from 'react';
-
 /**
- * The running band at the foot of the page.
+ * The running band.
  *
- * Measured on the reference at 1700x887: 19.55px, weight 700, line-height
- * 1.0, letter-spacing NORMAL, text-transform NONE, sitting 32px clear of
- * the bottom edge. Their line is "2026 MAISON AUGE own the beauty" — caps
- * for the house, lowercase for the phrase — with a heavy short rule
- * between repeats. Ours was 10px, uppercased and tracked out to 0.09em,
- * which read as a legal footer rather than a band.
+ * It is NOT a fixed overlay, and that was the mistake. Sampling the
+ * reference across a full scroll of its page, the band's viewport top
+ * marches steadily down — 12915, 12187, 11283 ... 1383, 838, 835 — which
+ * means it scrolls with the document and simply comes to rest at the foot
+ * of the last screen. It is a section, not furniture.
  *
- * "Let's do this" is Rich's own line, not a written one: it is the local
- * part of his studio address.
+ * Pinning ours to the viewport had a consequence beyond being wrong: black
+ * text with no plate behind it, sitting over whatever imagery happened to
+ * be passing underneath, which on half of Rich's archive is dark or mid
+ * grey. In the flow it always has paper behind it, so it can stay exactly
+ * what he asked for — clear, no plate, just the text moving.
  *
- * No plate behind it — just the text moving over the page.
- *
- * It is also absent on the opening screen. On the reference the first
- * frame carries the centred caption alone and the band only appears once
- * you have started moving, so the text at the bottom of the page changes
- * as you scroll rather than sitting there from the start.
+ * Two identical halves inside one track, translated -50%: that is what
+ * makes the loop seamless without measuring anything. Decorative, so it is
+ * hidden from assistive tech rather than read out on repeat.
  */
 export default function Ticker({
-  text = "2026 ®RICH COLVILL let’s do this",
+  text = "2026 \u00aeRICH COLVILL let\u2019s do this",
   repeat = 6,
 }: {
   text?: string;
   repeat?: number;
 }) {
-  const layer = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const root = document.querySelector('[data-scroll-root]');
-    const el = layer.current;
-    if (!root || !el) return;
-    const onScroll = () => {
-      el.classList.toggle('is-on', root.scrollTop > window.innerHeight * 0.35);
-    };
-    onScroll();
-    root.addEventListener('scroll', onScroll, { passive: true });
-    return () => root.removeEventListener('scroll', onScroll);
-  }, []);
-
   // The separator is a drawn rule, not an em-dash: theirs is a short heavy
   // bar, and a typographic dash at this weight is neither long nor thick
   // enough to match it.
@@ -67,7 +48,7 @@ export default function Ticker({
   ));
 
   return (
-    <div className="ticker-layer" ref={layer} aria-hidden="true">
+    <div className="ticker-layer" aria-hidden="true">
       <div className="ticker-track">
         <div style={{ display: 'flex' }}>{half}</div>
         <div style={{ display: 'flex' }}>{half}</div>

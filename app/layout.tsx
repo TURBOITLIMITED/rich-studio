@@ -60,10 +60,10 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        {/* The mark and the band are furniture that stays on top of
-            everything, so they sit outside the scroll container. */}
+        {/* The mark is the only piece of furniture left outside the
+            scroll container. The running band used to live here too; it
+            is a section in the flow now, the way the reference has it. */}
         <RscMark />
-        <Ticker />
 
         <ScrollRoot>
           {/* The masthead is fixed too, but it has to live INSIDE the
@@ -79,6 +79,7 @@ export default function RootLayout({
               viewport and the masthead stays pinned. */}
           <Wordmark text="Rich Colvill" />
           <main id="main">{children}</main>
+          <Ticker />
           <SiteFooter />
         </ScrollRoot>
 

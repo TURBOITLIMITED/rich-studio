@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import HeroReveal from '@/components/HeroReveal';
+import Ticker from '@/components/Ticker';
 import ProjectSection from '@/components/ProjectSection';
 import Block from '@/components/Block';
 import { homeProjects, indexProjects } from '@/lib/projects';
@@ -46,6 +47,10 @@ export default function Home() {
           </p>
         </Block>
       </section>
+
+      {/* The reference runs the band twice: once straight after the
+          statement and once at the foot of the page. */}
+      <Ticker />
 
       {/* ---------- The outlined pull-quote. His line, not a written one. ---------- */}
       <section aria-label="Get in touch" style={{ paddingInline: PAD, paddingBottom: 'clamp(60px, 12vh, 160px)' }}>

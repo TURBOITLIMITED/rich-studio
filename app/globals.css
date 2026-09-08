@@ -282,29 +282,21 @@ body {
 /* The footer is the last thing in the scroll container, so it carries the
    clearance for the fixed ticker rather than every page shipping a spacer. */
 footer {
-  padding-bottom: clamp(70px, 10vh, 110px);
+  padding-bottom: clamp(28px, 5vh, 60px);
   position: relative;
   z-index: 50;
 }
 
-/* No plate and no rule — just the text moving across the page, and it
-   fades up only once you have started scrolling, so the opening screen
-   is the caption alone. */
+/* No plate and no rule — just the text moving across the page. In the
+   document flow, not pinned to the viewport: see Ticker.tsx. Because it
+   is a band of its own it always has paper behind it, which is what keeps
+   "clear" and "legible" from being in conflict. */
 .ticker-layer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  /* Theirs sits 32px clear of the bottom edge, not flush to it. */
-  bottom: clamp(14px, 3.6vh, 38px);
-  z-index: 60;
-  background: transparent;
+  position: relative;
   overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.ticker-layer.is-on {
-  opacity: 1;
+  width: 100%;
+  padding-block: clamp(20px, 4vh, 44px);
+  z-index: 20;
 }
 
 @keyframes ticker-run {
