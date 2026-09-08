@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import SiteFooter from '@/components/SiteFooter';
+import Reveal from '@/components/Reveal';
 import { DESKS, HOURS, STUDIO_EMAIL } from '@/lib/contact';
 
 export const metadata: Metadata = {
@@ -9,49 +9,90 @@ export const metadata: Metadata = {
 };
 
 /* His own words, from his own site. "GET ®RICH QUICK." is the line he
-   already uses for this; nothing on this page is written for him. */
+   already uses for this page; nothing here is written for him. Addresses
+   come from lib/contact.ts so there is only ever one copy — an earlier
+   build shipped an invented hello@ address. */
+
+const PAD = 'clamp(14px, 4vw, 64px)';
+
 export default function Contact() {
   return (
     <>
-      <header className="page-head sheet">
-        <span className="t-mono page-label">
-          CONTACT
-        </span>
-        <h1 className="t-wordmark page-shout" data-split>
-          GET &#174;RICH QUICK.
-        </h1>
-        <p className="t-body page-body" data-reveal>
-          LET&#39;S GET TOGETHER, OVER E-MAIL, WHATSAPP, ZOOM, PHONE OR EVEN
-          BETTER OVER A BEER, HAVE A CHAT AND SEE HOW WE CAN TAKE YOUR BRIEF
-          TO THE NEXT LEVEL.
-        </p>
-      </header>
+      <section
+        style={{
+          paddingTop: 'calc(var(--wordmark-size) * 1.15)',
+          paddingInline: PAD,
+          paddingBottom: 'clamp(50px, 10vh, 120px)',
+        }}
+      >
+        <Reveal>
+          <p className="t-meta m-0">Contact</p>
+        </Reveal>
+        <Reveal delay={100}>
+          <h1
+            className="t-wordmark m-0"
+            style={{ fontSize: 'clamp(2rem, 7vw, 6rem)', lineHeight: 0.92, marginTop: 18 }}
+          >
+            Get ®Rich quick.
+          </h1>
+        </Reveal>
+        <Reveal delay={180}>
+          <p className="t-body" style={{ marginTop: 'clamp(22px, 4vh, 44px)' }}>
+            Let’s get together, over e-mail, WhatsApp, Zoom, phone or even better
+            over a beer, have a chat and see how we can take your brief to the
+            next level.
+          </p>
+        </Reveal>
+      </section>
 
-      <section className="sheet contact-page">
-        <div className="contact-primary" data-reveal>
-          <span className="t-mono contact-role">EMAIL TO ARRANGE A TIME</span>
-          <a className="contact-address" href={`mailto:${STUDIO_EMAIL}`}>
-            {STUDIO_EMAIL.toUpperCase()}
-          </a>
-          <span className="t-mono contact-hours">{HOURS}</span>
-        </div>
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(60px, 12vh, 150px)' }}>
+        <Reveal>
+          <p className="t-meta" style={{ marginBottom: 10 }}>
+            Email to arrange a time
+          </p>
+          <p
+            className="t-wordmark m-0"
+            style={{ fontSize: 'clamp(1.05rem, 3.4vw, 2.6rem)', lineHeight: 1 }}
+          >
+            <a
+              href={`mailto:${STUDIO_EMAIL}`}
+              className="link-underline"
+              style={{ color: 'var(--color-magenta)' }}
+            >
+              {STUDIO_EMAIL}
+            </a>
+          </p>
+          <p className="t-meta" style={{ marginTop: 16 }}>
+            {HOURS}
+          </p>
+        </Reveal>
+      </section>
 
-        <ul className="contact-desks" data-reveal="stagger">
-          {DESKS.map((d) => (
-            <li key={d.email}>
-              <span className="t-mono contact-role">{d.role}</span>
-              <a
-                className="t-mono contact-desk"
-                href={`mailto:${d.email.toLowerCase()}`}
-              >
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
+        <ul
+          style={{
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 230px), 1fr))',
+            gap: 'clamp(18px, 3vw, 40px)',
+          }}
+        >
+          {DESKS.map((d, i) => (
+            <Reveal as="li" key={d.email} delay={i * 80}>
+              <span className="t-meta" style={{ display: 'block', marginBottom: 8 }}>
+                {d.role}
+              </span>
+              <a href={`mailto:${d.email.toLowerCase()}`} className="t-label link-underline">
                 {d.email}
               </a>
-            </li>
+            </Reveal>
           ))}
         </ul>
       </section>
 
-      <SiteFooter contact={false} />
+      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

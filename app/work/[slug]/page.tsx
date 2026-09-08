@@ -1,117 +1,101 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import RegistrationHero from '@/components/RegistrationHero';
-import CasePlates from '@/components/CasePlates';
-import SiteFooter from '@/components/SiteFooter';
-import ActGround from '@/components/ActGround';
-import { ALL_WORK, getWork, neighbours } from '@/lib/work';
+import Collage from '@/components/Collage';
+import Reveal from '@/components/Reveal';
+import { getProject, projectSlugs } from '@/lib/projects';
 
+const PAD = 'clamp(14px, 4vw, 64px)';
+
+/* output: 'export' means every route is built ahead of time, so the
+   slug list has to be exhaustive — there is no fallback renderer. */
 export function generateStaticParams() {
-  return ALL_WORK.map((w) => ({ slug: w.slug }));
+  return projectSlugs().map((slug) => ({ slug }));
 }
 
-// Next 16: params is a Promise and must be awaited.
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const work = getWork(slug);
-  if (!work) return { title: 'Not found' };
-
-  // His copy is entirely uppercase; shouting it in a search result and a
-  // social card would read as broken, so sentence-case it for metadata only.
-  const desc =
-    work.description.charAt(0) +
-    work.description.slice(1).toLowerCase().slice(0, 200);
-
+  const p = getProject(slug);
+  if (!p) return { title: 'Not found' };
   return {
-    title: work.title,
-    description: desc,
+    title: p.title,
+    description: p.summary,
     openGraph: {
-      title: `${work.title} — ®RICH COLVILL`,
-      description: desc,
-      images: work.images[0] ? [{ url: work.images[0].src }] : undefined,
+      title: `${p.title} — ®RICH COLVILL`,
+      description: p.summary,
+      images: p.images[0] ? [{ url: p.images[0].src }] : undefined,
     },
   };
 }
 
-export default async function CaseStudy({
+export default async function ProjectPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const work = getWork(slug);
-  if (!work) notFound();
-
-  const { prev, next } = neighbours(slug);
-  const [hero] = work.images;
-  const meta = [...work.disciplines, ...work.industries].join('  /  ');
+  const project = getProject(slug);
+  if (!project) notFound();
 
   return (
     <>
-      {/* Repaints the page in this project's own ground colour. */}
-      <ActGround ground={work.ground} ink={work.groundInk} />
-
-      <RegistrationHero
-        src={hero.src}
-        alt={`${work.client} — ${work.title}`}
-        title={work.title}
-        client={work.client}
-        meta={meta}
-        caption={false}
-      />
-
-      {/* The name at size on the left, the facts labelled on the right.
-          No YEAR row: there is no year on a WorkItem and inventing one
-          would be putting words in the client's mouth. */}
-      <section className="cs-masthead sheet grid12">
-        <h1 className="t-display cs-masthead-title">{work.title}</h1>
-
-        <div className="cs-masthead-meta">
-          <div className="cs-fact">
-            <span className="t-mono cs-fact-label">CLIENT</span>
-            <span className="cs-fact-value">{work.client}</span>
-          </div>
-          <div className="cs-fact">
-            <span className="t-mono cs-fact-label">DISCIPLINE</span>
-            <span className="cs-fact-value">{work.disciplines.join('  /  ')}</span>
-          </div>
-          <div className="cs-fact">
-            <span className="t-mono cs-fact-label">INDUSTRY</span>
-            <span className="cs-fact-value">{work.industries.join('  /  ')}</span>
-          </div>
+      {/* The reference pins the project name and a close control at the
+          top of the case study. The close goes back to the index rather
+          than history, so a shared link never dead-ends. */}
+      <section
+        style={{
+          paddingTop: 'calc(var(--wordmark-size) * 1.15)',
+          paddingInline: PAD,
+          paddingBottom: 'clamp(30px, 6vh, 70px)',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto',
+          gap: 24,
+          alignItems: 'start',
+        }}
+      >
+        <div>
+          <h1 className="t-label m-0">{project.title}</h1>
+          <p className="t-meta m-0" style={{ marginTop: 6 }}>
+            {project.category}
+            {' · '}
+            {project.kind}
+            {project.credit ? ` · ${project.credit}` : ''}
+          </p>
         </div>
+        <Link href="/work" className="t-meta link-underline" aria-label="Close and return to the index">
+          Close ×
+        </Link>
       </section>
 
-      {/* The bed: one plate held while the sheets and the brief run past.
-          Carries the FULL run including the hero image, so the sheet in the
-          masthead can be pulled back onto the bed. */}
-      <CasePlates
-        images={work.images}
-        client={work.client}
-        description={work.description}
-      />
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(50px, 10vh, 120px)' }}>
+        <Reveal>
+          <p className="t-body" style={{ maxWidth: '52ch' }}>
+            {project.summary}
+          </p>
+        </Reveal>
+      </section>
 
-      <nav className="cs-nav sheet" aria-label="Case studies" data-reveal>
-        {prev && (
-          <Link href={`/work/${prev.slug}`} className="cs-nav-link">
-            <span className="t-mono">&#8592; PREVIOUS</span>
-            <span className="t-caps cs-nav-title">{prev.title}</span>
-          </Link>
-        )}
-        {next && (
-          <Link href={`/work/${next.slug}`} className="cs-nav-link cs-nav-next">
-            <span className="t-mono">NEXT &#8594;</span>
-            <span className="t-caps cs-nav-title">{next.title}</span>
-          </Link>
-        )}
-      </nav>
+      <Collage images={project.images} altBase={project.title} softenLarge={project.slug === 'ces-enfants'} />
 
-      <SiteFooter />
+      <section
+        style={{
+          paddingInline: PAD,
+          paddingBlock: 'clamp(90px, 16vh, 200px)',
+          textAlign: 'center',
+        }}
+      >
+        <Reveal>
+          <Link href="/work" className="t-label link-underline">
+            All work
+          </Link>
+        </Reveal>
+      </section>
+
+      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }
