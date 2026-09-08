@@ -74,6 +74,13 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
 
   return (
     <section ref={section} aria-label="Showreel" style={{ height: '200svh', position: 'relative' }}>
+      {/* The z-index belongs HERE, on the sticky element, not on the frame
+          inside it. position:sticky forms a stacking context, so a z-index
+          on the video's own frame is trapped within this box and cannot be
+          compared against the masthead at all — which is why the masthead
+          kept painting over the showreel long after the collage frames had
+          started passing in front of it. 50 is the same layer the collage
+          frames use: imagery in front of the name. */}
       <div
         style={{
           position: 'sticky',
@@ -82,6 +89,7 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
           display: 'grid',
           placeItems: 'center',
           overflow: 'hidden',
+          zIndex: 50,
         }}
       >
         <div
