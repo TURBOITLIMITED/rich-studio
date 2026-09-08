@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import SmoothScroll from '@/components/SmoothScroll';
-import SiteNav from '@/components/SiteNav';
-import MotionProvider from '@/components/MotionProvider';
+import ScrollRoot from '@/components/ScrollRoot';
+import Wordmark from '@/components/Wordmark';
+import RscMark from '@/components/RscMark';
+import Ticker from '@/components/Ticker';
 
 /* Copy here is Rich's own, verbatim from richcolvill.com — not invented.
-   The previous build shipped a made-up strapline and a hello@ address
-   that does not exist. */
+   An earlier build shipped a made-up strapline and a hello@ address that
+   does not exist. Contact details live in lib/contact.ts for the same
+   reason: one copy cannot drift. */
 export const metadata: Metadata = {
   metadataBase: new URL('https://richcolvill.com'),
   title: {
@@ -40,48 +42,32 @@ export default function RootLayout({
   return (
     <html lang="en-GB">
       <head>
-        {/* The LCP element is the wordmark TEXT, and 92% of its time was
-            render delay waiting on these two faces. Preloading them is the
-            single biggest mobile win available. */}
+        {/* The wordmark is the LCP element on every route and it is set in
+            the bold weight, so that one file is the only font worth
+            preloading. The regular weight is used below the fold only. */}
         <link
           rel="preload"
-          href="/fonts/HelveticaCondensed-Regular.woff"
-          as="font"
-          type="font/woff"
-          crossOrigin="anonymous"
-        />
-        {/* Switzer ships as discrete weights, so preloading it means naming
-            the ones above the fold rather than one variable file: 800 for
-            display, 400 for the copy beneath it. Together they are 35KB
-            against the 90KB Archivo variable they replace. */}
-        <link
-          rel="preload"
-          href="/fonts/switzer/switzer-800.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/switzer/switzer-400.woff2"
+          href="/fonts/NimbusSans-Bold.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
         />
       </head>
       <body>
-        <a href="#main" className="skip-link t-mono">
+        <a href="#main" className="skip-link t-label">
           Skip to content
         </a>
 
-        {/* The fixed nav must sit outside #smooth-content, or
-            ScrollSmoother's transform drags it up the page. */}
-        <SiteNav />
-        <MotionProvider />
+        {/* Fixed furniture sits OUTSIDE the scroll container. That is the
+            whole trick of the layout: these three never move, and they
+            need no scroll listener to stay put. */}
+        <Wordmark text="Rich Colvill" />
+        <RscMark />
+        <Ticker />
 
-        <SmoothScroll>
+        <ScrollRoot>
           <main id="main">{children}</main>
-        </SmoothScroll>
+        </ScrollRoot>
       </body>
     </html>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import SiteFooter from '@/components/SiteFooter';
+import Reveal from '@/components/Reveal';
+import { STUDIO_EMAIL } from '@/lib/contact';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -7,11 +8,10 @@ export const metadata: Metadata = {
     'A team of creative creatures focussed on executing high end branding, visuals and roll-out. Over 25 years industry experience.',
 };
 
-/* NOTE: /about on the live WordPress site has NO unique body copy at all —
-   it renders the shared footer boilerplate and nothing else. Everything on
-   this page is therefore assembled from copy Rich has actually written
-   elsewhere on his own site. Nothing here is invented. He still owes us a
-   real studio bio and a portrait; the slots are marked in the handover. */
+/* Everything on this page is copy Rich has written elsewhere on his own
+   site. Nothing is invented. He still owes a real studio bio and a
+   portrait — the slots are noted in the handover, not filled with
+   placeholder prose. */
 
 const CLIENTS = [
   'SILVERSTONE', 'ADIDAS', 'ODEON', "WALL'S", 'PERNOD RICARD',
@@ -24,66 +24,99 @@ const SECTORS = [
   'PROFESSIONAL SERVICES', 'AUTOMOTIVE',
 ];
 
+const PAD = 'clamp(14px, 4vw, 64px)';
+
 export default function About() {
   return (
     <>
-      <header className="page-head sheet">
-        <span className="t-mono page-label">
-          ABOUT
-        </span>
-        <h1 className="t-display page-shout-sm" data-split>
-          A TEAM OF CREATIVE CREATURES.
-        </h1>
-      </header>
+      <section
+        style={{
+          paddingTop: 'calc(var(--wordmark-size) * 1.15)',
+          paddingInline: PAD,
+          paddingBottom: 'clamp(50px, 10vh, 120px)',
+        }}
+      >
+        <Reveal>
+          <p className="t-meta m-0">About</p>
+        </Reveal>
+        <Reveal delay={100}>
+          <h1
+            className="t-wordmark m-0"
+            style={{ fontSize: 'clamp(1.9rem, 6.4vw, 5.4rem)', lineHeight: 0.92, marginTop: 18 }}
+          >
+            A team of creative creatures.
+          </h1>
+        </Reveal>
+      </section>
 
-      <section className="about sheet" data-reveal="stagger">
-        <div className="about-col">
-          <span className="t-mono about-label">PRACTICE</span>
-          <p className="t-statement about-lead">
-            WE HELP BUSINESSES STAND OUT THROUGH CREATIVE PRODUCTION.
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
+        <Reveal>
+          <p className="t-statement" style={{ maxWidth: '70ch' }}>
+            We help businesses stand out through creative production. — Rich
+            Colvill® is a team of creative creatures focussed on executing high
+            end branding, visuals and roll-out. — With over 25 years industry
+            experience, working across a variety of brands.
           </p>
-          <p className="t-body">
-            RICH COLVILL&#174; IS A TEAM OF CREATIVE CREATURES FOCUSSED ON
-            EXECUTING HIGH END BRANDING, VISUALS AND ROLL-OUT.
-          </p>
-        </div>
+        </Reveal>
+      </section>
 
-        <div className="about-col">
-          <span className="t-mono about-label">SECTORS</span>
-          <ul className="about-list">
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
+        <Reveal>
+          <p className="t-meta" style={{ marginBottom: 18 }}>
+            Sectors
+          </p>
+          <ul
+            style={{
+              listStyle: 'none',
+              margin: 0,
+              padding: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px 26px',
+            }}
+          >
             {SECTORS.map((s) => (
-              <li key={s} className="t-caps about-item">{s}</li>
+              <li key={s} className="t-label">
+                {s}
+              </li>
             ))}
           </ul>
-        </div>
+        </Reveal>
+      </section>
 
-        <div className="about-col">
-          <span className="t-mono about-label">EXPERIENCE</span>
-          <p className="t-statement about-lead">25 YEARS.</p>
-          <p className="t-body">
-            WITH OVER 25 YEARS INDUSTRY EXPERIENCE, WORKING ACROSS A VARIETY
-            OF BRANDS.
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
+        <Reveal>
+          <p className="t-meta" style={{ marginBottom: 18 }}>
+            Selected clients
           </p>
-        </div>
-      </section>
-
-      <section className="clients">
-        <span className="t-mono about-label sheet">SELECTED CLIENTS</span>
-        {/* A running band rather than a static list: 25 years of names is
-            a lot of page, and a marquee reads them out instead. */}
-        <div className="marquee" aria-label="Selected clients">
-          <div className="marquee-track">
+          <ul
+            style={{
+              listStyle: 'none',
+              margin: 0,
+              padding: 0,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 190px), 1fr))',
+              gap: '10px 26px',
+            }}
+          >
             {CLIENTS.map((c) => (
-              <span key={c} className="marquee-item t-display">
+              <li key={c} className="t-label" style={{ borderTop: '1px solid var(--color-rule)', paddingTop: 10 }}>
                 {c}
-                <span className="marquee-dot" aria-hidden="true" />
-              </span>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </Reveal>
       </section>
 
-      <SiteFooter />
+      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
+        <Reveal>
+          <a href={`mailto:${STUDIO_EMAIL}`} className="t-label link-underline" style={{ color: 'var(--color-magenta)' }}>
+            Get ®Rich quick.
+          </a>
+        </Reveal>
+      </section>
+
+      <div aria-hidden="true" style={{ height: 'clamp(56px, 8vh, 88px)' }} />
     </>
   );
 }

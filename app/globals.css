@@ -1,2792 +1,340 @@
 @import "tailwindcss";
 
 /* ============================================================
-   ®RICH COLVILL — PRESS SHEET
-   The site is a sheet coming off a press. Paper stock, ink,
-   print furniture, and imagery that arrives out of register.
-   Palette is two-tone by doctrine: all colour comes either from
-   Rich's own work, or from process-ink fringing on misregister.
+   ®RICH COLVILL STUDIO
+   Layout system after maisonauge.com: one giant fixed wordmark
+   pinned to the top of the viewport with the work scrolling
+   behind it, extreme type contrast, a running footer ticker,
+   and scattered editorial collages instead of a grid.
+
+   Palette is Rich's own, not the reference's blush: paper and
+   near-black off his logo artwork, magenta sampled from the
+   title card of his own showreel (#C5004B).
+
+   Typeface is Nimbus Sans — URW's metrically exact Helvetica,
+   free to embed. Rich asked for "Helvetica 75 bold, all
+   uppercase, never lowercase". That is the whole type system.
    ============================================================ */
+
+@font-face {
+  font-family: "NimbusSans";
+  src: url("/fonts/NimbusSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "NimbusSans";
+  src: url("/fonts/NimbusSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
-  /* --- stock + ink (his real brand values) --- */
   --color-paper: #f0f0ef;
-  --color-paper-2: #e6e5e2;
   --color-ink: #0a0a0a;
-  --color-ink-2: #3a3f46;
+  --color-ink-soft: #55565a;
+  --color-magenta: #c5004b;
+  --color-rule: #d6d6d4;
 
-  /* --- process inks: ONLY ever seen as misregistration fringing --- */
-  --color-cyan: #00aeef;
-  --color-magenta: #ec008c;
-  --color-yellow: #fff200;
+  --font-display: "NimbusSans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  --font-display: "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-wordmark: "HelveticaCondensed", "Switzer", "Helvetica Neue", sans-serif;
-  --font-mono: "SpaceMono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* The wordmark is sized to fill the viewport width. 13.4vw is
+     measured off the reference at 1200/1600/1920 — but their string
+     is 11 characters and "RICH COLVILL" is 12, so the ch-based
+     divisor below does the real work and the vw is the ceiling. */
+  --wordmark-size: min(13.4vw, 22.5vh);
 }
-
-/* ============================================================
-   FONTS — self-hosted. Helvetica Condensed is Rich's own licensed
-   file carried over from his WordPress install; it is one weight
-   only, so it is reserved for the wordmark and never used for
-   display copy that needs weight range.
-
-   SWITZER is the display face, chosen off the reference the client
-   settled on. Indian Type Foundry, served free for commercial use via
-   Fontshare — which is worth stating plainly, because the Helvetica
-   Condensed beside it is a DESKTOP licence being used as a webfont and
-   that is a real exposure. Six static weights rather than a variable
-   file: the reference uses 400 through 900 as discrete steps and the
-   whole set is 106KB, against 90KB for the one Archivo variable it
-   replaces.
-   ============================================================ */
-
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer/switzer-400.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer/switzer-500.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer/switzer-600.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer/switzer-700.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer/switzer-800.woff2") format("woff2");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Switzer";
-  src: url("/fonts/switzer/switzer-900.woff2") format("woff2");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Kept: the footer sign-off measures itself against a real face, and
-   .rc-mark's fallback path still names it. Retire it once every
-   Archivo reference in this file has been re-measured against Switzer. */
-@font-face {
-  font-family: "Archivo";
-  src: url("/fonts/Archivo-Variable.woff2") format("woff2-variations");
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "HelveticaCondensed";
-  src: url("/fonts/HelveticaCondensed-Regular.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SpaceMono";
-  src: url("/fonts/SpaceMono-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SpaceMono";
-  src: url("/fonts/SpaceMono-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ============================================================
-   TOKENS
-   ============================================================ */
 
 :root {
-  --paper: #f0f0ef;
-  --paper-2: #e6e5e2;
-  /* Neutral. His brand value is #091017, but R9 G16 B23 leads blue by
-     14 points — invisible in type, clearly navy across a full-screen
-     ground. Client: "the background looks blue not black". */
-  --ink: #0a0a0a;
-  --ink-70: rgba(10, 10, 10, 0.7);
-  --ink-45: rgba(10, 10, 10, 0.45);
-  --ink-22: rgba(10, 10, 10, 0.22);
-  --ink-12: rgba(10, 10, 10, 0.12);
-
-  --cyan: #00aeef;
-  --magenta: #ec008c;
-  --yellow: #fff200;
-
-  /* the act ground — repainted per case study from that project's
-     own artwork. Defaults to paper so the home page is neutral. */
-  --act: var(--paper);
-  --act-ink: var(--ink);
-
-  /* grid: 12 columns, gutter, and the page margin the crop marks sit in.
-
-     Margin and gutter are measured off the reference the client settled
-     on, not chosen: at a 1440 stage it sets a flat 20px margin either
-     side, a 15px gap between the two columns of its work grid and a 13px
-     row gap — 20 + 693 + 15 + 693 + 20 = 1441. The old 3.2vw margin gave
-     46px here, and that difference is most of why its images read so
-     much larger than ours did. The 12-column system stays underneath;
-     this only changes what it is inset by. */
-  --cols: 12;
-  --gutter: clamp(10px, 1.05vw, 15px);
-  --margin: clamp(16px, 1.4vw, 20px);
-  --row-gap: clamp(10px, 0.9vw, 13px);
-  --rule: 1px;
-
-  /* motion — the named durations. Nothing ships outside these. */
-  --t-snap: 320ms;   /* register on hover */
-  --t-release: 520ms; /* fall back out of register */
-  --t-act: 720ms;     /* act-to-act ground change */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-/* ============================================================
-   BASE
-   ============================================================ */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-* {
-  margin: 0;
-  padding: 0;
+  color-scheme: light;
 }
 
 html {
-  /* ScrollSmoother drives scrolling; never both. */
-  scroll-behavior: auto;
-  -webkit-text-size-adjust: 100%;
+  /* Lenis drives a fixed scroll container, so the document itself
+     never scrolls. Guard against iOS rubber-banding the shell. */
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--act);
-  color: var(--act-ink);
-  font-family: var(--font-display, "Archivo", sans-serif);
-  font-synthesis-weight: none;
-  line-height: 1.28;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  transition: background-color var(--t-act) var(--ease-in-out),
-    color var(--t-act) var(--ease-in-out);
+  text-rendering: optimizeLegibility;
+  margin: 0;
+  overflow: hidden;
 }
 
-img,
-canvas,
-video {
-  display: block;
-  max-width: 100%;
-}
+/* ------------------------------------------------------------
+   Type roles. Everything is uppercase and bold by doctrine —
+   there is no lowercase anywhere on this site except the
+   project summary paragraphs, which need to stay readable.
+   ------------------------------------------------------------ */
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-/* Focus is never removed — it is drawn as a registration target. */
-:focus-visible {
-  outline: 2px solid var(--act-ink);
-  outline-offset: 3px;
-}
-
-::selection {
-  background: var(--act-ink);
-  color: var(--act);
-}
-
-/* ============================================================
-   TYPE — scale cliff. There is no mid-size type on this site;
-   it is either furniture-small or enormous. That gap IS the
-   maximalism.
-   ============================================================ */
-
-.t-mono {
-  font-family: var(--font-mono, monospace);
-  font-size: clamp(9px, 0.68vw, 11px);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  line-height: 1.4;
-  font-weight: 400;
-}
-
-.t-mono-b {
-  font-weight: 700;
-}
-
-/* The wordmark: Rich's own Helvetica Condensed, cropped to the page. */
 .t-wordmark {
-  font-family: var(--font-wordmark, sans-serif);
-  font-size: clamp(3rem, 15.5vw, 17rem);
+  font-size: var(--wordmark-size);
   line-height: 0.82;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.022em;
   text-transform: uppercase;
-}
-
-/* Display: Archivo at extreme weight + tight width. */
-.t-display {
-  font-family: var(--font-display, sans-serif);
-  font-weight: 800;
-  font-stretch: 82%;
-  font-size: clamp(2.4rem, 8.4vw, 9rem);
-  line-height: 0.88;
-  letter-spacing: -0.028em;
-  text-transform: uppercase;
-}
-
-.t-statement {
-  font-family: var(--font-display, sans-serif);
   font-weight: 700;
-  font-stretch: 88%;
-  font-size: clamp(1.5rem, 4.1vw, 3.6rem);
-  line-height: 1.02;
-  letter-spacing: -0.018em;
-  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-/* Body copy is deliberately small and set narrow — a caption on a
-   press sheet, not a blog. Rich writes in caps; we do not fight it. */
+.t-label {
+  font-size: 0.6875rem; /* 11px */
+  line-height: 1.25;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.t-meta {
+  font-size: 0.625rem; /* 10px */
+  line-height: 1.3;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-ink-soft);
+}
+
 .t-body {
-  font-family: var(--font-display, sans-serif);
-  font-weight: 400;
-  font-size: clamp(0.82rem, 1.02vw, 0.98rem);
-  line-height: 1.55;
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.45;
   letter-spacing: 0.005em;
-  max-width: 30ch;
-}
-
-.t-caps {
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  max-width: 46ch;
 }
 
-/* ============================================================
-   LAYOUT
-   ============================================================ */
+/* The justified all-caps statement block, with em-dash separators.
+   This is the single most recognisable element of the reference. */
+.t-statement {
+  font-size: clamp(0.875rem, 1.35vw, 1.375rem);
+  line-height: 1.28;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  font-weight: 700;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: none;
+}
 
-.sheet {
+.t-quote {
+  font-size: clamp(0.6875rem, 0.92vw, 0.875rem);
+  line-height: 1.5;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   Fixed furniture
+   ------------------------------------------------------------ */
+
+.scroll-root {
+  position: fixed;
+  inset: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
   width: 100%;
-  padding-inline: var(--margin);
+  height: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-root::-webkit-scrollbar {
+  display: none;
 }
 
-.grid12 {
-  display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: var(--gutter);
+/* The wordmark sits above the imagery, not behind it — work
+   scrolls underneath and is clipped by nothing. z-index only,
+   no blend mode: magenta over photography goes muddy. */
+.wordmark-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  padding-top: 0.9vh;
+  text-align: center;
+  pointer-events: none;
+  color: var(--color-ink);
+  mix-blend-mode: normal;
 }
 
-/* The visible column rules — Swiss grid made literal, held down the
-   whole page. Sits behind content, never intercepts pointer events. */
+.mark-layer {
+  position: fixed;
+  left: clamp(10px, 1.4vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 500;
+  width: clamp(26px, 2.4vw, 40px);
+}
 
+.ticker-layer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 450;
+  border-top: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  overflow: hidden;
+  pointer-events: none;
+}
 
-@media (max-width: 900px) {
-  :root {
-    --cols: 6;
+@keyframes ticker-run {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-/* ============================================================
-   PRINT FURNITURE — restrained: corner crop marks + margin HUD.
-   Colour bars appear only at act transitions.
-   ============================================================ */
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-run 46s linear infinite;
+  will-change: transform;
+}
 
+/* ------------------------------------------------------------
+   Reveals. Kept deliberately cheap — opacity and a short rise,
+   nothing that fights Lenis for the compositor.
+   ------------------------------------------------------------ */
 
-/* ============================================================
-   CONTENT IMAGES
+.rise {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.rise.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
 
-   One crisp source image, full opacity at rest and on hover.
-
-   This was the registration effect: three stacked copies of the image,
-   offset and multiply-blended, arriving out of register and pulling true
-   under the cursor. The client has settled on a reference whose images
-   are simply sharp, so the plates are gone from both the markup and here.
-
-   NOT the same system as the wordmark and creature mark (.wm-* / .cr-*),
-   which still print in four plates. That is his logo and it stays.
-   ============================================================ */
-
-.reg {
+.link-underline {
   position: relative;
-  overflow: hidden;
-  background: var(--paper-2);
+  display: inline-block;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after,
+.link-underline:focus-visible::after {
+  transform: scaleX(1);
 }
 
-.reg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Named in the markup, so it keeps a rule of its own rather than relying
-   on the element selector above. */
-.reg-base {
-  display: block;
-}
-
-/* Skip link — visible the moment it takes focus, never before. */
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
-  z-index: 100;
-  background: var(--ink);
-  color: var(--paper);
-  padding: 12px 18px;
+  z-index: 9999;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 10px 16px;
 }
-
 .skip-link:focus {
-  left: 12px;
-  top: 12px;
-}
-
-/* Grain. One tileable SVG turbulence, multiplied over everything.
-   Cheap, and it is what makes the paper read as paper. */
-
-/* ============================================================
-   SMOOTH SCROLL — ScrollSmoother requires this exact wrapper
-   structure. Desktop pointer-fine only; touch keeps native scroll.
-   ============================================================ */
-
-#smooth-wrapper {
-  position: relative;
-}
-
-#smooth-content {
-  will-change: transform;
-}
-
-/* ============================================================
-   REDUCED MOTION — everything is simply already in register.
-   Nothing is lost but the performance.
-   ============================================================ */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-
-  .reg {
-    --p: 1 !important;
-  }
-
-
-}
-
-/* ============================================================
-   COMPONENT LAYER
-   ============================================================ */
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* ---------- MASTHEAD ---------- */
-
-.masthead {
-  position: relative;
-  z-index: 1;
-  min-height: 100svh;
-  padding-top: clamp(72px, 12vh, 150px);
-  padding-bottom: clamp(24px, 5vh, 64px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.wordmark {
-  margin: 0;
-  position: relative;
-}
-
-/* Four ink plates stacked. At --p 0 they are scattered; at 1 they are
-   one solid wordmark. This is the site's thesis in the first element. */
-.wordmark-stack {
-  position: relative;
-  display: block;
-  isolation: isolate;
-}
-
-.wm-plate {
-  display: block;
-  white-space: nowrap;
-  mix-blend-mode: multiply;
-  will-change: transform;
-}
-
-.wm-plate:not(.wm-c) {
-  position: absolute;
-  inset: 0;
-}
-
-.wm-c { color: var(--cyan);    transform: translate3d(calc((1 - var(--p)) * -0.055em), calc((1 - var(--p)) *  0.022em), 0); }
-.wm-m { color: var(--magenta); transform: translate3d(calc((1 - var(--p)) *  0.042em), calc((1 - var(--p)) * -0.030em), 0); }
-.wm-y { color: var(--yellow);  transform: translate3d(calc((1 - var(--p)) *  0.012em), calc((1 - var(--p)) *  0.040em), 0); }
-.wm-k { color: var(--ink);     opacity: calc(0.10 + 0.90 * var(--p)); }
-
-.masthead-foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(20px, 4vw, 64px);
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.masthead-strap {
-  margin: 0;
-  flex: 1 1 18ch;
-  /* Overridden locally, NOT on .t-statement — the statement of practice
-     shares that class and is deliberately large. The strap is a slug line
-     in the band under the rail; it does not need to compete with the work
-     above it. */
-  font-size: clamp(1rem, 2vw, 1.7rem);
-  line-height: 1.12;
-  /* A measure, not a hard <br />. The breaks that used to be in the markup
-     forced three lines at EVERY width; a measure gives a couple of lines
-     on a wide screen and lets a narrow one wrap where it needs to.
-
-     This costs the band nothing: its height is set by the FEATURED block
-     beside it (89px), and two lines of this come to about 60. */
-  max-width: 30ch;
-}
-
-.masthead-feature {
-  flex: 0 1 34ch;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border-top: var(--rule) solid var(--ink-22);
-  padding-top: 10px;
-}
-
-.feature-link {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.feature-line {
-  font-weight: 700;
-  font-stretch: 88%;
-  font-size: clamp(0.95rem, 1.6vw, 1.32rem);
-  line-height: 1.1;
-  /* Each strap arrives out of register and settles. */
-  animation: strap-register 620ms var(--ease-out) both;
-}
-
-@keyframes strap-register {
-  from { opacity: 0; transform: translate3d(-0.35em, 0, 0); filter: blur(1.5px); }
-  to   { opacity: 1; transform: none; filter: none; }
-}
-
-.feature-client { opacity: 0.62; }
-
-.feature-link:hover .feature-client,
-.feature-link:focus-visible .feature-client { opacity: 1; }
-
-.feature-dots { display: flex; gap: 6px; margin-top: 4px; }
-
-.feature-dot {
-  width: 18px;
-  height: 3px;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  background: var(--ink-22);
-  transition: background 240ms var(--ease-out);
-}
-
-.feature-dot.is-on { background: var(--ink); }
-
-/* Touch targets must stay 44px even when the visible mark is 3px tall. */
-.feature-dot::after {
-  content: '';
-  position: absolute;
-  inset: -20px -4px;
-}
-
-.feature-dot { position: relative; }
-
-/* ---------- WORK ---------- */
-
-.work {
-  position: relative;
-  z-index: 1;
-  padding-block: clamp(56px, 11vh, 140px);
-}
-
-
-/* Two up, every tile the same. The reference runs a uniform pair with a
-   13px row gap rather than a varied span rhythm — measured 693 + 15 + 693
-   inside a 20px margin at a 1440 stage, which is exactly six of twelve
-   columns each once the gutter is 15. */
-.work-grid { list-style: none; row-gap: var(--row-gap); }
-
-.work-tile { grid-column: span 6; min-width: 0; }
-
-@media (max-width: 560px) {
-  /* One up on a phone: two 4:3 plates side by side on 375 gives a 170px
-     tile, which is smaller than the caption under it. */
-  .work-tile { grid-column: 1 / -1; }
-}
-
-.work-link { display: block; }
-
-.work-thumb {
-  /* 3:2, not 4:3. The reference measures 693x471 (1.471); 3:2 is 1.5 and
-     is a real photographic ratio rather than a copied oddity, so the
-     plates crop the way a press sheet would. */
-  aspect-ratio: 3 / 2;
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.work-cap { display: flex; flex-direction: column; gap: 3px; }
-
-.work-num { opacity: 0.4; }
-
-.work-title {
-  font-weight: 700;
-  font-stretch: 88%;
-  font-size: clamp(0.92rem, 1.35vw, 1.16rem);
-  line-height: 1.12;
-}
-
-.work-facet { opacity: 0.45; }
-
-/* ---------- THE HOLD ---------- */
-
-.hold {
-  position: relative;
-  z-index: 1;
-  /* The visible screen, less the header and the band hooked beneath it —
-     because the band is held at the top for the whole of this section, so
-     a full 100svh here centres the statement in a box whose top third is
-     covered and drops it about 100px low. */
-  min-height: calc(100svh - var(--head-h) - var(--band-h, 0px));
-  display: flex;
-  align-items: center;
-  background: var(--paper-2);
-}
-
-.hold-inner { width: 100%; max-width: 1500px; margin-inline: auto; }
-
-.hold-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: 0.5;
-  margin-bottom: clamp(16px, 3vh, 34px);
-}
-
-.hold-copy { margin: 0 0 clamp(18px, 3vh, 36px); max-width: 22ch; }
-
-/* THE ROLL
-   Each line is a one-line window holding the same text twice; the pair
-   inside is what moves. The text is therefore ALWAYS legible — it turns
-   over rather than appearing, the way a counter or a departure board
-   does. The window's height is set in JS from the line's own measured
-   height, before the duplicate goes in. */
-.hold-line {
-  display: block;
-  overflow: hidden;
-}
-
-.hold-roll {
-  display: block;
-  will-change: transform;
-}
-
-.hold-face { display: block; }
-
-.hold-body { opacity: 0.62; max-width: 62ch; }
-
-.site-footer {
-  position: relative;
-  z-index: 1;
-  padding-block: clamp(30px, 6vh, 70px);
-  /* So the sign-off can be sized off the width it actually has. */
-  container-type: inline-size;
-}
-
-/* THE SIGN-OFF
-   Last thing on the page, the full width of it, rising out of its own
-   mask as you reach the bottom.
-
-   12.55cqw is not a guess: "THAT'S ALL F**KS" set in SWITZER 800 at
-   -0.028em measures 7.968x its own font size, so width / 7.968 fills the
-   line exactly. Re-measure if the string or the face changes — which is
-   exactly what happened: the previous 11.58cqw was derived against
-   Archivo 800 at 8.63x, and on Switzer that left the sign-off 104px
-   short of the measure at a 1348px stage. Measured with a Range over the
-   text node, because the mask's overflow:hidden makes scrollWidth report
-   the container width and agree with whatever you already believed.
-
-   The mask clips, so a fallback face while Switzer loads trims rather
-   than pushing out a horizontal scrollbar. */
-.footer-shout-mask {
-  overflow: hidden;
-  margin-top: clamp(24px, 5vh, 56px);
-}
-
-.footer-shout {
-  margin: 0;
-  opacity: 0.16;
-  font-size: 12.55cqw;
-  line-height: 0.86;
-  white-space: nowrap;
-}
-
-.footer-rule { height: var(--rule); background: var(--ink-22); margin-bottom: 14px; }
-
-.footer-meta { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; opacity: 0.55; }
-
-.footer-meta a:hover { opacity: 1; text-decoration: underline; }
-
-/* ---------- REDUCED MOTION (must stay last) ---------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .masthead { --p: 1 !important; }
-  .wm-plate { transform: none !important; }
-  .wm-k { opacity: 1 !important; }
-  .feature-line { animation: none !important; }
-  .hold-roll { transform: none !important; }
-}
-
-/* ---------- NAV ----------
-   A solid 58px bar: mark left, links and a filled square CTA right, both
-   ends on the page margin. Measured off the reference — 58px tall, CTA
-   padding 8px 14px, border-radius 0.
-
-   It used to be centred, transparent, and hid its mark until 70% past the
-   hero. Solid now, because with the crop marks and the HUD gone there is
-   no furniture layer left to separate it from the page, and on a case
-   study it sits over a full-bleed plate. */
-.site-nav {
-  position: fixed;
-  inset: 0 0 auto 0;
-  z-index: 62;
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-inline: var(--margin);
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-display);
-}
-
-.site-nav-mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.site-nav-right {
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 2vw, 28px);
-}
-
-.site-nav-links {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 1.8vw, 24px);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.site-nav-link {
-  /* 14px/500 uppercase with the reference's tight tracking. */
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  transition: opacity 200ms var(--ease-out);
-  /* 44px touch target without changing the visual size */
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-}
-
-.site-nav-link:hover, .site-nav-link.is-on { opacity: 1; }
-.site-nav-link.is-on { text-decoration: underline; text-underline-offset: 4px; }
-
-/* The filled square. Ink block, paper type, no radius. */
-.site-nav-cta,
-.cta-square {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 8px 14px;
-  border-radius: 0;
-  background: var(--ink);
-  color: var(--paper);
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  transition: opacity 200ms var(--ease-out);
-}
-
-.site-nav-cta:hover,
-.cta-square:hover { opacity: 0.82; }
-
-/* The homepage button through to the archive, on the same margin as the
-   grid above it. */
-.home-cta-row { padding-block: clamp(28px, 5vh, 64px); }
-
-/* The count beside the archive title, raised like the reference's (10).
-   A flex sibling of the h1 rather than a <sup> inside it: SplitText owns
-   the inside of [data-split] and mangled the nested element. Raised with
-   align-self here, so nothing has to survive the split. */
-.page-shout-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.1em;
-}
-
-.page-count {
-  font-family: var(--font-display);
-  font-size: clamp(0.9rem, 2.2vw, 1.9rem);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.01em;
-  opacity: 0.55;
-  /* Sits on the cap line rather than the baseline. */
-  padding-top: 0.35em;
-  white-space: nowrap;
-}
-
-@media (max-width: 640px) {
-  .site-nav { gap: 10px; }
-  .site-nav-mark { font-size: 13px; }
-  .site-nav-link { font-size: 12px; }
-  .site-nav-cta { font-size: 12px; padding: 8px 10px; }
-  .site-nav-right { gap: 10px; }
-}
-
-/* ---------- SHARED PAGE HEAD ---------- */
-
-.page-head {
-  position: relative;
-  z-index: 1;
-  padding-top: clamp(84px, 15vh, 190px);
-  padding-bottom: clamp(20px, 4vh, 50px);
-}
-
-
-.page-shout { margin: 0; }
-
-.page-shout-sm { margin: 0; max-width: 16ch; }
-
-.page-body { opacity: 0.55; margin-top: clamp(12px, 2vh, 22px); }
-
-/* ---------- ABOUT ---------- */
-
-.about {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: clamp(24px, 4vw, 64px);
-  padding-block: clamp(30px, 6vh, 80px);
-  border-top: var(--rule) solid var(--ink-22);
-}
-
-.about-col { display: flex; flex-direction: column; gap: 10px; }
-
-.about-label { opacity: 0.45; }
-
-.about-lead { margin: 0; }
-
-.about-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
-
-.about-item { font-weight: 600; font-stretch: 88%; font-size: clamp(0.9rem, 1.3vw, 1.1rem); opacity: 0.75; }
-
-.clients {
-  position: relative;
-  z-index: 1;
-  padding-block: clamp(40px, 8vh, 110px);
-  border-top: var(--rule) solid var(--ink-22);
-}
-
-.clients-list {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 clamp(16px, 2.4vw, 42px);
-  margin-top: clamp(14px, 3vh, 30px);
-}
-
-.clients-item {
-  font-size: clamp(1.4rem, 5.2vw, 5rem);
-  line-height: 1.02;
-  opacity: 0.22;
-  transition: opacity 260ms var(--ease-out);
-  cursor: default;
-}
-
-.clients-item:hover { opacity: 1; }
-
-/* ---------- CASE STUDY ---------- */
-
-.cs-hero {
-  position: relative;
-  z-index: 1;
-  /* Not the full screen. The client's own reference for this page is a
-     hero at roughly 60% with the project name and its facts visible in
-     the same view — you arrive at a case study, not at a photograph you
-     have to scroll past to find out whose it is. Clamped so it stays a
-     hero on a short laptop and does not become a banner on a tall one. */
-  height: clamp(360px, 62svh, 760px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
-}
-
-.cs-hero-media { position: absolute; inset: 0; }
-
-/* The <img> is the floor: it is what shows with no WebGL, and what the
-   canvas paints over once the shader is confirmed working. */
-.cs-hero-img { width: 100%; height: 100%; object-fit: cover; }
-
-
-.cs-hero-caption {
-  position: relative;
-  z-index: 2;
-  padding-bottom: clamp(28px, 6vh, 72px);
-  color: var(--paper);
-  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.45);
-}
-
-.cs-hero-client { opacity: 0.8; }
-
-.cs-hero-title { margin: 6px 0 8px; }
-
-.cs-hero-meta { opacity: 0.7; }
-
-/* THE CASE-STUDY MASTHEAD
-   The reference sets the project name at size on the left and the facts
-   labelled on the right, under a bare full-bleed plate. The two halves
-   meet on the same column line the work grid's two tiles do — 6 and 6 —
-   so a case study and the index it came from are cut to one measure. */
-.cs-masthead {
-  position: relative;
-  z-index: 1;
-  align-items: start;
-  padding-block: clamp(40px, 7vh, 104px);
-  row-gap: clamp(24px, 4vh, 48px);
-}
-
-.cs-masthead-title {
-  grid-column: 1 / span 6;
-  margin: 0;
-  /* Sized off the COLUMN it sits in, not the viewport, and by the longest
-     word in the archive rather than by eye — .t-display sizes on vw, which
-     cannot know either the column or the face's cap width, and at 121px it
-     set SILVERSTONE 799px wide inside a 693px column and straight through
-     the facts beside it.
-
-     A 6-of-12 span reduces to (100vw - 2*margin)/2 - 0.5*gutter; verified
-     693 at a 1440 stage, against 693 measured. The longest unbreakable run
-     across all 31 titles is RECRUITMENT, which measures 7.07x its own font
-     size in Switzer 800 at -0.028em. Dividing the column by that means no
-     title can reach the facts. Re-measure if the face, the tracking or the
-     archive changes.
-
-     These titles are SENTENCES, not the single words the reference sets —
-     the longest is 53 characters — so they wrap, and the divisor only has
-     to hold the longest WORD. Fitting the longest whole title on one line
-     would mean 21px type. */
-  font-size: min(
-    calc(((100vw - 2 * var(--margin)) / 2 - 0.5 * var(--gutter)) / 7.07),
-    10rem
-  );
-  line-height: 0.92;
-  text-wrap: balance;
-}
-
-.cs-masthead-meta {
-  grid-column: 7 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(18px, 3vh, 32px);
-  min-width: 0;
-}
-
-.cs-fact { display: flex; flex-direction: column; gap: 6px; }
-.cs-fact-label { opacity: 0.5; }
-.cs-fact-value { max-width: 42ch; }
-
-@media (max-width: 900px) {
-  .cs-masthead-title,
-  .cs-masthead-meta { grid-column: 1 / -1; }
-
-  /* Full width now, so the column is the whole measure and the divisor
-     works against that instead of a half. */
-  .cs-masthead-title {
-    font-size: min(calc((100vw - 2 * var(--margin)) / 7.07), 10rem);
-  }
-}
-
-.cs-brief {
-  position: relative;
-  z-index: 1;
-  padding-block: clamp(50px, 11vh, 140px);
-}
-
-.cs-label { display: flex; align-items: center; gap: 10px; opacity: 0.5; margin-bottom: clamp(14px, 3vh, 30px); }
-
-.cs-copy { margin: 0; max-width: 26ch; }
-
-.cs-plates { position: relative; z-index: 1; padding-bottom: clamp(40px, 8vh, 110px); }
-
-.cs-plate-grid { list-style: none; row-gap: clamp(20px, 4vh, 56px); }
-
-.cs-plate { grid-column: span var(--span, 6); position: relative; min-width: 0; }
-
-@media (max-width: 900px) { .cs-plate { grid-column: span 6; } }
-
-.cs-plate-img { width: 100%; aspect-ratio: 3 / 2; }
-
-.cs-plate-num { position: absolute; top: 8px; left: 8px; opacity: 0.6; mix-blend-mode: difference; color: var(--paper); }
-
-/* ---------- THE PRESS BED ----------
-   One plate held on the bed while the sheets and the brief run past it.
-   Columns 1-7 carry the plate, 9-12 the run — column 8 IS the space
-   between them, so both edges land on the grid instead of on a chosen gap. */
-.cs-bed {
-  align-items: start;
-  row-gap: clamp(28px, 5vh, 64px);
-  padding-block: clamp(36px, 6vh, 92px);
-}
-
-.cs-bed-plate { grid-column: 1 / span 7; position: relative; min-width: 0; }
-
-.cs-bed-run {
-  grid-column: 9 / -1;
-  min-width: 0;
-  /* So the brief can be sized off the width it actually HAS. The display
-     scale that suits a full-width statement sets ~60px type in a 436px
-     measure, which reads as a mistake rather than as emphasis. */
-  container-type: inline-size;
-}
-
-.cs-bed-img { width: 100%; aspect-ratio: 3 / 2; }
-
-.cs-bed-folio {
-  position: absolute;
+  left: 8px;
   top: 8px;
-  left: 8px;
-  opacity: 0.6;
-  mix-blend-mode: difference;
-  color: var(--paper);
 }
 
-/* The picker. Four to a row, so a 31-image study still reads as a run of
-   sheets rather than as a contact sheet. */
-.cs-bed-sheets {
-  list-style: none;
-  margin: 0 0 clamp(26px, 4.5vh, 52px);
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--gutter);
-}
-
-.cs-bed-sheet { min-width: 0; }
-
-.cs-bed-pick {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  position: relative;
-  /* Held back until chosen — a sheet that has not been pulled onto the bed
-     has not been pulled true yet. */
-  opacity: 0.42;
-  transition: opacity 220ms ease;
-}
-
-.cs-bed-pick:hover,
-.cs-bed-pick:focus-visible { opacity: 0.78; }
-
-.cs-bed-pick[aria-current='true'] { opacity: 1; }
-
-.cs-bed-thumb { width: 100%; aspect-ratio: 1 / 1; }
-
-.cs-bed-thumb-num {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  opacity: 0.75;
-  mix-blend-mode: difference;
-  color: var(--paper);
-}
-
-/* The sheet on the bed is trapped to its marks. */
-.cs-bed-pick[aria-current='true']::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  outline: var(--rule) solid currentColor;
+:where(a, button):focus-visible {
+  outline: 2px solid var(--color-magenta);
   outline-offset: 3px;
-  pointer-events: none;
 }
 
-/* Sized in cqw against .cs-bed-run, so the brief holds the same optical
-   weight whatever the column measures. The clamp floor keeps it readable
-   when the column goes full width on mobile. */
-.cs-bed-copy {
-  max-width: none;
-  font-size: clamp(1.05rem, 5.4cqw, 1.9rem);
-  line-height: 1.14;
-}
+/* ------------------------------------------------------------
+   The archive is almost entirely 16:9 deck frames, so the
+   collage gets its variety from scale and horizontal offset
+   rather than from mixing portrait against landscape. Widths
+   and offsets are set per-figure in the component.
+   ------------------------------------------------------------ */
 
-@media (max-width: 900px) {
-  /* No bed below 900px: the plate and the run stack, and the pin is never
-     created (see CasePlates), so the page simply scrolls. */
-  .cs-bed-plate,
-  .cs-bed-run { grid-column: 1 / -1; }
-}
-
-.cs-nav {
+.collage figure {
   position: relative;
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  padding-block: clamp(30px, 6vh, 80px);
-  border-top: var(--rule) solid var(--ink-22);
 }
 
-.cs-nav-link { display: flex; flex-direction: column; gap: 6px; max-width: 44%; }
-
-.cs-nav-next { text-align: right; margin-left: auto; }
-
-.cs-nav-title { font-weight: 700; font-stretch: 88%; font-size: clamp(0.95rem, 1.8vw, 1.5rem); line-height: 1.1; }
-
-.cs-nav-link:hover .cs-nav-title { text-decoration: underline; text-underline-offset: 4px; }
-
-/* ---------- REDUCED MOTION (stays last) ---------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .clients-item { opacity: 0.7; }
-}
-
-/* ============================================================
-   MASTHEAD CORRECTIONS
-   The wordmark is set on two lines so COLVILL can be enormous without
-   running off the right edge, and the (R) sits as a true superscript
-   the way it does in his own mark.
-   ============================================================ */
-
-.t-wordmark {
-  font-size: clamp(2.4rem, 26.5vw, 19rem);
-  line-height: 0.78;
-}
-
-.wm-line { display: block; white-space: nowrap; }
-
-.wm-reg {
-  font-size: 0.26em;
-  vertical-align: super;
-  line-height: 1;
-  letter-spacing: 0;
-  margin-right: 0.04em;
-}
-
-/* Plates are ink on paper, not neon. Multiply plus a held-back opacity
-   keeps this reading as a misprint rather than as a rainbow. */
-.wm-plate:not(.wm-k) { opacity: calc(0.72 - 0.72 * var(--p)); }
-
-.masthead { overflow: hidden; }
-
-/* The featured work, sitting in what was dead space between the wordmark
-   and the strap. Registers on the same scroll as everything else. */
-.masthead-plate {
-  position: absolute;
-  right: var(--margin);
-  top: 46%;
-  width: clamp(150px, 26vw, 400px);
-  aspect-ratio: 3 / 4;
-  isolation: isolate;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.mp-img {
-  position: absolute;
-  inset: 0;
+.collage img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  mix-blend-mode: multiply;
-  animation: plate-in 700ms var(--ease-out) both;
+  height: auto;
 }
 
-.mp-c { transform: translate3d(calc((1 - var(--p)) * -13px), calc((1 - var(--p)) *  6px), 0); filter: url(#none) saturate(0) sepia(1) hue-rotate(150deg); opacity: 0.55; }
-.mp-m { transform: translate3d(calc((1 - var(--p)) *  10px), calc((1 - var(--p)) * -8px), 0); filter: saturate(0) sepia(1) hue-rotate(280deg); opacity: 0.55; }
-.mp-k { opacity: calc(0.45 + 0.55 * var(--p)); }
+/* ------------------------------------------------------------
+   Small screens. The 12-column collage has to collapse or a
+   4-of-12 figure lands at ~130px on a 390px phone — smaller than
+   the thumbnail it was cropped from. Everything goes full width
+   bar a gentle inset on every other figure, which keeps a trace
+   of the scatter without shrinking the work.
+   ------------------------------------------------------------ */
 
-@keyframes plate-in {
-  from { opacity: 0; }
+@media (max-width: 760px) {
+  .collage {
+    grid-template-columns: repeat(6, 1fr);
+    gap: clamp(22px, 6vw, 40px) 10px;
+  }
+  .collage > figure {
+    grid-column: 1 / -1 !important;
+    margin-inline: 0 !important;
+  }
+  .collage > figure:nth-child(4n + 2) {
+    grid-column: 1 / span 5 !important;
+  }
+  .collage > figure:nth-child(4n + 4) {
+    grid-column: 2 / span 5 !important;
+  }
+
+  .project-head {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .project-head > * {
+    grid-column: 1 / -1 !important;
+  }
+
+  .ticker-layer .t-meta {
+    font-size: 0.5625rem;
+  }
 }
 
-@media (max-width: 900px) {
-  .masthead-plate {
+/* The mark is decorative furniture — below 520px it competes with
+   the content for the left margin, so it steps out of the way. */
+@media (max-width: 520px) {
+  .mark-layer {
     top: auto;
-    bottom: 30%;
-    width: 40vw;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 42px);
+    transform: none;
   }
 }
 
-@media (max-width: 640px) {
-  .masthead { padding-top: 64px; }
-}
-
-/* ---------- REDUCED MOTION (stays last) ---------- */
 @media (prefers-reduced-motion: reduce) {
-  .mp-img { animation: none !important; transform: none !important; }
-  .wm-plate:not(.wm-k) { opacity: 0 !important; }
-}
-
-/* ============================================================
-   MASTHEAD FIT
-   Sizing COLVILL by vw alone clipped its final L. The cap width of this
-   condensed face measures ~0.52em, so seven caps need ~3.8em; size the
-   wordmark off the ACTUAL available width instead and it can never clip.
-   ============================================================ */
-
-.t-wordmark {
-  font-size: min(23vw, calc((100vw - (2 * var(--margin))) / 3.8), 17rem);
-}
-
-.wordmark { position: relative; z-index: 2; }
-
-.masthead-foot { position: relative; z-index: 2; }
-
-/* The featured plate sits BEHIND the wordmark and bleeds off the right
-   edge — texture, not a competing element. It was previously landing on
-   top of the featured caption and making both unreadable. */
-.masthead-plate {
-  right: 0;
-  top: 14%;
-  bottom: auto;
-  width: clamp(150px, 25vw, 380px);
-  height: 52vh;
-  aspect-ratio: auto;
-  z-index: 0;
-  opacity: 0.55;
-}
-
-@media (max-width: 900px) {
-  .masthead-plate {
-    top: 12%;
-    bottom: auto;
-    width: 46vw;
-    height: 34vh;
-    opacity: 0.4;
+  .ticker-track {
+    animation: none;
   }
-}
-
-/* The bottom HUD belongs to the masthead. Once the page scrolls it would
-   sit on top of real captions, so it retires rather than collides. */
-
-
-
-
-/* No scrim over the photograph. There used to be a 190px black wash
-   across the top of every hero so the margin HUD and the transparent nav
-   stayed readable on top of it. The HUD is gone and the nav paints its
-   own paper ground, so the only thing that wash still did was darken the
-   top of every one of Rich's images. */
-
-
-/* On a case study the furniture always sits on the photograph, never on
-   the act ground, so it is always paper-coloured there. */
-.cs-hero ~ * { position: relative; }
-
-/* ============================================================
-   CONTRAST CORRECTIONS
-   Measured with Lighthouse/axe against the real #f0f0ef ground. Opacity
-   on ink is what set these; every value below is the level that clears
-   WCAG AA (4.5:1 body, 3:1 for large display).
-   ============================================================ */
-
-/* Small mono furniture was #7d8083 on paper = 3.48:1. */
-.work-num,
-.work-facet,
-.about-label,
-.page-label,
-.hold-label,
-.cs-label { opacity: 0.72; }
-
-.site-nav-link { opacity: 0.72; }
-.feature-client { opacity: 0.78; }
-.footer-meta { opacity: 0.78; }
-.page-body, .hold-body { opacity: 0.82; }
-
-/* Large display type needs 3:1, not 4.5:1 — but 0.16 and 0.22 were far
-   under even that. These stay quiet, just not invisible. */
-.footer-shout { opacity: 0.5; }
-.clients-item { opacity: 0.5; }
-
-/* The wordmark composited to #929597 = 2.64:1 against paper. The black
-   key plate now carries more weight at rest, so it reads as ink even
-   before it registers. */
-.wm-k { opacity: calc(0.42 + 0.58 * var(--p)); }
-
-/* The strap re-runs its entry animation every rotation, and axe sampled it
-   mid-fade at #abadae (1.97:1). Animate position and focus instead of
-   opacity so the text is never below contrast at any point in the tween. */
-@keyframes strap-register {
-  from { transform: translate3d(-0.35em, 0, 0); filter: blur(1.6px); }
-  to   { transform: none; filter: none; }
-}
-
-/* ============================================================
-   THE WORK BANNER — depth stack
-   Every dimension resolves from the 12-column grid, never from an
-   eyeballed viewport percentage.
-
-   With content width W and gutter g, a span of 8 columns is:
-     col   = (W - 11g) / 12
-     span8 = 8col + 7g = (2W - g) / 3
-   Expressed against the stage (whose width IS W), that is
-   calc((2 * 100% - var(--gutter)) / 3) — exact, and free of the
-   scrollbar error that 100vw carries.
-   ============================================================ */
-
-.pf {
-  position: relative;
-  z-index: 1;
-  min-height: 100svh;
-  background: var(--ink);
-  color: var(--paper);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding-inline: var(--margin);
-}
-
-/* Light spilling up off the bottom edge, as if the sheet is lit from
-   under the press bed. */
-.pf-spill {
-  position: absolute;
-  left: 50%;
-  bottom: -18vh;
-  transform: translateX(-50%);
-  width: 150vw;
-  height: 56vh;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 100%,
-    rgba(240, 240, 239, 0.4) 0%,
-    rgba(240, 240, 239, 0.12) 40%,
-    rgba(240, 240, 239, 0) 72%
-  );
-}
-
-/* Column 1 left edge. */
-.pf-count {
-  position: absolute;
-  left: var(--margin);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 40;
-  opacity: 0.8;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Column 12 right edge. */
-.pf-cta {
-  position: absolute;
-  right: var(--margin);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 40;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 12px 20px;
-  border: var(--rule) solid rgba(240, 240, 239, 0.4);
-  border-radius: 999px;
-  color: var(--paper);
-  transition: background 240ms var(--ease-out), border-color 240ms var(--ease-out),
-    color 240ms var(--ease-out);
-}
-
-.pf-cta:hover,
-.pf-cta:focus-visible {
-  background: var(--paper);
-  border-color: var(--paper);
-  color: var(--ink);
-}
-
-/* ---------- the stage ---------- */
-
-.pf-stage {
-  position: relative;
-  z-index: 2;
-  width: 100%;              /* == W, the grid content width */
-  max-width: 1600px;
-  height: 74vh;
-}
-
-.pf.is-3d .pf-stage {
-  perspective: 1200px;
-  perspective-origin: 50% 46%;
-  transform-style: preserve-3d;
-}
-
-.pf.is-3d .pf-card {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc((2 * 100% - var(--gutter)) / 3);   /* exactly 8 of 12 cols */
-  transform: translate3d(-50%, -50%, 0);
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform, opacity;
-}
-
-.pf-plate {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  background: #121212;
-}
-
-.pf-img,
-.pf-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Once the shader is confirmed running, the fallback <img> steps aside. */
-.pf-img.is-hidden { opacity: 0; }
-
-/* Caption locks to the card's own left edge — a fixed relationship to the
-   grid rather than to the viewport. Baselines stay consistent because the
-   three lines share one flow. */
-.pf-caption {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  column-gap: var(--gutter);
-  align-items: baseline;
-  margin-top: 18px;
-}
-
-.pf-num {
-  opacity: 0.55;
-  font-variant-numeric: tabular-nums;
-}
-
-.pf-title {
-  grid-column: 2;
-  font-size: clamp(1rem, 1.9vw, 1.6rem);
-  color: var(--paper);
-  line-height: 1.06;
-}
-
-.pf-client {
-  grid-column: 2;
-  opacity: 0.55;
-  margin-top: 6px;
-}
-
-/* Only the front card's caption is legible; the queue behind it stays
-   quiet so the composition never reads as clutter. */
-.pf.is-3d .pf-card:not(.is-front) .pf-caption { opacity: 0.25; }
-
-/* ---------- touch: a flat scroll-snap row, no pin, no 3D ---------- */
-
-.pf.is-row { min-height: auto; padding-block: 14vh; }
-
-.pf.is-row .pf-stage {
-  height: auto;
-  display: flex;
-  gap: var(--gutter);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-bottom: 8px;
-}
-
-.pf.is-row .pf-stage::-webkit-scrollbar { display: none; }
-
-.pf.is-row .pf-card {
-  position: relative;
-  flex: 0 0 82%;
-  scroll-snap-align: center;
-}
-
-.pf.is-row .pf-count,
-.pf.is-row .pf-cta {
-  position: static;
-  transform: none;
-  margin-inline: auto;
-}
-
-.pf.is-row .pf-cta { margin-top: 22px; }
-.pf.is-row .pf-count { margin-bottom: 14px; }
-
-/* ---------- the real navigation ---------- */
-
-.pf-index {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  list-style: none;
-}
-
-.pf-index:focus-within {
-  position: absolute;
-  left: var(--margin);
-  bottom: 24px;
-  width: auto;
-  height: auto;
-  clip: auto;
-  overflow: visible;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  z-index: 50;
-}
-
-.pf-index-link {
-  color: var(--paper);
-  opacity: 0.75;
-  display: inline-flex;
-  gap: 10px;
-  min-height: 32px;
-  align-items: center;
-}
-
-.pf-index-link:hover,
-.pf-index-link.is-on { opacity: 1; }
-.pf-index-num { opacity: 0.6; font-variant-numeric: tabular-nums; }
-
-/* Wrapper around every pinned section: ScrollTrigger's pin-spacer is
-   inserted inside a node React owns, so unmount never hits a reparented
-   child. */
-.pin-host { position: relative; }
-
-/* Reduced motion: no pin is created, so the stack never advances. The
-   index list becomes the visible, complete navigation. */
-@media (prefers-reduced-motion: reduce) {
-  .pf-index {
-    position: static;
-    width: auto;
-    height: auto;
-    clip: auto;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  .rise {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
-}
-
-/* The front slot: one canvas parked where a card comes to rest. Same grid
-   width as a card, so the registration lands exactly on the plate. */
-.pf-front {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc((2 * 100% - var(--gutter)) / 3);
-  aspect-ratio: 16 / 10;
-  transform: translate3d(-50%, -50%, 0);
-  transform-style: preserve-3d;
-  pointer-events: none;
-  opacity: 0;
-  overflow: hidden;
-  background: #121212;
-}
-
-.pf-front .pf-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-/* The card caption must clear the plate, which the slot now overlays. */
-.pf.is-3d .pf-card { padding-bottom: 0; }
-
-/* ============================================================
-   MASTHEAD FOOT — black band
-   The lower band of the landing page runs ink with paper text: the
-   strap, the featured strap and every piece of small text in it. It
-   bleeds the full width by cancelling the section's own inline padding.
-   ============================================================ */
-
-.masthead { padding-bottom: 0; }
-
-.masthead-foot {
-  background: var(--ink);
-  color: var(--paper);
-  margin-inline: calc(-1 * var(--margin));
-  padding: clamp(22px, 4vh, 44px) var(--margin) clamp(26px, 5vh, 52px);
-  align-items: flex-end;
-}
-
-/* Rules and dots were keyed to ink; on the band they must key to paper. */
-.masthead-foot .masthead-feature { border-top-color: rgba(240, 240, 239, 0.32); }
-.masthead-foot .feature-dot { background: rgba(240, 240, 239, 0.3); }
-.masthead-foot .feature-dot.is-on { background: var(--paper); }
-.masthead-foot .feature-client { opacity: 0.72; }
-
-/* The two bottom HUD blocks only ever appear over this band (they retire
-   on scroll), so they read as paper too. */
-
-/* The foot band goes on the 12-column grid rather than being sized in ch.
-   The strap holds columns 1-7, the featured block columns 9-12, so both
-   edges land on real column lines. Bottom padding clears the fixed HUD,
-   which was sitting on the descender of STUDIO. */
-.masthead-foot {
-  display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: var(--gutter);
-  align-items: end;
-  padding-bottom: clamp(46px, 7.5vh, 82px);
-}
-
-.masthead-strap { grid-column: 1 / span 7; flex: none; }
-.masthead-feature { grid-column: 9 / span 4; flex: none; }
-
-@media (max-width: 900px) {
-  /* 6 columns at this width: the two blocks stack, both full width. */
-  .masthead-strap { grid-column: 1 / span 6; }
-  .masthead-feature { grid-column: 1 / span 6; margin-top: 12px; }
-}
-
-/* The card box must equal the PLATE box. The caption was inside the flow,
-   so the card's centre sat below the plate's centre — and the front slot,
-   which centres on the card, landed on top of the caption. The caption now
-   hangs below the box, so card centre == plate centre == slot centre. */
-.pf.is-3d .pf-card {
-  aspect-ratio: 16 / 10;
-}
-
-.pf.is-3d .pf-plate {
-  position: absolute;
-  inset: 0;
-  aspect-ratio: auto;
-}
-
-.pf.is-3d .pf-caption {
-  position: absolute;
-  top: calc(100% + 18px);
-  left: 0;
-  right: 0;
-  margin-top: 0;
-}
-
-/* The figure hangs in the margin so the TITLE aligns exactly to the plate
-   edge — i.e. to column 3 — rather than being indented off it. */
-.pf-caption {
-  position: relative;
-  display: block;
-}
-
-.pf-num {
-  position: absolute;
-  right: calc(100% + var(--gutter));
-  top: 0;
-  white-space: nowrap;
-}
-
-.pf-title { display: block; }
-.pf-client { display: block; }
-
-/* In row mode the counter and CTA become static, so they turn into flex
-   siblings of the stage and squeeze it (228px inside a 390px viewport).
-   Stack them instead. */
-.pf.is-row {
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.pf.is-row .pf-stage { width: 100%; flex: none; }
-.pf.is-row .pf-count { align-self: flex-start; }
-.pf.is-row .pf-cta { align-self: center; }
-
-/* The hanging figure is a desktop device: inside the horizontal scroll
-   container it hangs outside the card and gets clipped. In row mode it
-   sits above the title instead. */
-.pf.is-row .pf-num {
-  position: static;
-  display: block;
-  margin-bottom: 6px;
-}
-
-.pf.is-row .pf-caption { margin-top: 14px; }
-
-/* ============================================================
-   STATEMENT OF PRACTICE — centred across the page
-   The block, its label and the client list all share one centre axis.
-   The measure stays ~22ch so the line breaks Rich sees are unchanged.
-   ============================================================ */
-
-.hold-inner { text-align: center; }
-
-.hold-label {
-  justify-content: center;
-  width: 100%;
-}
-
-.hold-copy {
-  max-width: 30ch;
-  margin-inline: auto;
-  text-align: center;
-}
-
-.hold-body {
-  max-width: 30ch;
-  margin-inline: auto;
-  text-align: center;
-}
-
-/* The words are clipped, not moved: on centred text a translate made each
-   line look like it was hanging off its own axis. */
-
-/* The statement is 14 lines. At the shared .t-statement size that is
-   ~823px of type, which overflowed a 900px viewport — the label collided
-   with the nav and the client list was cut off the bottom. Sized so the
-   whole block (label + statement + client list) sits inside the pinned
-   viewport, with the measure still 22ch so the line breaks are unchanged. */
-.hold {
-  padding-block: clamp(64px, 10vh, 104px);
-}
-
-.hold-copy {
-  font-size: clamp(0.95rem, 2.9vw, 2.45rem);
-  line-height: 1.06;
-}
-
-.hold-body { margin-top: clamp(14px, 2.4vh, 26px); }
-
-/* Sizing the statement off vw alone overflows short-but-wide viewports
-   (1280x720, 1440x820): the type is chosen by WIDTH while the real
-   constraint is HEIGHT. 14 lines at 1.06 leading need 14.84 x font-size,
-   plus ~320px for the padding, label and client list — so cap the size by
-   the height budget too and take whichever is smaller. */
-.hold-copy {
-  font-size: clamp(1.25rem, min(2.9vw, calc((100svh - 320px) / 15)), 2.45rem);
-}
-
-/* The band carries ink down behind it as it rises, so the hero turns black
-   from the bottom up rather than leaving paper underneath. */
-.masthead-foot { position: relative; will-change: transform; }
-
-.masthead-foot::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-  height: 100svh;
-  background: var(--ink);
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .masthead-foot { transform: none !important; }
-}
-
-/* ============================================================
-   HIS MARK
-   The circled R is Rich's actual logo. It was previously being set as a
-   typographic (R) from Archivo, which is a different shape entirely — the
-   sort of thing he would spot immediately.
-
-   Drawn as an alpha mask filled with currentColor rather than an <img>,
-   so it inherits whatever colour it sits in AND can be tinted per ink
-   plate by the registration effect.
-   ============================================================ */
-
-.rc-mark {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  background: currentColor;
-  -webkit-mask: url('/rc-mark.svg') center / contain no-repeat;
-  mask: url('/rc-mark.svg') center / contain no-repeat;
-  vertical-align: -0.12em;
-  flex: none;
-}
-
-/* In the mono slug lines it sits tight against the wordmark. */
-.t-mono .rc-mark {
-  width: 0.95em;
-  height: 0.95em;
-  margin-right: 0.22em;
-  vertical-align: -0.1em;
-}
-
-/* Hero: superscript, on the cap line, at the same optical size the
-   typographic mark held. */
-.wm-reg.rc-mark {
-  width: 0.26em;
-  height: 0.26em;
-  vertical-align: baseline;
-  margin-right: 0.05em;
-  position: relative;
-  top: -0.52em;
-}
-
-/* .wm-reg already carries font-size: 0.26em, so sizing the mark at 0.26em
-   applied the ratio twice and rendered it at 18px instead of ~71px. The
-   em here resolves against the already-reduced font-size, so 1em is right. */
-.wm-reg.rc-mark {
-  width: 1em;
-  height: 1em;
-  top: -0.15em;
-}
-
-/* ============================================================
-   STATEMENT — wider measure
-   Client: "this section is too narrow it needs to cover more of the page
-   we may need to make this section smaller."
-
-   22ch was a narrow column in the middle of a wide page. The statement now
-   spans 10 of 12 columns, centred — a grid span, not a ch guess. With
-   content width W and gutter g:
-     span10 = 10col + 9g = (5W - g) / 6
-   The wider measure roughly halves the line count, so the height budget
-   divides by 8 lines rather than 15.
-   ============================================================ */
-
-.hold-copy {
-  max-width: none;
-  width: calc((5 * 100% - var(--gutter)) / 6);
-  margin-inline: auto;
-  font-size: clamp(1.15rem, min(3.4vw, calc((100svh - 300px) / 8)), 3.1rem);
-}
-
-/* The client list widens with it, and sits inside the statement's measure
-   so the two share the same right edge rather than each finding its own. */
-.hold-body {
-  max-width: none;
-  width: calc((5 * 100% - var(--gutter)) / 6);
-}
-
-/* The mark is a superscript and belongs on the CAP line, not hanging at
-   the baseline of RICH. Measured: it sat 125px below the line-box top at a
-   71px font-size, so it needed raising by 1.76em on top of the 0.15em it
-   already had. */
-.wm-reg.rc-mark { top: -1.91em; }
-
-/* ============================================================
-   HIS CREATURE MARK
-   Leads the hero lockup — mark, then the (R), then the name. An alpha
-   mask filled with currentColor, exactly like rc-mark, so the four ink
-   plates tint it and it comes into register with the wordmark instead of
-   sitting outside the effect as a flat image.
-   ============================================================ */
-
-.creature {
-  position: relative;
-  z-index: 2;
-  width: clamp(120px, 19vw, 300px);
-  aspect-ratio: 1200 / 1105;
-  isolation: isolate;
-  margin-bottom: clamp(4px, 1vh, 14px);
-}
-
-.cr-plate {
-  position: absolute;
-  inset: 0;
-  background: currentColor;
-  -webkit-mask: url('/rc-creature.webp') left center / contain no-repeat;
-  mask: url('/rc-creature.webp') left center / contain no-repeat;
-  mix-blend-mode: multiply;
-  will-change: transform;
-}
-
-/* Same plate errors as the wordmark, scaled to this element. */
-.cr-c { color: var(--cyan);    opacity: calc(0.72 - 0.72 * var(--p)); transform: translate3d(calc((1 - var(--p)) * -14px), calc((1 - var(--p)) *  6px), 0); }
-.cr-m { color: var(--magenta); opacity: calc(0.72 - 0.72 * var(--p)); transform: translate3d(calc((1 - var(--p)) *  11px), calc((1 - var(--p)) * -8px), 0); }
-.cr-y { color: var(--yellow);  opacity: calc(0.72 - 0.72 * var(--p)); transform: translate3d(calc((1 - var(--p)) *   3px), calc((1 - var(--p)) * 10px), 0); }
-.cr-k { color: var(--ink);     opacity: calc(0.42 + 0.58 * var(--p)); }
-
-@media (prefers-reduced-motion: reduce) {
-  .cr-plate { transform: none !important; }
-  .cr-c, .cr-m, .cr-y { opacity: 0 !important; }
-  .cr-k { opacity: 1 !important; }
-}
-
-/* ============================================================
-   HERO FIT with the creature in the lockup
-   Adding the mark put creature (252) + wordmark (424) + band (280) = 956
-   into a 900px viewport, so the wordmark ran into the band. The wordmark
-   was sized purely by WIDTH; it needs a height budget too, exactly like
-   the statement. Two lines at 0.78 leading cost 1.62 x font-size.
-   ============================================================ */
-
-.creature {
-  width: clamp(100px, 13vw, 210px);
-}
-
-.t-wordmark {
-  font-size: min(
-    23vw,
-    calc((100vw - (2 * var(--margin))) / 3.8),
-    calc((100svh - 560px) / 1.62),
-    17rem
-  );
-}
-
-/* The fixed 560px overhead was wrong: the things above and below the
-   wordmark (top padding, the mark, the band) all scale with viewport
-   height, so a pixel constant left 0-2px of clearance at 900/1050 and
-   starved the wordmark at 720. Overhead is ~65svh, so the wordmark gets
-   the remaining ~35svh, and two lines at 0.78 leading cost 1.62x. */
-.creature {
-  width: min(13vw, 22svh, 210px);
-}
-
-.t-wordmark {
-  font-size: min(
-    23vw,
-    calc((100vw - (2 * var(--margin))) / 3.8),
-    20svh,
-    17rem
-  );
-}
-
-/* 20svh still left only 6-11px under the wordmark at 1280x720 and
-   1440x820 — visually touching. 18.5svh clears every tested height.
-   The mark also needs a floor: at 390px wide, 13vw is 51px, which is too
-   small for it to read as a mark at all. */
-.creature {
-  width: max(84px, min(13vw, 22svh, 210px));
-}
-
-.t-wordmark {
-  font-size: min(
-    23vw,
-    calc((100vw - (2 * var(--margin))) / 3.8),
-    18.5svh,
-    17rem
-  );
-}
-
-/* ============================================================
-   THE PRESS STAGE
-   Palette is bound to the site's own tokens rather than a second set, so
-   the rail prints on the same stock as everything else. The component
-   re-reads these on a colour-scheme change and rebuilds its textures, so
-   the machinery is there if the site ever gains a dark theme.
-   ============================================================ */
-
-:root {
-  --press-paper: #f0f0ef;
-  --press-ink: #0a0a0a;
-  --press-cy: #8fcbe8;
-  --press-mg: #f0a3c8;
-  --press-yl: #f7e8a4;
-  --press-gr: #2c3b2d;
-  --press-co: #e8836b;
-}
-
-.stage {
-  position: relative;
-  z-index: 1;
-  /* The stage takes the screen minus the band and a margin, so the ink
-     lands ON the fold rather than wherever a fixed height leaves it.
-     --band-h is measured and published by PressHero; the fallback is a
-     sane desktop band for the frames before it arrives. */
-  height: calc(100svh - var(--band-h, 170px) - var(--hero-gap));
-  min-height: 380px;
-  overflow: hidden;
-  background: var(--press-paper);
-  cursor: grab;
-  touch-action: pan-y;      /* vertical scroll stays native; drag is horizontal */
-}
-
-.stage.dragging { cursor: grabbing; }
-.stage.focused  { cursor: zoom-out; }
-
-/* alpha:true with the paper colour behind it, so a WebGL failure degrades
-   to a flat paper hero rather than a black rectangle. */
-.press-gl {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.veil {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  pointer-events: none;
-  background: var(--ink);
-  opacity: 0;
-}
-
-
-/* ---------- the ink band under the stage ---------- */
-
-.hero-band {
-  position: relative;
-  z-index: 5;                  /* rides up over the pinned stage */
-  margin-inline: 0;            /* it is its own section now, not inset */
-  padding-inline: var(--margin);
-  /* No `transform: none !important` here. It was left behind when an old
-     rise animation was removed, and being !important it silently beat the
-     inline transform ScrollTrigger writes to pin this band — the pin
-     activated correctly and moved nothing. */
-}
-
-/* The old band carried a 100svh ink panel beneath it for the rise. As a
-   standalone section that would paint over whatever follows. */
-.hero-band::after { content: none; }
-
-/* Pinning the band inserts a spacer to hold its place in the flow, and
-   that spacer sat between the hooked band and the next section as a band
-   of empty paper — through which you could see the hero, still pinned
-   behind it. Painting the HOST covers exactly that spacer and no more:
-   the host is the band plus its spacer, so it ends where the next section
-   begins and cannot bleed over it. The ink simply holds the screen while
-   the band is hooked, which is what it looked like it was going to do. */
-/* z-index matters here: .stage is position:relative z-index:1, so without
-   its own layer the host would sit UNDER the pinned hero and the books
-   would show through it. The ink is now only the band's own height —
-   there is no spacer left to cover — but it still catches the few pixels
-   the pin's frozen height lets the colophon overhang by. */
-.band-host {
-  position: relative;
-  z-index: 4;
-  background: var(--ink);
-}
-
-.hero-index {
-  grid-column: 1 / -1;
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  list-style: none;
-}
-
-.hero-index:focus-within {
-  position: static;
-  width: auto;
-  height: auto;
-  clip: auto;
-  overflow: visible;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 22px;
-  margin-top: 22px;
-}
-
-.hero-index-link {
-  color: var(--paper);
-  opacity: 0.8;
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  min-height: 32px;
-}
-
-.hero-index-link:hover { opacity: 1; }
-.hero-index-num { opacity: 0.6; font-variant-numeric: tabular-nums; }
-
-/* ---------- THE PRESS IS DOWN ----------
-   No WebGL, or the modules never arrived. The stage stops occupying two
-   thirds of the viewport with an invisible canvas, and the index list —
-   the same six projects the rail was carrying, already in the markup —
-   becomes the hero. A visitor with no WebGL still lands on Rich's work,
-   not on a Stop button attached to nothing. */
-:root[data-press='down'] .stage {
-  /* Not zero. The fixed nav takes its colour from the page ground, so
-     collapsing the stage completely would drop the black band straight
-     under it and leave the links ink-on-ink. Keeping a paper margin the
-     depth of the nav is both the fix and the right look — the site's own
-     margin, with the band starting below it. */
-  height: clamp(64px, 9vh, 96px);
-  min-height: 0;
-}
-
-:root[data-press='down'] .press-pause,
-:root[data-press='down'] .veil {
-  display: none;
-}
-
-:root[data-press='down'] .hero-index {
-  position: static;
-  width: auto;
-  height: auto;
-  clip: auto;
-  overflow: visible;
-  display: block;
-  margin-top: 34px;
-  border-top: 1px solid rgb(255 255 255 / 0.18);
-}
-
-:root[data-press='down'] .hero-index li {
-  border-bottom: 1px solid rgb(255 255 255 / 0.18);
-}
-
-:root[data-press='down'] .hero-index-link {
-  display: flex;
-  gap: 18px;
-  align-items: baseline;
-  padding: 16px 0;
-  opacity: 1;
-}
-
-@media (max-width: 820px) {
-  .stage { min-height: 300px; }
-}
-
-/* Studio info lives in the band, not in fixed chrome. As a fixed block it
-   sat on the strap's descenders at rest, because the band now begins at
-   74svh instead of filling the viewport. */
-.colophon {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px 28px;
-  flex-wrap: wrap;
-  margin-top: clamp(22px, 4vh, 44px);
-  opacity: 0.72;
-}
-
-/* The colophon's own margin is sized for a masthead. In the band it put
-   68px of empty ink between the featured block and "BY APPOINTMENT ONLY",
-   which was most of what read as a lot of black space. */
-.hero-band .colophon { margin-top: clamp(8px, 1.2vh, 14px); }
-
-/* THE BAND'S OWN MEASURE
-   Three separate .masthead-foot rules stack padding onto this element —
-   it inherits a masthead's spacing while being a slug band under the
-   rail, which is what made it a third of the screen on a laptop. It sets
-   its own here, and this rule comes last so it wins all three. */
-.hero-band {
-  padding-top: clamp(12px, 1.8vh, 22px);
-  padding-bottom: clamp(12px, 1.8vh, 22px);
-  gap: clamp(10px, 1.4vw, 18px);
-  row-gap: clamp(10px, 1.6vh, 18px);
-}
-
-@media (max-width: 640px) {
-  .colophon { flex-direction: column; gap: 6px; }
-}
-
-/* The hint sat at --ink-45 on paper, which fails AA. */
-
-/* Stop/run control for the rail — WCAG 2.2.2.
-
-   Hidden the way a skip link is hidden: taken out of the design at the
-   client's request, but still in the page and still reachable. The rail
-   auto-animates for far longer than five seconds, so Level A requires the
-   content itself to carry a pause mechanism — prefers-reduced-motion is
-   not a sufficient technique on its own. Tab to it and it takes its place
-   back, bottom right, exactly as it was. */
-.press-pause.is-quiet:not(:focus-visible) {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  min-height: 0;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.press-pause {
-  position: absolute;
-  right: var(--margin);
-  bottom: 20px;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 16px;
-  background: none;
-  border: var(--rule) solid var(--ink-22);
-  border-radius: 999px;
-  color: var(--ink-70);
-  cursor: pointer;
-  transition: border-color 200ms var(--ease-out), color 200ms var(--ease-out);
-}
-
-.press-pause:hover,
-.press-pause:focus-visible {
-  border-color: var(--ink);
-  color: var(--ink);
-}
-
-@media (max-width: 640px) {
-  .press-pause { left: var(--margin); right: auto; }
-}
-
-/* With motion reduced the rail never drifts, so there is nothing to stop. */
-@media (prefers-reduced-motion: reduce) {
-  .press-pause { display: none; }
-}
-
-/* ============================================================
-   THE CINEMATIC
-   A real copy of the case study's hero, starting exactly over the opened
-   page and zooming to fill the screen while the route changes underneath.
-   It is the destination's own image, so the cut has nothing to give away.
-   ============================================================ */
-
-.cine {
-  position: fixed;
-  z-index: 900;
-  overflow: hidden;
-  background: var(--ink);
-  pointer-events: none;
-  /* transform only — see runCinematic. Animating left/top/width/height
-     here relaid out a full screen element every frame. */
-  will-change: transform, opacity;
-  /* 0 0, because the zoom's translate and scale are computed against the
-     element's top left corner. */
-  transform-origin: 0 0;
-  box-shadow: 0 40px 120px rgba(10, 10, 10, 0.35);
-}
-
-/* Anchored to the TOP. The capture is 1520x1000 and most windows are
-   wider than that, so a centred cover crops equally off the top and the
-   bottom — and the top is the header, the one part that makes this read
-   as the site rather than as a picture. Cropping only the foot costs
-   nothing: the real page continues below the fold anyway. */
-.cine-img { object-position: top center; }
-
-.cine-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-
-/* The caption fades up as the frame grows — at thumbnail size it would
-   only be noise on top of the picture. */
-
-.cine-title { font-size: clamp(1.2rem, 4.6vw, 4rem); line-height: 0.94; }
-.cine-client { opacity: 0.85; }
-
-/* ============================================================
-   MOTION LAYER
-   Primitives applied by data attribute across every page, so the whole
-   site moves in one language rather than collecting unrelated effects.
-   ============================================================ */
-
-/* Split lines need a clipping parent, or the incoming line is visible
-   above its own mask before it arrives. */
-.m-line { overflow: hidden; display: block; }
-[data-split] { overflow: hidden; }
-
-/* Reveals start hidden ONLY when the motion layer is live. Without this
-   guard, a JS failure would leave the whole page invisible — the content
-   must never depend on the enhancement. */
-.motion-ready [data-reveal] { will-change: transform, opacity; }
-
-.magnetic { will-change: transform; }
-
-/* ---------- roll-over labels ---------- */
-.roll {
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-}
-
-.roll > span {
-  display: block;
-  transition: transform 420ms var(--ease-out);
-}
-
-.roll > span::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 0;
-  top: 100%;
-  white-space: nowrap;
-}
-
-.roll:hover > span,
-a:focus-visible .roll > span,
-.roll:focus-visible > span { transform: translateY(-100%); }
-
-/* ---------- marquee ---------- */
-.marquee {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  padding-block: clamp(18px, 3vh, 40px);
-  border-block: var(--rule) solid var(--ink-22);
-  margin-top: clamp(16px, 3vh, 34px);
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  will-change: transform;
-}
-
-.marquee-item {
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(20px, 3vw, 52px);
-  padding-right: clamp(20px, 3vw, 52px);
-  font-size: clamp(1.3rem, 4vw, 3.4rem);
-  line-height: 1;
-  white-space: nowrap;
-  opacity: 0.75;
-}
-
-.marquee-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.4;
-  flex: none;
-}
-
-.clients { padding-block: clamp(40px, 8vh, 110px); }
-
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { transform: none !important; flex-wrap: wrap; width: auto; }
-  .roll > span { transition: none; }
-  .marquee { overflow: visible; }
-}
-
-/* The rail fades in once its sheets are real. Landing mid-press-pass —
-   watching a halftone field resolve while the artwork was still arriving —
-   read as the page being broken rather than as a printing press. */
-.press-gl {
-  opacity: 0;
-  transition: opacity 520ms var(--ease-out);
-}
-
-.press-gl.is-ready { opacity: 1; }
-
-@media (prefers-reduced-motion: reduce) {
-  .press-gl { transition: none; }
-}
-
-
-/* ---------- THE HEADER KEEPS ITS GROUND ----------
-   The top chrome is fixed, and it used to be transparent: it took its
-   colour from --act and sat on whatever section was scrolling under it,
-   so the slug line disappeared as soon as the black band arrived. It now
-   has the landing's own paper behind it, permanently — the header does
-   not change as you scroll.
-
-   Sits at 59: above the grain (55), below the furniture (60), the HUD
-   (61) and the nav (62), so the crop marks and type stay on top of it. */
-:root {
-  --hero-gap: clamp(10px, 1.6vh, 22px);
-  --head-h: 72px;
-  /* NOT --paper. The landing's ground is the WebGL backdrop, which renders
-     lighter than the CSS token: measured across the top of the stage it is
-     248-250 / 246-250 / 247-249, i.e. #f9f8f8 with about two levels of
-     grain either side. Matching the token instead left a visible step
-     where the header met the hero. Re-measure this if the backdrop
-     shader's paper or vignette changes. */
-  --head-ground: #f9f8f8;
-}
-
-
-/* The nav sets its own ground and ink in the NAV block above, so it no
-   longer needs rescuing from --act here. */
-
-/* Everything pressable gets the hand. The browser's own pointing hand,
-   not a drawn one: a bitmap at cursor size reads as an image stuck to the
-   screen rather than as the pointer, and it cannot follow the platform or
-   the user's own cursor settings. Links get this from the UA stylesheet;
-   buttons and the ARIA roles do not, so they are named here. */
-button,
-summary,
-label[for],
-[role='tab'],
-[role='button'] {
-  cursor: pointer;
-}
-
-button:disabled,
-[aria-disabled='true'] {
-  cursor: not-allowed;
-}
-
-/* ============================================================
-   THE INDEX BY INDUSTRY
-   Categories set large and centred, a sample from that category
-   standing either side of the live one. The names are the control; the
-   sheets are there to say what is behind the word.
-   ============================================================ */
-
-
-/* ---------- CONTACT, IN THE FOOT ----------
-   It used to be a full section of its own repeated above the footer on
-   four pages: a display shout, a paragraph and a five cell grid. Set
-   small and folded in here it is the last thing on the page rather than
-   a section competing with the work above it. */
-
-.footer-contact {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  /* Row gap deliberately tighter than the column gap: the only thing on
-     the second row is one link, and a 56px column gutter above it opens a
-     band of empty paper in the middle of the foot. */
-  gap: clamp(14px, 1.6vw, 24px) clamp(20px, 3vw, 56px);
-  align-items: start;
-  margin-bottom: clamp(24px, 4vh, 44px);
-}
-
-.footer-col { display: flex; flex-direction: column; gap: 8px; }
-
-.footer-h {
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  opacity: 0.5;
-  margin: 0;
-}
-
-.footer-email {
-  font-family: var(--font-mono);
-  font-size: clamp(0.95rem, 1.7vw, 1.35rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  border-bottom: var(--rule) solid transparent;
-  align-self: flex-start;
-}
-
-.footer-email:hover,
-.footer-email:focus-visible { border-bottom-color: currentColor; }
-
-.footer-note { opacity: 0.5; }
-
-.footer-desks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px 24px;
-}
-
-.footer-desks li { display: flex; flex-direction: column; gap: 4px; }
-.footer-role { opacity: 0.45; }
-.footer-desk { border-bottom: var(--rule) solid transparent; align-self: flex-start; }
-.footer-desk:hover, .footer-desk:focus-visible { border-bottom-color: currentColor; }
-
-.footer-more {
-  grid-column: 1 / -1;
-  opacity: 0.6;
-  justify-self: start;
-  /* 44px of target, without 44px of box round a one line link. */
-  padding-block: 12px;
-}
-
-.footer-more:hover { opacity: 1; }
-
-@media (max-width: 720px) {
-  .footer-contact { grid-template-columns: 1fr; }
-}
-
-/* The slug line doubles as the way home. It is furniture, so it keeps its
-   weight — but it has to answer a pointer and a keyboard like any link. */
-
-
-/* ---------- /contact ---------- */
-.contact-page {
-  display: grid;
-  gap: clamp(28px, 5vh, 64px);
-  padding-block: clamp(24px, 5vh, 60px) clamp(48px, 9vh, 110px);
-}
-
-.contact-primary { display: flex; flex-direction: column; gap: 10px; }
-
-.contact-role { opacity: 0.45; }
-
-.contact-address {
-  font-family: var(--font-display, sans-serif);
-  font-weight: 800;
-  font-stretch: 88%;
-  font-size: clamp(1.3rem, 4vw, 3.2rem);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  border-bottom: var(--rule) solid transparent;
-  align-self: flex-start;
-}
-
-.contact-address:hover,
-.contact-address:focus-visible { border-bottom-color: currentColor; }
-
-.contact-hours { opacity: 0.55; }
-
-.contact-desks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: clamp(18px, 3vw, 40px);
-  border-top: var(--rule) solid var(--ink-22);
-  padding-top: clamp(18px, 3vh, 34px);
-}
-
-.contact-desks li { display: flex; flex-direction: column; gap: 6px; }
-
-.contact-desk {
-  border-bottom: var(--rule) solid transparent;
-  align-self: flex-start;
-  min-height: 32px;
-}
-
-.contact-desk:hover,
-.contact-desk:focus-visible { border-bottom-color: currentColor; }
-
-/* ============================================================
-   SCROLL SET PIECES
-   Three held sections, built from the scroll study the client
-   settled on. Each renders its FINISHED state in CSS and is
-   put back to its start by its own component before it
-   animates, so prefers-reduced-motion simply never runs the
-   trigger and lands on the frame the animation ends on.
-   ============================================================ */
-
-/* ---------- 1. THE PLATE COMING ON PRESS ----------
-   The runway is the section's own height: 100svh of .exp-run is the held
-   frame, the rest is the distance the growth is scrubbed across. */
-.exp-run {
-  position: relative;
-  z-index: 1;
-  height: 260svh;
-  background: var(--paper);
-}
-
-.exp-pin {
-  position: relative;
-  height: 100svh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.exp-plate {
-  position: relative;
-  overflow: hidden;
-  background: var(--paper-2);
-  /* OPEN. ExpandPlate sets the closed size before it animates. */
-  width: 100vw;
-  height: 100svh;
-}
-
-/* The caption sits on the plate, so it needs a ground of its own. Ink
-   from the foot, since the plate can be any photograph. */
-.exp-plate::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 46%;
-  background: linear-gradient(to top, rgb(10 10 10 / 0.74), rgb(10 10 10 / 0));
-  pointer-events: none;
-  /* Above the image, below the caption. As ::after it is the last child in
-     paint order, so without this it covers the very type it exists to make
-     readable. */
-  z-index: 1;
-}
-
-.exp-fill {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.exp-cap {
-  position: absolute;
-  inset: auto 0 clamp(26px, 6vh, 68px) 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  color: var(--paper);
-  pointer-events: none;
-}
-
-.exp-cap > * { pointer-events: auto; }
-.exp-client { opacity: 0.82; }
-
-.exp-title {
-  margin: 0;
-  /* Sized off the page measure and the longest word in the archive, the
-     same 7.07 divisor the case-study masthead is derived from. */
-  font-size: min(calc((100vw - 2 * var(--margin)) / 7.07), 9rem);
-  line-height: 0.92;
-}
-
-/* Inverted against the plate: paper block, ink type. */
-.exp-cta {
-  margin-top: 10px;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-@media (max-width: 900px) {
-  .exp-run { height: 220svh; }
-}
-
-/* ---------- 2. THE REEL ----------
-   Two modes, and which one is live is decided by the component, not by a
-   media query here: WorkReel stamps data-reel-pinned onto the section only
-   once it has actually created the pin. If the trigger is never made — a
-   phone, a coarse pointer, reduced motion — the row stays a native
-   scroll-snap swipe and nothing has hijacked the gesture. */
-.reel {
-  position: relative;
-  z-index: 1;
-  background: var(--paper);
-}
-
-.reel-pin {
-  min-height: 100svh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-
-.reel-track {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--gutter);
-  padding-inline: var(--margin);
-  will-change: transform;
-}
-
-/* Unpinned: swipe it. */
-.reel:not([data-reel-pinned]) .reel-pin {
-  min-height: 0;
-  padding-block: clamp(28px, 6vh, 72px);
-}
-
-.reel:not([data-reel-pinned]) .reel-track {
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-}
-
-.reel:not([data-reel-pinned]) .reel-track::-webkit-scrollbar { display: none; }
-.reel:not([data-reel-pinned]) .reel-card { scroll-snap-align: start; }
-
-.reel-card {
-  flex: 0 0 auto;
-  width: clamp(240px, 32vw, 520px);
-  min-width: 0;
-}
-
-.reel-link { display: block; }
-
-.reel-frame {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 3 / 2;
-  background: var(--paper-2);
-}
-
-/* Wider than its frame so the drift never exposes an edge: inset -14%
-   makes it 128% of the frame, and the tween moves it +/-8% of THAT, which
-   is +/-10.2% of the frame. */
-.reel-fill {
-  position: absolute;
-  inset: 0 -14%;
-  width: 128%;
-  /* The global `img { max-width: 100% }` at the top of this file silently
-     caps that 128% back to the frame width, and the drift then pulls the
-     image off its own right edge — measured 70px of bare frame showing.
-     Every oversized image in here has to opt out of that reset. */
-  max-width: none;
-  height: 100%;
-  object-fit: cover;
-  will-change: transform;
-}
-
-.reel-cap {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  margin-top: 10px;
-}
-
-.reel-num { opacity: 0.72; }
-
-.reel-title {
-  font-size: clamp(0.95rem, 1.4vw, 1.35rem);
-  line-height: 1.05;
-}
-
-.reel-facet { opacity: 0.72; }
-
-/* ---------- 3. THE CORRIDOR ----------
-   The archive comes at you. Plates on a ring, receding, flown past the
-   camera while the page title grows through them.
-
-   The slabs are opacity 0 here and only ever lit by the component, so the
-   reduced-motion path — where the component returns before creating
-   anything — shows the title alone on paper rather than a frozen heap of
-   plates stacked on the centre point. */
-.corridor {
-  position: relative;
-  z-index: 1;
-  height: 320svh;
-  background: var(--paper);
-}
-
-.cor-pin {
-  position: relative;
-  height: 100svh;
-  overflow: hidden;
-  perspective: 1200px;
-  display: grid;
-  place-items: center;
-}
-
-.cor-deck {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  pointer-events: none;
-}
-
-/* Centred on the pin by margin, not by translate(-50%,-50%): GSAP owns
-   x/y/z on these and a centring translate in the same transform would be
-   overwritten the first time it sets one. */
-.cor-slab {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 22vw;
-  height: 27.5vw;
-  margin: -13.75vw 0 0 -11vw;
-  overflow: hidden;
-  background: var(--paper-2);
-  opacity: 0;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-}
-
-.cor-fill {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.cor-cap {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  color: var(--paper);
-  mix-blend-mode: difference;
-  opacity: 0.9;
-}
-
-.cor-title {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  text-align: center;
-  /* Same 7.07 divisor as the case-study masthead: the longest word in the
-     archive set against the page measure. */
-  font-size: min(calc((100vw - 2 * var(--margin)) / 7.07), 9rem);
-  line-height: 0.92;
-  will-change: transform;
-}
-
-.cor-count {
-  font-size: 0.26em;
-  font-weight: 500;
-  vertical-align: super;
-  opacity: 0.55;
-  margin-left: 0.1em;
-}
-
-@media (max-width: 900px) {
-  .corridor { height: 260svh; }
-  .cor-slab {
-    width: 42vw;
-    height: 52.5vw;
-    margin: -26.25vw 0 0 -21vw;
+  html {
+    scroll-behavior: auto;
   }
 }
