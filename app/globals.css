@@ -79,6 +79,9 @@
      cap height. Ours covered 13%, which read as the two things merely
      touching. 0.161em of the type restores the 35% and scales with it. */
   --masthead-drop: calc(var(--wordmark-size) * 0.161);
+  /* Held in a variable because the band's clipping boxes have to open up
+     by a share of it — see .ticker-layer. */
+  --ticker-size: clamp(13px, 1.15vw, 21px);
 }
 
 :root {
@@ -215,7 +218,7 @@ body {
    for the name, lowercase for the line. Ours was 10px tracked-out
    uppercase, which is why it read as a legal footer instead of a band. */
 .t-ticker {
-  font-size: clamp(13px, 1.15vw, 21px);
+  font-size: var(--ticker-size);
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -375,6 +378,14 @@ footer {
   right: 0;
   bottom: clamp(14px, 3.6vh, 38px);
   z-index: 60;
+  /* Horizontal clipping is the whole point — the track is wider than the
+     window and would otherwise give the page a horizontal scrollbar. But
+     overflow clips both axes, and at line-height 1 the line box is 1em
+     while the font draws taller than that, so the band was losing the
+     tops of its ascenders: measured, ink began at 836.0 against 835.0
+     with the clip lifted. The layer is anchored by its BOTTOM, so
+     padding-top grows it upward and the text does not move. */
+  padding-top: calc(var(--ticker-size) * 0.5);
   overflow: hidden;
   pointer-events: none;
   color: var(--color-ink);
@@ -385,13 +396,22 @@ footer {
    is laid over it and masked to the dark regions only — with no mask value
    set it resolves to a fully transparent gradient, i.e. hidden, which is
    the correct state on a page with no plates under the band. */
+/* Same headroom again on the inner clip, taken straight back off with a
+   negative margin so the copy sits exactly where it did. */
 .ticker-copy {
   overflow: hidden;
+  padding-top: calc(var(--ticker-size) * 0.5);
+  margin-top: calc(var(--ticker-size) * -0.5);
 }
 
+/* inset: 0 puts this on the layer's PADDING box, so it already begins at
+   the top of that headroom — it needs the padding to line its text up
+   with the ink copy, and must NOT take the negative margin, which on an
+   absolutely positioned box would drag it back off that alignment. */
 .ticker-copy.is-paper {
   position: absolute;
   inset: 0;
+  margin-top: 0;
   color: var(--color-paper);
   -webkit-mask-image: var(--dark-mask, linear-gradient(transparent, transparent));
   mask-image: var(--dark-mask, linear-gradient(transparent, transparent));
