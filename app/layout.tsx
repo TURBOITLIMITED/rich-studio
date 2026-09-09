@@ -73,11 +73,12 @@ export default function RootLayout({
             for ever on a centred name over a closed slit. */}
         <noscript>
           <style>{`html[data-intro] .wordmark-layer,
+                   html[data-intro] .wordmark-glyph > span,
                    html[data-intro] .hero-frame,
                    html[data-intro] .hero-frame video { transform: none !important; clip-path: none !important; }
                    html[data-intro] .mark-layer,
-                   html[data-intro] .ticker-layer { opacity: 1 !important; }
-                   html[data-intro] .hero-caption { visibility: visible !important; }
+                   html[data-intro] .ticker-layer,
+                   html[data-intro] .hero-caption { opacity: 1 !important; }
                    html[data-intro] .scroll-root { overflow-y: scroll !important; }`}</style>
         </noscript>
       </head>

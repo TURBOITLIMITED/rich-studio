@@ -16,11 +16,21 @@
  * pulled the glyph tops above the line box and the caps were sliced off by
  * the top of the viewport.
  *
- * There is no per-character stagger on load. There was, and it had to go:
- * the reference moves the whole word as one object, rising from below the
- * fold to the centre of the screen and then up to here — see Intro.tsx —
- * and a letter-by-letter entrance underneath that read as two competing
- * animations.
+ * EVERY character is two nested spans, and that is the load animation
+ * rather than a styling quirk. The outer box clips; the inner one carries
+ * the letter and slides up out of the clip. The reference does exactly
+ * this — each of its glyphs is a `relative inline-block overflow-hidden`
+ * box with the letter sitting at translateY(150%) of it, so the page is
+ * genuinely blank for the first half second and the word then unmasks in
+ * place, left to right, without the block ever moving.
+ *
+ * This replaced a version that slid the whole layer up the screen. Three
+ * independent reads say that was wrong: the reference's own DOM, a pixel
+ * scan of a screen recording of it reloading (the ink's BOTTOM edge stays
+ * pinned while the top climbs, and the x extent grows left to right —
+ * a travelling block would appear at full width with both edges moving),
+ * and the frames themselves, where letters are visibly cut off flat along
+ * one shared horizontal line while their neighbours are already whole.
  *
  * It is deliberately NOT an <h1>. It is identical on every route and hidden
  * from assistive tech, so using a heading here left /work, /about and
@@ -35,28 +45,26 @@ export default function Wordmark({ text = 'Rich Colvill' }: { text?: string }) {
         {/* His mark is "®RICH COLVILL", not "RICH COLVILL" — the ® is part
             of the name, on his showreel title card and his logo lockup.
             Set small and raised rather than at cap height, or a 230px
-            glyph would eat the R beside it. */}
+            glyph would eat the R beside it. The raise lives on the OUTER
+            box so the inner span is free to carry the reveal. */}
         <span
           aria-hidden="true"
+          className="wordmark-glyph"
           style={{
-            display: 'inline-block',
             fontSize: '0.26em',
             transform: 'translateY(0.5em)',
-            flex: '0 0 auto',
+            ['--i' as string]: 0,
           }}
         >
-          ®
+          <span>®</span>
         </span>
         {chars.map((c, i) => (
           <span
             key={`${c}-${i}`}
-            style={{
-              display: 'inline-block',
-              whiteSpace: 'pre',
-              flex: '0 0 auto',
-            }}
+            className="wordmark-glyph"
+            style={{ ['--i' as string]: i + 1 }}
           >
-            {c}
+            <span>{c}</span>
           </span>
         ))}
       </div>

@@ -46,7 +46,9 @@ const STEPS: [string, number][] = [
   ['rise', 0],
   ['hold', 970],
   ['open', 1550],
-  ['done', 2650],
+  // 2680, not 2650: the second move and the iris both run 1100ms from the
+  // 'open' cue, so the phase must not flip until they have finished.
+  ['done', 2680],
 ];
 
 /* Survives a remount. React's dev StrictMode mounts this effect, runs its
@@ -98,7 +100,7 @@ export default function Intro() {
           window.setTimeout(() => {
             played = true;
             el.removeAttribute('data-intro');
-          }, 2650 + 1200),
+          }, 2680 + 1200),
         );
       });
     });

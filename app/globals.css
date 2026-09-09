@@ -118,6 +118,23 @@ body {
    character, spread with space-between across the gutters. That is how
    the reference makes an 11-character word fill 1620 of 1700px — the
    glyphs alone only measure ~1342. */
+/* One clipping box per character. No height and no layout of its own —
+   just a lid, so nothing shows at rest and the reveal has something to
+   slide out from. The natural line box puts that lid ~0.24em below the
+   baseline; the reference's sits ~0.28em below its own, which is near
+   enough that giving these boxes an explicit height (and shifting the
+   whole masthead's centring by 0.15em to get it) buys nothing. */
+.wordmark-glyph {
+  display: inline-block;
+  flex: 0 0 auto;
+  overflow: hidden;
+  white-space: pre;
+}
+.wordmark-glyph > span {
+  display: inline-block;
+  white-space: pre;
+}
+
 .wordmark-row {
   display: flex;
   justify-content: space-between;
@@ -410,15 +427,11 @@ footer {
    is why every rule below animates transform and nothing else.
    ------------------------------------------------------------ */
 
-/* Boot: the name sits 38.8vh below the centre of the screen, and the
-   showreel is a closed slit. This state is in the server-rendered HTML,
-   so the first painted frame is already correct. */
-html[data-intro] .wordmark-layer {
-  transform: translateY(calc(50svh - 50% + var(--intro-drop) + 38.8svh));
-  will-change: transform;
-}
-
-/* Rise to centre, then hold there.
+/* Boot: the masthead is ALREADY sitting at the centre of the screen, with
+   every letter parked below its own lid — so the first painted frame is a
+   blank page, exactly as the reference's is for its first ~500ms. The
+   block does not move in this phase at all; only the letters do, and only
+   within their own boxes.
 
    --intro-drop is not a fudge. Centring the layer BOX puts the letters
    15.5px above true centre, because the box carries the cap-clearance
@@ -427,19 +440,42 @@ html[data-intro] .wordmark-layer {
    reloading, their held letters sit 6.8px BELOW true centre — so ours
    were 22px too high, which is exactly the "not in the middle" Rich was
    seeing on a page with nothing else on it to judge against. */
+html[data-intro='boot'] .wordmark-layer,
 html[data-intro='rise'] .wordmark-layer,
 html[data-intro='hold'] .wordmark-layer {
   transform: translateY(calc(50svh - 50% + var(--intro-drop)));
-  transition: transform 970ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
-/* Then up to the masthead's own place. Theirs genuinely changes mechanism
-   for this second move and it reads as a heavier one, so it gets its own
-   duration and a symmetric ease rather than continuing the first. */
+/* The letters, unmasking in place.
+
+   172% of a 1.0em box is 1.72em of travel, which is what their 150% of a
+   1.15em box comes to — same distance in ems, so the same perceived speed
+   at our smaller size rather than the same number of pixels.
+
+   16ms of stagger, not their measured 19ms: "®RICH COLVILL" is 13 items
+   against their 11, and 19 would spread it over 247ms where theirs runs
+   190ms. 16 x 12 = 192ms holds the reference's total sweep, which is what
+   the eye actually reads. The 380ms delay puts the first letter on the
+   move at ~513ms from navigation against their ~500ms, and the last one
+   landing at ~1465ms against their ~1470ms. */
+html[data-intro='boot'] .wordmark-glyph > span {
+  transform: translateY(172%);
+}
+html[data-intro='rise'] .wordmark-glyph > span,
+html[data-intro='hold'] .wordmark-glyph > span {
+  transform: translateY(0);
+  transition: transform 760ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: calc(380ms + var(--i) * 16ms);
+}
+
+/* Then the whole block goes up to the masthead's own place — the one move
+   it does make. 1100ms, on the iris curve, so the name and the curtain
+   are one gesture that lands together the way theirs does. */
 html[data-intro='open'] .wordmark-layer,
 html[data-intro='done'] .wordmark-layer {
   transform: translateY(0);
-  transition: transform 910ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 1100ms cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 /* A full-width, zero-height slit at the vertical midline, growing outward
@@ -451,7 +487,10 @@ html[data-intro] .hero-frame {
 html[data-intro='open'] .hero-frame,
 html[data-intro='done'] .hero-frame {
   clip-path: inset(0% 0% 0% 0%);
-  transition: clip-path 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+  /* easeInOutQuart, read off their own WAAPI animation — not the cubic it
+     looks like. At quarter-time the difference is 0.053 against 0.071:
+     small, but it is the whole character of the opening. */
+  transition: clip-path 1100ms cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 /* The picture zooms out in lockstep with the iris — same duration, same
@@ -462,7 +501,7 @@ html[data-intro] .hero-frame video {
 html[data-intro='open'] .hero-frame video,
 html[data-intro='done'] .hero-frame video {
   transform: scale(1);
-  transition: transform 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition: transform 1100ms cubic-bezier(0.76, 0, 0.24, 1);
 }
 
 /* The RSC mark opens the page directly beneath the centred name — that is
@@ -502,22 +541,33 @@ html[data-intro='open'] .mark-layer,
 html[data-intro='done'] .mark-layer {
   opacity: 1;
   transform: translateY(-50%) scale(1);
-  transition: transform 910ms cubic-bezier(0.65, 0, 0.35, 1), opacity 420ms ease;
+  transition: transform 1100ms cubic-bezier(0.76, 0, 0.24, 1), opacity 420ms ease;
 }
 
-/* The band has nothing to do with the opening and simply arrives with it.
-   The caption is hidden rather than faded because HeroReveal writes its
-   opacity inline every frame from the scroll position. */
+/* The band has nothing to do with the opening, and it used to arrive
+   during it — fading up from 2113ms while the curtain was still opening,
+   so two things moved at the moment the eye was on the reveal. The
+   reference shows no band at all until everything has landed. Ours keeps
+   the band (it is Rich's, not theirs) but waits its turn. */
 html[data-intro] .ticker-layer {
   opacity: 0;
 }
-html[data-intro='open'] .ticker-layer,
 html[data-intro='done'] .ticker-layer {
   opacity: 1;
-  transition: opacity 700ms ease 400ms;
+  transition: opacity 700ms ease 300ms;
 }
-html[data-intro]:not([data-intro='done']) .hero-caption {
-  visibility: hidden;
+
+/* The caption fades rather than popping. It was a visibility toggle
+   because HeroReveal writes opacity inline from the scroll position every
+   frame; that write is now gated on the sequence being over, so this can
+   have the property to itself while the page opens. */
+html[data-intro] .hero-caption {
+  opacity: 0;
+}
+html[data-intro='open'] .hero-caption,
+html[data-intro='done'] .hero-caption {
+  opacity: 1;
+  transition: opacity 500ms ease 610ms;
 }
 
 /* Nothing scrolls until the sequence has finished, or the curtain and the

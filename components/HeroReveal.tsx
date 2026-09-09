@@ -67,6 +67,31 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
   const section = useRef<HTMLDivElement>(null);
   const frame = useRef<HTMLDivElement>(null);
   const caption = useRef<HTMLDivElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
+
+  /* autoPlay is not enough, and the failure is invisible until you measure
+     it. Chrome will not start a muted autoplay video whose element is
+     clipped to zero height — and the opening sequence holds the frame at
+     clip-path: inset(50% 0 50% 0) for the first 1.7s. Measured: readyState
+     4 (fully buffered) from 200ms, paused: true right up to 1874ms, when
+     the iris opened and playback finally began at currentTime 0. So the
+     slit tore open on frame zero of the reel, which is black for its first
+     0.9s. Asking for playback explicitly means the reel really is running
+     behind the closed curtain, the way the comment on the clip-path
+     always claimed it was. */
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return;
+    const go = () => {
+      const p = v.play();
+      // Autoplay can still be refused (a data-saver mode, a user setting).
+      // The poster stays up in that case, which is the right fallback.
+      if (p) p.catch(() => {});
+    };
+    if (v.readyState >= 2) go();
+    else v.addEventListener('loadeddata', go, { once: true });
+    return () => v.removeEventListener('loadeddata', go);
+  }, []);
 
   useEffect(() => {
     const sec = section.current;
@@ -102,7 +127,10 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
 
       // The caption sits under the panel at rest and is swallowed as the
       // curtain opens — it has nowhere to go once the frame is full bleed.
-      if (caption.current) {
+      // Not while the page is still opening: the caption's fade-in belongs
+      // to the stylesheet then, and an inline write every frame would beat
+      // it and pin the caption at 1 from the first frame.
+      if (caption.current && !document.documentElement.hasAttribute('data-intro')) {
         caption.current.style.opacity = `${Math.max(0, 1 - open * 1.6)}`;
       }
       raf = requestAnimationFrame(tick);
@@ -151,6 +179,7 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
           }}
         >
           <video
+            ref={video}
             src="/video/reel.mp4"
             poster="/video/reel-poster.jpg"
             autoPlay
@@ -180,7 +209,11 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
           className="hero-caption"
           style={{
             position: 'absolute',
-            bottom: 'clamp(26px, 5vh, 60px)',
+            /* Clear of the running band, which is fixed to the bottom of
+               the window and is not in the flow to push this off it. At
+               26px the two overlapped by 7px and the caption read as a
+               second line of the band. */
+            bottom: 'clamp(62px, 9.4vh, 104px)',
             left: 0,
             right: 0,
             textAlign: 'center',
