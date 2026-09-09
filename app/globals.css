@@ -73,6 +73,12 @@
      LETTERS land where the reference's do. See the opening-sequence
      block below for the measurement. */
   --intro-drop: calc(var(--wordmark-size) * 0.109);
+  /* How far the masthead sits below the top of the window, so the
+     showreel passes over the feet of the letters instead of clearing
+     them. Measured on the reference at rest: its panel covers 35% of the
+     cap height. Ours covered 13%, which read as the two things merely
+     touching. 0.161em of the type restores the 35% and scales with it. */
+  --masthead-drop: calc(var(--wordmark-size) * 0.161);
 }
 
 :root {
@@ -278,7 +284,7 @@ body {
    container by scrollTop, not by a transform. */
 .wordmark-layer {
   position: fixed;
-  top: 0;
+  top: var(--masthead-drop);
   left: 0;
   right: 0;
   z-index: 40;
@@ -443,7 +449,12 @@ footer {
 html[data-intro='boot'] .wordmark-layer,
 html[data-intro='rise'] .wordmark-layer,
 html[data-intro='hold'] .wordmark-layer {
-  transform: translateY(calc(50svh - 50% + var(--intro-drop)));
+  /* --masthead-drop comes back out here. It moves where the masthead
+     RESTS; the centred hold is measured from the window, not from the
+     masthead, and must land in the same place whatever the rest is. */
+  transform: translateY(
+    calc(50svh - 50% + var(--intro-drop) - var(--masthead-drop))
+  );
   will-change: transform;
 }
 
@@ -525,17 +536,28 @@ html[data-intro='done'] .hero-frame video {
    inside its viewBox, so the painted rings are 0.84 of the box; 81.5 of
    ink needs a 96.8 box off a 67.8 one. Scaling about the centre also
    walks the bottom edge down to the 45.5px margin on its own. */
+/* It arrives from below rather than simply appearing. Tracked frame by
+   frame on the recording: the mark's ink enters as an 11px sliver and its
+   TOP edge climbs 995 -> 880 while its width locks almost at once, which
+   is a vertical travel and not a scale — a scale would open in both axes
+   together. 120px over 560ms on an ease-out puts the same move on ours. */
 html[data-intro] .mark-layer {
   opacity: 0;
   transform: translate(
       calc(50vw - 50% - var(--mark-inset)),
-      calc(50svh - 100% - 52px)
+      calc(50svh - 100% - 52px + 120px)
     )
     scale(1.43);
 }
 html[data-intro='hold'] .mark-layer {
   opacity: 1;
-  transition: opacity 420ms ease;
+  transform: translate(
+      calc(50vw - 50% - var(--mark-inset)),
+      calc(50svh - 100% - 52px)
+    )
+    scale(1.43);
+  transition: transform 560ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 420ms ease;
 }
 html[data-intro='open'] .mark-layer,
 html[data-intro='done'] .mark-layer {

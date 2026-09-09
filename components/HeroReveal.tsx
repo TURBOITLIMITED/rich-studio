@@ -199,6 +199,14 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
               marginTop: '-50svh',
               width: '100vw',
               height: '100svh',
+              /* Tailwind's preflight ships `video { max-width: 100% }`, and
+                 100% here is the PANEL, not the viewport — so the 100vw
+                 above was being clamped to the panel's own width and the
+                 footage sat 218px left of centre inside its frame. An
+                 inline width does not beat a stylesheet max-width; they
+                 are different properties. */
+              maxWidth: 'none',
+              maxHeight: 'none',
               objectFit: 'cover',
             }}
           />

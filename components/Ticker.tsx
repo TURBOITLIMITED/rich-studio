@@ -18,16 +18,25 @@
  * assistive tech rather than read out on repeat.
  */
 export default function Ticker({
-  text = "2026 \u00aeRICH COLVILL let\u2019s do this",
-  repeat = 6,
+  /* Two phrases, alternating. "Get ®Rich quick" is already his line — it
+     is the mail link at the foot of the home page — so the band picks it
+     up rather than inventing a second voice for him. Capitalised the way
+     that line already is on the page, not shouted: the band is 19.55px
+     mixed case, and caps here would fight the name beside it. */
+  phrases = ['2026 \u00aeRICH COLVILL let\u2019s do this', 'Get \u00aeRich quick scheme'],
+  repeat = 3,
 }: {
-  text?: string;
+  phrases?: string[];
   repeat?: number;
 }) {
   // The separator is a drawn rule, not an em-dash: theirs is a short heavy
   // bar, and a typographic dash at this weight is neither long nor thick
   // enough to match it.
-  const half = Array.from({ length: repeat }, (_, i) => (
+  // repeat x phrases, so both halves of the track stay identical and the
+  // loop still meets itself without measuring anything.
+  const items = Array.from({ length: repeat }, () => phrases).flat();
+
+  const half = items.map((text, i) => (
     <span
       key={i}
       className="t-ticker"
