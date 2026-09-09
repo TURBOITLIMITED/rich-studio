@@ -16,6 +16,12 @@
  * pulled the glyph tops above the line box and the caps were sliced off by
  * the top of the viewport.
  *
+ * There is no per-character stagger on load. There was, and it had to go:
+ * the reference moves the whole word as one object, rising from below the
+ * fold to the centre of the screen and then up to here — see Intro.tsx —
+ * and a letter-by-letter entrance underneath that read as two competing
+ * animations.
+ *
  * It is deliberately NOT an <h1>. It is identical on every route and hidden
  * from assistive tech, so using a heading here left /work, /about and
  * /contact with no accessible heading at all and gave each case study two.
@@ -48,23 +54,12 @@ export default function Wordmark({ text = 'Rich Colvill' }: { text?: string }) {
               display: 'inline-block',
               whiteSpace: 'pre',
               flex: '0 0 auto',
-              animation: 'wm-in 0.9s cubic-bezier(0.22,1,0.36,1) both',
-              animationDelay: `${0.04 * i}s`,
             }}
           >
             {c}
           </span>
         ))}
       </div>
-      <style>{`
-        @keyframes wm-in {
-          from { opacity: 0; transform: translate3d(0, 0.16em, 0); }
-          to   { opacity: 1; transform: translate3d(0, 0, 0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .wordmark-layer span { animation: none !important; }
-        }
-      `}</style>
     </div>
   );
 }

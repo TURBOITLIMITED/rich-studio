@@ -94,6 +94,7 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
       >
         <div
           ref={frame}
+          className="hero-frame"
           data-dark
           /* The showreel is graded dark throughout; measured frames sit
              around 0.10. The band reads this the same way it reads a
@@ -114,13 +115,17 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             aria-label="Rich Colvill Studio showreel"
+            /* Centred with margins rather than translate(-50%,-50%): the
+               opening sequence animates this element's transform, and an
+               inline transform here would win over the stylesheet. */
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
-              transform: 'translate(-50%, -50%)',
+              marginLeft: '-50vw',
+              marginTop: '-50svh',
               width: '100vw',
               height: '100svh',
               objectFit: 'cover',
@@ -130,6 +135,7 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
 
         <div
           ref={caption}
+          className="hero-caption"
           style={{
             position: 'absolute',
             bottom: 'clamp(26px, 5vh, 60px)',

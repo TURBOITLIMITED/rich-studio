@@ -6,6 +6,7 @@ import Wordmark from '@/components/Wordmark';
 import RscMark from '@/components/RscMark';
 import Ticker from '@/components/Ticker';
 import BackdropContrast from '@/components/BackdropContrast';
+import Intro from '@/components/Intro';
 import SiteFooter from '@/components/SiteFooter';
 
 /* Copy here is Rich's own, verbatim from richcolvill.com — not invented.
@@ -43,7 +44,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en-GB">
+    /* data-intro ships in the served HTML so the very first painted frame
+       is already the opening state — setting it from an effect would flash
+       the finished page first. The inline script below unwinds it before
+       paint on every route but the home page, and for reduced motion. */
+    <html lang="en-GB" data-intro="boot">
       <head>
         {/* The wordmark is the LCP element on every route and it is set in
             the bold weight, so that one file is the only font worth
@@ -55,6 +60,26 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){var d=document.documentElement;try{var p=location.pathname;" +
+              "var home=p==='/'||p==='/index.html';" +
+              "var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;" +
+              "if(!home||rm){d.removeAttribute('data-intro')}}catch(e){d.removeAttribute('data-intro')}})()",
+          }}
+        />
+        {/* Without JS the sequence can never advance, and the page would sit
+            for ever on a centred name over a closed slit. */}
+        <noscript>
+          <style>{`html[data-intro] .wordmark-layer,
+                   html[data-intro] .hero-frame,
+                   html[data-intro] .hero-frame video { transform: none !important; clip-path: none !important; }
+                   html[data-intro] .mark-layer,
+                   html[data-intro] .ticker-layer { opacity: 1 !important; }
+                   html[data-intro] .hero-caption { visibility: visible !important; }
+                   html[data-intro] .scroll-root { overflow-y: scroll !important; }`}</style>
+        </noscript>
       </head>
       <body>
         <a href="#main" className="skip-link t-label">
@@ -89,6 +114,7 @@ export default function RootLayout({
             [data-parallax] figure. One rAF loop for the whole page. */}
         <ScrollMotion />
         <BackdropContrast />
+        <Intro />
       </body>
     </html>
   );

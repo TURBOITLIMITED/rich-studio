@@ -382,6 +382,104 @@ footer {
   position: relative;
 }
 
+/* ------------------------------------------------------------
+   THE OPENING SEQUENCE
+   Measured off the reference by sampling the DOM every 80ms from
+   navigation, three independent runs. Timings and easings live in
+   Intro.tsx; this is only the geometry.
+
+   The masthead never fades — opacity was 1 at all 83 samples in
+   both directions. It arrives and leaves purely by moving, which
+   is why every rule below animates transform and nothing else.
+   ------------------------------------------------------------ */
+
+/* Boot: the name sits 38.8vh below the centre of the screen, and the
+   showreel is a closed slit. This state is in the server-rendered HTML,
+   so the first painted frame is already correct. */
+html[data-intro] .wordmark-layer {
+  transform: translateY(calc(50svh - 50% + 38.8svh));
+  will-change: transform;
+}
+
+/* Rise to dead centre, then hold there. */
+html[data-intro='rise'] .wordmark-layer,
+html[data-intro='hold'] .wordmark-layer {
+  transform: translateY(calc(50svh - 50%));
+  transition: transform 970ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Then up to the masthead's own place. Theirs genuinely changes mechanism
+   for this second move and it reads as a heavier one, so it gets its own
+   duration and a symmetric ease rather than continuing the first. */
+html[data-intro='open'] .wordmark-layer,
+html[data-intro='done'] .wordmark-layer {
+  transform: translateY(0);
+  transition: transform 910ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* A full-width, zero-height slit at the vertical midline, growing outward
+   top and bottom together. Their left and right insets are 0% from the
+   first sample — this is an iris, not a wipe, and not a scale. */
+html[data-intro] .hero-frame {
+  clip-path: inset(50% 0% 50% 0%);
+}
+html[data-intro='open'] .hero-frame,
+html[data-intro='done'] .hero-frame {
+  clip-path: inset(0% 0% 0% 0%);
+  transition: clip-path 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* The picture zooms out in lockstep with the iris — same duration, same
+   easing. It is already playing behind the closed slit. */
+html[data-intro] .hero-frame video {
+  transform: scale(1.2);
+}
+html[data-intro='open'] .hero-frame video,
+html[data-intro='done'] .hero-frame video {
+  transform: scale(1);
+  transition: transform 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Furniture stays out of the way until the reveal is under way. The
+   caption is hidden rather than faded because HeroReveal writes its
+   opacity inline every frame from the scroll position. */
+html[data-intro] .mark-layer,
+html[data-intro] .ticker-layer {
+  opacity: 0;
+}
+html[data-intro='open'] .mark-layer,
+html[data-intro='done'] .mark-layer,
+html[data-intro='open'] .ticker-layer,
+html[data-intro='done'] .ticker-layer {
+  opacity: 1;
+  transition: opacity 700ms ease 400ms;
+}
+html[data-intro]:not([data-intro='done']) .hero-caption {
+  visibility: hidden;
+}
+
+/* Nothing scrolls until the sequence has finished, or the curtain and the
+   scroll-driven hero fight each other over the same frame. */
+html[data-intro]:not([data-intro='done']) .scroll-root {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-intro] .wordmark-layer,
+  html[data-intro] .hero-frame,
+  html[data-intro] .hero-frame video,
+  html[data-intro] .mark-layer,
+  html[data-intro] .ticker-layer {
+    transform: none;
+    clip-path: none;
+    opacity: 1;
+    transition: none;
+  }
+  html[data-intro] .scroll-root {
+    overflow-y: scroll;
+  }
+}
+
 .link-underline {
   position: relative;
   display: inline-block;
