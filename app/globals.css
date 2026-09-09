@@ -68,6 +68,11 @@
      before the rAF loop takes over. */
   --hero-w: min(80vw, 142.56svh);
   --hero-ar: 2.16;
+
+  /* How far the masthead drops from a box-centred position so that the
+     LETTERS land where the reference's do. See the opening-sequence
+     block below for the measurement. */
+  --intro-drop: calc(var(--wordmark-size) * 0.109);
 }
 
 :root {
@@ -409,14 +414,22 @@ footer {
    showreel is a closed slit. This state is in the server-rendered HTML,
    so the first painted frame is already correct. */
 html[data-intro] .wordmark-layer {
-  transform: translateY(calc(50svh - 50% + 38.8svh));
+  transform: translateY(calc(50svh - 50% + var(--intro-drop) + 38.8svh));
   will-change: transform;
 }
 
-/* Rise to dead centre, then hold there. */
+/* Rise to centre, then hold there.
+
+   --intro-drop is not a fudge. Centring the layer BOX puts the letters
+   15.5px above true centre, because the box carries the cap-clearance
+   padding at the top and "RICH COLVILL" has no descenders to fill the
+   space at the bottom. Measured off a screen recording of the reference
+   reloading, their held letters sit 6.8px BELOW true centre — so ours
+   were 22px too high, which is exactly the "not in the middle" Rich was
+   seeing on a page with nothing else on it to judge against. */
 html[data-intro='rise'] .wordmark-layer,
 html[data-intro='hold'] .wordmark-layer {
-  transform: translateY(calc(50svh - 50%));
+  transform: translateY(calc(50svh - 50% + var(--intro-drop)));
   transition: transform 970ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -463,12 +476,23 @@ html[data-intro='done'] .hero-frame video {
    moment the eye is on it, and any disagreement between the two shows.
    The translate is written against --mark-inset so it tracks the resting
    position at every viewport width instead of assuming a number. */
+/* Their monogram does NOT tuck under the name — measured off the screen
+   recording it sits 45px clear of the BOTTOM of the window, centred, with
+   215px of empty page between it and the letters above. Ours was 38px
+   under the name, which read as a lockup rather than as two things
+   holding opposite ends of an empty screen. It is also a fifth larger
+   during the opening than at rest: theirs measures 89x81.5 there. The
+   1.43 is solved, not eyeballed — his mark SVG carries ~15% padding
+   inside its viewBox, so the painted rings are 0.84 of the box; 81.5 of
+   ink needs a 96.8 box off a 67.8 one. Scaling about the centre also
+   walks the bottom edge down to the 45.5px margin on its own. */
 html[data-intro] .mark-layer {
   opacity: 0;
   transform: translate(
-    calc(50vw - 50% - var(--mark-inset)),
-    calc(var(--wordmark-size) * 0.66 + 2svh)
-  );
+      calc(50vw - 50% - var(--mark-inset)),
+      calc(50svh - 100% - 52px)
+    )
+    scale(1.43);
 }
 html[data-intro='hold'] .mark-layer {
   opacity: 1;
@@ -477,7 +501,7 @@ html[data-intro='hold'] .mark-layer {
 html[data-intro='open'] .mark-layer,
 html[data-intro='done'] .mark-layer {
   opacity: 1;
-  transform: translateY(-50%);
+  transform: translateY(-50%) scale(1);
   transition: transform 910ms cubic-bezier(0.65, 0, 0.35, 1), opacity 420ms ease;
 }
 

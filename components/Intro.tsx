@@ -49,16 +49,35 @@ const STEPS: [string, number][] = [
   ['done', 2650],
 ];
 
+/* Survives a remount. React's dev StrictMode mounts this effect, runs its
+   cleanup, and mounts it again — and the cleanup strips the attribute the
+   guard then looks for, so a naive version silently never plays on the dev
+   server while working perfectly in production. Two things fix it: the
+   sequence puts the attribute back if it is missing and it has not played
+   yet, and this flag stops it replaying on a later remount. */
+let played = false;
+
 export default function Intro() {
   useEffect(() => {
     const el = document.documentElement;
 
-    // The inline script in the head has already cleared this on every route
-    // but the home page, and for reduced motion. If it is gone, there is no
-    // sequence to run.
-    if (!el.hasAttribute('data-intro')) return;
+    if (played) {
+      el.removeAttribute('data-intro');
+      return;
+    }
+
+    // The inline script in the head clears this on every route but the home
+    // page, and for reduced motion — but so does a throwaway StrictMode
+    // cleanup, which is not a reason to skip. Tell them apart by asking
+    // whether the sequence has actually run.
+    if (!el.hasAttribute('data-intro')) {
+      const p = window.location.pathname;
+      if (p !== '/' && p !== '/index.html') return;
+      el.setAttribute('data-intro', 'boot');
+    }
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      played = true;
       el.removeAttribute('data-intro');
       return;
     }
@@ -75,7 +94,12 @@ export default function Intro() {
         }
         // Cleared once the last transition has finished, so nothing is left
         // holding a transition on the masthead while the page is in use.
-        ids.push(window.setTimeout(() => el.removeAttribute('data-intro'), 2650 + 1200));
+        ids.push(
+          window.setTimeout(() => {
+            played = true;
+            el.removeAttribute('data-intro');
+          }, 2650 + 1200),
+        );
       });
     });
 
