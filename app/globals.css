@@ -135,6 +135,21 @@ body {
   flex: 0 0 auto;
   overflow: hidden;
   white-space: pre;
+  /* The lid has to sit BELOW the glyph and nowhere near the top of it.
+     At line-height 1 the line box is exactly 1em, but Nimbus Sans is
+     taller than that between its ascender and descender, so the negative
+     half-leading lands the box's top edge right on the cap line — and
+     round letters overshoot it. C and O are drawn a hair taller than R
+     and H so they LOOK the same height, and clipping at the box shaved
+     exactly that hair off: flat-topped Cs and Os with the flat letters
+     beside them untouched.
+
+     Padding opens the clip box out; the equal negative margin takes the
+     layout back. Flex aligns the MARGIN box, so the content lands exactly
+     where it did and only the clipping rectangle grows. Inline as well as
+     top, because the same argument applies to the sides. */
+  padding: 0.3em 0.06em 0;
+  margin: -0.3em -0.06em 0;
 }
 .wordmark-glyph > span {
   display: inline-block;
