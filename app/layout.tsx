@@ -5,6 +5,7 @@ import ScrollMotion from '@/components/ScrollMotion';
 import Wordmark from '@/components/Wordmark';
 import RscMark from '@/components/RscMark';
 import Ticker from '@/components/Ticker';
+import BackdropContrast from '@/components/BackdropContrast';
 import SiteFooter from '@/components/SiteFooter';
 
 /* Copy here is Rich's own, verbatim from richcolvill.com — not invented.
@@ -60,10 +61,12 @@ export default function RootLayout({
           Skip to content
         </a>
 
-        {/* The mark is the only piece of furniture left outside the
-            scroll container. The running band used to live here too; it
-            is a section in the flow now, the way the reference has it. */}
+        {/* Furniture: fixed to the viewport, above everything, outside
+            the scroll container. Both are clear — no plate behind either
+            — so BackdropContrast flips their colour from the measured
+            luminance of whatever is passing underneath. */}
         <RscMark />
+        <Ticker />
 
         <ScrollRoot>
           {/* The masthead is fixed too, but it has to live INSIDE the
@@ -79,13 +82,13 @@ export default function RootLayout({
               viewport and the masthead stays pinned. */}
           <Wordmark text="Rich Colvill" />
           <main id="main">{children}</main>
-          <Ticker />
           <SiteFooter />
         </ScrollRoot>
 
         {/* Drives the scale-settle and in-frame parallax on every
             [data-parallax] figure. One rAF loop for the whole page. */}
         <ScrollMotion />
+        <BackdropContrast />
       </body>
     </html>
   );

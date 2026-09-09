@@ -1,21 +1,21 @@
 /**
  * The running band.
  *
- * It is NOT a fixed overlay, and that was the mistake. Sampling the
- * reference across a full scroll of its page, the band's viewport top
- * marches steadily down — 12915, 12187, 11283 ... 1383, 838, 835 — which
- * means it scrolls with the document and simply comes to rest at the foot
- * of the last screen. It is a section, not furniture.
+ * Pinned to the foot of the viewport, with no plate behind it.
  *
- * Pinning ours to the viewport had a consequence beyond being wrong: black
- * text with no plate behind it, sitting over whatever imagery happened to
- * be passing underneath, which on half of Rich's archive is dark or mid
- * grey. In the flow it always has paper behind it, so it can stay exactly
- * what he asked for — clear, no plate, just the text moving.
+ * It is rendered TWICE, one copy ink and one copy paper, stacked exactly.
+ * The paper copy is masked at runtime to the horizontal ranges where a
+ * dark plate is passing underneath, so the line takes whichever colour
+ * reads against the thing actually behind it, region by region, and stays
+ * clear everywhere — see BackdropContrast.tsx for why a single colour is
+ * not enough. The mask lives on the outer copy, which does not move; put
+ * it on the track and its coordinates would travel with the text.
  *
  * Two identical halves inside one track, translated -50%: that is what
- * makes the loop seamless without measuring anything. Decorative, so it is
- * hidden from assistive tech rather than read out on repeat.
+ * makes the loop seamless without measuring anything. Both copies run the
+ * same animation and CSS animations are driven off the document timeline,
+ * so they are frame-locked to each other. Decorative, so it is hidden from
+ * assistive tech rather than read out on repeat.
  */
 export default function Ticker({
   text = "2026 \u00aeRICH COLVILL let\u2019s do this",
@@ -47,12 +47,17 @@ export default function Ticker({
     </span>
   ));
 
+  const copy = (
+    <div className="ticker-track">
+      <div style={{ display: 'flex' }}>{half}</div>
+      <div style={{ display: 'flex' }}>{half}</div>
+    </div>
+  );
+
   return (
     <div className="ticker-layer" aria-hidden="true">
-      <div className="ticker-track">
-        <div style={{ display: 'flex' }}>{half}</div>
-        <div style={{ display: 'flex' }}>{half}</div>
-      </div>
+      <div className="ticker-copy">{copy}</div>
+      <div className="ticker-copy is-paper">{copy}</div>
     </div>
   );
 }

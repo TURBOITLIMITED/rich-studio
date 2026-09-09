@@ -6,6 +6,12 @@ export type ProjectImage = {
   w: number;
   h: number;
   orient: 'portrait' | 'landscape' | 'square';
+  /** Mean luminance, 0-1, measured off the file by scripts/luminance.py.
+   *  The running band is fixed to the foot of the viewport with no plate
+   *  behind it, so it has to know how dark the plate passing underneath it
+   *  is. 129 of Rich's 193 images sit below 0.45 — a permanently black
+   *  band would be unreadable on two thirds of the archive. */
+  lum?: number;
 };
 
 export type Project = {

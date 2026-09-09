@@ -95,6 +95,10 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
         <div
           ref={frame}
           data-dark
+          /* The showreel is graded dark throughout; measured frames sit
+             around 0.10. The band reads this the same way it reads a
+             collage plate. */
+          data-lum="0.10"
           style={{
             width: `${START_W * 100}%`,
             height: `${START_H * 100}%`,

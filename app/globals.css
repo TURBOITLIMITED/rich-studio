@@ -267,6 +267,7 @@ body {
   mask-size: contain;
 }
 
+/* Toggled by BackdropContrast, from the same measurement the band uses. */
 .mark-layer.on-dark .mark-shape {
   background: var(--color-paper);
 }
@@ -282,21 +283,42 @@ body {
 /* The footer is the last thing in the scroll container, so it carries the
    clearance for the fixed ticker rather than every page shipping a spacer. */
 footer {
-  padding-bottom: clamp(28px, 5vh, 60px);
+  /* Clearance for the fixed band, which is not in the flow to push it. */
+  padding-bottom: clamp(70px, 10vh, 110px);
   position: relative;
   z-index: 50;
 }
 
-/* No plate and no rule — just the text moving across the page. In the
-   document flow, not pinned to the viewport: see Ticker.tsx. Because it
-   is a band of its own it always has paper behind it, which is what keeps
-   "clear" and "legible" from being in conflict. */
+/* No plate and no rule — just the text moving across the page, pinned to
+   the foot of the viewport. Nothing sits behind it, so its colour is
+   decided at runtime from the measured luminance of whatever plate is
+   passing underneath: see BackdropContrast.tsx. */
 .ticker-layer {
-  position: relative;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: clamp(14px, 3.6vh, 38px);
+  z-index: 60;
   overflow: hidden;
-  width: 100%;
-  padding-block: clamp(20px, 4vh, 44px);
-  z-index: 20;
+  pointer-events: none;
+  color: var(--color-ink);
+  transition: color 0.28s ease;
+}
+
+/* The two stacked copies. The ink one defines the height; the paper one
+   is laid over it and masked to the dark regions only — with no mask value
+   set it resolves to a fully transparent gradient, i.e. hidden, which is
+   the correct state on a page with no plates under the band. */
+.ticker-copy {
+  overflow: hidden;
+}
+
+.ticker-copy.is-paper {
+  position: absolute;
+  inset: 0;
+  color: var(--color-paper);
+  -webkit-mask-image: var(--dark-mask, linear-gradient(transparent, transparent));
+  mask-image: var(--dark-mask, linear-gradient(transparent, transparent));
 }
 
 @keyframes ticker-run {

@@ -97,6 +97,7 @@ export default function Collage({
           <figure
             key={img.src}
             data-parallax
+            data-lum={img.lum ?? 0.5}
             className="frame"
             style={{
               gridColumn: `${start} / span ${span}`,
