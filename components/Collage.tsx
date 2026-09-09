@@ -1,65 +1,59 @@
 import type { ProjectImage } from '@/lib/projects';
 
 /**
- * The scattered editorial layout.
+ * The image column of a project.
  *
- * The reference gets its rhythm from mixing portrait against landscape.
- * Rich's archive is almost entirely 16:9 presentation frames — 179
- * landscape against 3 portrait — so copying that directly would produce a
- * page of identical letterboxes stepping down the screen. The variety here
- * comes from scale, horizontal offset and vertical stagger instead.
+ * Measured off maisonauge.com at 1700x887. Their project block is not a
+ * scattered grid at all — it is two columns. A title pinned on the left at
+ * 8.3%-25% of the viewport, and everything else in a single stack on the
+ * right running 33.3%-91.7%, flex column, 15dvh between rows. The rows
+ * inside that stack are:
  *
- * SCALE IS THE POINT, and it is measured. Every plate on the reference was
- * sampled across a full scroll of the page: as a percentage of the viewport
- * they come in at 18%, 28%, 30% and 67% wide, and 52-78% tall. The only
- * 100% element on the whole site is the hero showreel. Our collage opened
- * with a full-bleed plate that was 100% wide and 108% tall — taller than
- * the window — so it swallowed the masthead whole and there was nothing
- * for the work to sit against. The spans below are those measured widths
- * mapped onto the 12-column box: 8 = 67%, 7 = 58%, 5 = 40%, 4 = 30%,
- * 3 = 18%. Nothing bleeds; the gutter always holds.
+ *   a small plate      18.3% of the viewport  (31.3% of the column)
+ *   a full-width plate the whole column
+ *   a two-up row       two plates at 47% each, one left, one right
  *
- * The columns are also chosen so grid auto-placement packs two or three
- * plates onto a row — a start column has to clear where the previous plate
- * ended or the figure drops to a row of its own with half the viewport
- * empty beside it, which is what made the old layout read as scattered
- * junk. `drop` then staggers plates down their row so a packed row reads
- * as a composition rather than as cells of a table.
+ * That right-hand plate of the two-up is what reads as "then it scrolls on
+ * right": it is not travelling sideways — nothing on their page does, the
+ * tx component of every sampled transform matrix is 0 — it simply lives in
+ * the right of the column and rises into view while the title holds still
+ * on the left.
  *
- * Each figure is a CLIPPED FRAME holding an oversized image — that is what
- * ScrollMotion animates against. The frame owns the layout box; the image
- * inside is 10% larger and drifts within it as you scroll. Without the clip
- * you would just see the image jitter at the edges.
+ * Rich's projects run 1 to 10+ images against their fixed four, so the
+ * rows repeat full / two-up after the opening plate, which keeps the
+ * rhythm without needing a hand-built layout per project.
  *
- * There is deliberately no fade. The reference's images sit at opacity 1.00
- * through their whole reveal — the entrance is a scale settle from 1.2 to
- * 1.1, nothing more. Fading them in reads as a different site.
+ * Each plate is a CLIPPED FRAME holding an oversized image. The frame owns
+ * the layout box; the image inside rests at scale 1.1 and settles into it
+ * from 1.2 — see ScrollMotion. Without the clip you would see the image
+ * spill over its neighbours.
  */
 
-type Slot = { span: number; start: number; drop?: string };
+type Row =
+  | { kind: 'solo'; width: string }
+  | { kind: 'pair' };
 
-const PATTERN: Slot[] = [
-  { span: 8, start: 4 }, //  67% — their biggest plate, right of centre
-  { span: 3, start: 1, drop: '20vh' }, //  18% — small left plate
-  { span: 4, start: 5 }, //  30%
-  { span: 4, start: 9, drop: '14vh' }, //  30% — right
-  { span: 7, start: 2 }, //  58%
-  { span: 3, start: 10, drop: '24vh' }, //  18% — small right plate
-  { span: 5, start: 4 }, //  40% — centred
-  { span: 4, start: 1, drop: '10vh' }, //  30% — left
-  { span: 6, start: 6, drop: '18vh' }, //  48% — right
-];
-
-function slotFor(i: number, img: ProjectImage): Slot {
-  const base = PATTERN[i % PATTERN.length];
-  // A portrait is rare enough here that it should never take a wide slot —
-  // at 8 or 12 columns it would stand two viewports tall and bury whatever
-  // came after it. Centre it instead, so the space either side reads as
-  // deliberate rather than as a figure that failed to reach the edge.
-  if (img.orient === 'portrait' && base.span > 6) {
-    return { span: 5, start: 4, drop: base.drop };
+/** After the opening plate the stack alternates full-width and two-up. */
+function rowsFor(count: number): Row[] {
+  const rows: Row[] = [];
+  let placed = 0;
+  // The opener is the small plate, at 31.3% of the column.
+  if (placed < count) {
+    rows.push({ kind: 'solo', width: '31.3%' });
+    placed += 1;
   }
-  return base;
+  let full = true;
+  while (placed < count) {
+    if (full || count - placed === 1) {
+      rows.push({ kind: 'solo', width: '100%' });
+      placed += 1;
+    } else {
+      rows.push({ kind: 'pair' });
+      placed += 2;
+    }
+    full = !full;
+  }
+  return rows;
 }
 
 export default function Collage({
@@ -71,59 +65,90 @@ export default function Collage({
   /** These are the work, not decoration, so they get real alt text.
    *  Without the project name a screen reader hears twelve "image"s. */
   altBase: string;
-  /** Ces Enfants ships at 1366×768 and falls apart full-bleed, so its
-   *  section caps every figure below the statement sizes. */
+  /** Ces Enfants ships at 1366x768 and falls apart at full width, so its
+   *  section holds every plate to the two-up size. */
   softenLarge?: boolean;
 }) {
+  const rows = rowsFor(images.length);
+  let cursor = 0;
+
   return (
-    <div
-      className="collage"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(12, 1fr)',
-        gap: 'clamp(28px, 5vw, 90px) clamp(12px, 2vw, 28px)',
-        paddingInline: 'var(--gutter)',
-        alignItems: 'start',
-      }}
-    >
-      {images.map((img, i) => {
-        let { span, start, drop } = slotFor(i, img);
-        if (softenLarge && span > 6) {
-          span = 6;
-          start = 4;
+    <div className="plate-stack">
+      {rows.map((row, ri) => {
+        if (row.kind === 'pair') {
+          const pair = images.slice(cursor, cursor + 2);
+          const base = cursor;
+          cursor += 2;
+          return (
+            <div className="plate-pair" key={`r${ri}`}>
+              {pair.map((img, k) => (
+                <Plate
+                  key={img.src}
+                  img={img}
+                  index={base + k}
+                  total={images.length}
+                  altBase={altBase}
+                  width="47%"
+                />
+              ))}
+            </div>
+          );
         }
-        const ratio = img.w && img.h ? `${img.w} / ${img.h}` : '3 / 2';
+        const img = images[cursor];
+        const index = cursor;
+        cursor += 1;
+        const width = softenLarge && row.width === '100%' ? '72%' : row.width;
         return (
-          <figure
+          <Plate
             key={img.src}
-            data-parallax
-            data-lum={img.lum ?? 0.5}
-            className="frame"
-            style={{
-              gridColumn: `${start} / span ${span}`,
-              marginTop: drop,
-              aspectRatio: ratio,
-              /* No plate on the reference is taller than 78% of the
-                 window. A portrait in a 40%-wide slot works out at 115%
-                 from its own ratio, which is a plate you cannot see the
-                 whole of — so the frame clamps and the image crops to it
-                 rather than the page growing to fit. */
-              maxHeight: '78vh',
-            }}
-          >
-            <img
-              src={img.src}
-              srcSet={`${img.sm} 900w, ${img.src} 2000w`}
-              sizes={`${Math.round((span / 12) * 100)}vw`}
-              width={img.w}
-              height={img.h}
-              alt={`${altBase} — image ${i + 1} of ${images.length}`}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              decoding="async"
-            />
-          </figure>
+            img={img}
+            index={index}
+            total={images.length}
+            altBase={altBase}
+            width={width}
+          />
         );
       })}
     </div>
+  );
+}
+
+function Plate({
+  img,
+  index,
+  total,
+  altBase,
+  width,
+}: {
+  img: ProjectImage;
+  index: number;
+  total: number;
+  altBase: string;
+  width: string;
+}) {
+  return (
+    <figure
+      data-parallax
+      data-lum={img.lum ?? 0.5}
+      className="frame"
+      style={{
+        width,
+        margin: 0,
+        aspectRatio: img.w && img.h ? `${img.w} / ${img.h}` : '3 / 2',
+        /* No plate on the reference is taller than 78% of the window. */
+        maxHeight: '78vh',
+      }}
+    >
+      <img
+        src={img.src}
+        srcSet={`${img.sm} 900w, ${img.src} 2000w`}
+        sizes="58vw"
+        width={img.w}
+        height={img.h}
+        alt={`${altBase} — image ${index + 1} of ${total}`}
+        loading={index === 0 ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    </figure>
   );
 }

@@ -3,110 +3,100 @@
 import { useEffect } from 'react';
 
 /**
- * The scroll motion, measured off maisonauge.com rather than guessed at.
+ * The only authored motion in the work: a per-image settle, keyed off the
+ * image's own position on screen rather than off any project boundary.
  *
- * Three behaviours, all on the image inside a clipped frame:
+ * The curve is measured, not invented. Instrumenting maisonauge.com across
+ * a full scroll, sampling the transform matrix on every image:
  *
- *   1. ENTRY — the image starts at scale(1.2) while it is still below the
- *      fold and eases to scale(1.1) as it arrives. Their reveal is a
- *      settle, not a fade: opacity stayed pinned at 1.00 through every
- *      sample I took, so fading in here would read as a different site.
+ *   scale       1.200 -> 1.100   over ~400px  (~0.45 viewport heights)
+ *   translateY   +40px -> 0      over ~860px  (~1.0  viewport height)
+ *   opacity      1.000 throughout, 0 exceptions in ~1200 samples
  *
- *   2. PARALLAX — once settled at 1.1 the image drifts vertically inside
- *      its frame as it crosses the viewport. The 10% overscale is what
- *      buys the room: a 400px frame has 40px of slack, so the drift runs
- *      to about ±5% of frame height. Measured travel was 25-44px on
- *      frames of 398-566px, which is that number.
+ * Three things in that are easy to get wrong and all three were wrong here
+ * before:
  *
- *   3. DIRECTION ALTERNATES — adjacent images drift opposite ways on
- *      their site. That is the detail that stops a column of frames
- *      reading as one sheet of wallpaper, and it is cheap to keep.
+ *  - The rest state is scale(1.1), NOT 1. The zoom-out never returns to
+ *    identity, which is why every frame clips a 10% oversized image.
+ *  - There is no fade. Fading images in reads as a completely different
+ *    site, and they measured opacity 1 at every sample.
+ *  - There is no continuous parallax drift. The tx component of every
+ *    sampled matrix was 0 and translateY rests at 0 — the vertical
+ *    movement is an entry settle that finishes, not a drift that keeps
+ *    going. An earlier cut of this file drifted every frame by +-5% of its
+ *    height, which is motion the reference does not have.
  *
- * One rAF loop drives every frame on the page. Per-element scroll
- * listeners at ~190 images would be a jank machine; an IntersectionObserver
- * keeps the active set small and the loop only touches what is on screen.
+ * Progress is 0 when the frame's top is a full viewport below the fold and
+ * 1 when it reaches the middle of the screen, so both curves complete as
+ * the image crosses the mid-band.
  */
 
-type Frame = {
-  el: HTMLElement;
-  img: HTMLElement;
-  dir: number;
-};
+type Frame = { el: HTMLElement; img: HTMLElement };
 
 const SETTLED = 1.1;
 const ENTER = 1.2;
-/** Fraction of frame height the image is allowed to travel, each way. */
-const DRIFT = 0.05;
+/** Fraction of the run over which the scale finishes: 400px of 860px. */
+const SCALE_RUN = 0.45;
+const RISE = 40;
 
 export default function ScrollMotion() {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
-    if (!nodes.length) return;
-
-    const frames: Frame[] = nodes.map((el, i) => {
+    const frames: Frame[] = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-parallax]'),
+    ).map((el) => {
       const img = el.querySelector<HTMLElement>('img, video');
-      return { el, img: img ?? el, dir: i % 2 === 0 ? 1 : -1 };
+      return { el, img: img ?? el };
     });
+    if (!frames.length) return;
 
-    const active = new Set<Frame>();
-    const byEl = new Map<Element, Frame>(frames.map((f) => [f.el, f]));
-
-    /**
-     * One formula, used by the loop AND when a frame leaves the active
-     * set. Parking a frame at a fixed transform instead was the bug in
-     * the first cut: below the fold it sat at the SETTLED scale, so
-     * arriving meant jumping up to 1.14 and easing back down — the
-     * reverse of the intended settle — and leaving snapped the drift
-     * back to zero, which showed the moment you scrolled up again.
-     */
     const apply = (f: Frame) => {
       const r = f.el.getBoundingClientRect();
       if (!r.height) return;
       const vh = window.innerHeight;
 
-      // 0 when the frame's top edge is one viewport below the fold,
-      // 1 when its bottom edge has left the top.
-      const raw = (vh - r.top) / (vh + r.height);
+      // 0 while the frame is still a viewport below the fold, 1 once its
+      // top reaches the middle of the screen.
+      const raw = (vh - r.top) / vh;
       const p = raw < 0 ? 0 : raw > 1 ? 1 : raw;
 
-      // Entry runs over the first fifth of that journey: 1.2 settling to 1.1.
-      const entry = p < 0.2 ? p / 0.2 : 1;
-      const eased = 1 - Math.pow(1 - entry, 3);
-      const scale = ENTER + (SETTLED - ENTER) * eased;
+      const s = Math.min(1, p / SCALE_RUN);
+      const easedS = 1 - Math.pow(1 - s, 3);
+      const scale = ENTER + (SETTLED - ENTER) * easedS;
 
-      // Drift is centred: -half at the bottom of the pass, +half at the top.
-      const travel = r.height * DRIFT * f.dir;
-      const y = (p - 0.5) * 2 * travel;
+      const easedY = 1 - Math.pow(1 - p, 3);
+      const y = RISE * (1 - easedY);
 
       f.img.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
     };
+
+    // Only frames near the viewport are worth touching; the observer keeps
+    // the per-frame loop short on a page with 190 plates on it.
+    const live = new Set<Frame>();
+    const byEl = new Map<Element, Frame>();
+    frames.forEach((f) => byEl.set(f.el, f));
 
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           const f = byEl.get(e.target);
           if (!f) continue;
-          if (e.isIntersecting) active.add(f);
-          else {
-            active.delete(f);
-            // Settle it at the state it actually belongs in, not a
-            // fixed one, so re-entry is continuous.
-            apply(f);
-          }
+          if (e.isIntersecting) live.add(f);
+          else live.delete(f);
+          // Settle it once on the way out too, so a frame that leaves the
+          // observer's margin is left at the value it should hold rather
+          // than frozen mid-curve.
+          apply(f);
         }
       },
-      { rootMargin: '40% 0px 40% 0px' },
+      { rootMargin: '60% 0px 60% 0px' },
     );
     frames.forEach((f) => io.observe(f.el));
 
-    // Everything starts in its true state, so nothing pops on first paint.
-    frames.forEach(apply);
-
     let raf = 0;
     const tick = () => {
-      for (const f of active) apply(f);
+      live.forEach(apply);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
