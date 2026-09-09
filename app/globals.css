@@ -61,6 +61,13 @@
 
   /* The RSC mark's resting inset from the left edge. */
   --mark-inset: clamp(14px, 2vw, 34px);
+
+  /* The resting showreel panel. Derived in HeroReveal from two
+     measurements of the reference at different window sizes; these two
+     tokens only exist so the very first painted frame is already right,
+     before the rAF loop takes over. */
+  --hero-w: min(80vw, 142.56svh);
+  --hero-ar: 2.16;
 }
 
 :root {
@@ -649,6 +656,18 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
    bar a gentle inset on every other figure, which keeps a trace
    of the scatter without shrinking the work.
    ------------------------------------------------------------ */
+
+/* 2.16:1 is a cinema strip; at 80vw of a 390px phone that is 144px tall
+   and the showreel becomes a letterbox slot. Nothing about the
+   reference's mobile layout was ever measured, so this is our call rather
+   than a copy: the panel takes the source clip's own 16:9 and a little
+   more width. HeroReveal carries the same numbers for the scroll loop. */
+@media (max-width: 760px) {
+  :root {
+    --hero-w: 88vw;
+    --hero-ar: 16 / 9;
+  }
+}
 
 /* The two-column block is a desktop device. Below 860px there is no room
    to pin a title beside the work, so the block stacks: the title runs

@@ -22,11 +22,46 @@ import { useEffect, useRef } from 'react';
  * child that grew with its parent, it would scale, and scaling reads as
  * a completely different move.
  *
- * Start ratios are theirs: 1280/1600 = 0.80 wide, 593/950 = 0.624 tall.
+ * The resting panel is NOT a fixed fraction of the viewport, which is what
+ * this used to assume, and it is why the shape was off. Measured at two
+ * different window sizes:
+ *
+ *   1600x950   panel 1280x593   = 80.0vw x 62.4vh   aspect 2.159
+ *   1700x887   panel 1264x585   = 74.4vw x 66.0vh   aspect 2.161
+ *
+ * The vw and vh fractions disagree between the two but the ASPECT does
+ * not, so the panel has a fixed ratio and is fitted to whichever axis runs
+ * out first: width = min(80vw, 142.56vh) at 2.16:1. That reproduces both
+ * measurements to within a pixel. Taking the first reading as 80% x 62.4%
+ * of the viewport gave 1360x553 at 1700x887 — 96px too wide, 32px too
+ * short, and an aspect of 2.46 against their 2.16.
  */
 
-const START_W = 0.8;
-const START_H = 0.624;
+/** Their panel's aspect, from two independent measurements. */
+const PANEL_AR = 2.16;
+/** It is width-limited on wide-and-short windows, height-limited on the
+ *  rest: 80vw against 66vh x 2.16 = 142.56vh. */
+const MAX_VW = 0.8;
+const MAX_VH = 1.4256;
+
+/* 2.16:1 is a cinema strip, and on a phone 80vw of it is 144px tall — the
+   showreel would be a letterbox slot. Nothing about the reference's mobile
+   layout was ever measured, so this is our call, not a copy: below 760px
+   the panel takes the source clip's own 16:9 and a little more width. */
+const NARROW = 760;
+const NARROW_AR = 16 / 9;
+const NARROW_VW = 0.88;
+
+function restingPanel() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  if (vw <= NARROW) {
+    const w = NARROW_VW * vw;
+    return { w, h: w / NARROW_AR };
+  }
+  const w = Math.min(MAX_VW * vw, MAX_VH * vh);
+  return { w, h: w / PANEL_AR };
+}
 
 export default function HeroReveal({ children }: { children?: React.ReactNode }) {
   const section = useRef<HTMLDivElement>(null);
@@ -56,10 +91,14 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
       const open = Math.min(1, p / 0.5);
       const eased = 1 - Math.pow(1 - open, 2);
 
-      const w = START_W + (1 - START_W) * eased;
-      const h = START_H + (1 - START_H) * eased;
-      fr.style.width = `${(w * 100).toFixed(2)}%`;
-      fr.style.height = `${(h * 100).toFixed(2)}%`;
+      // Interpolated in pixels rather than percentages, because the
+      // resting size is fitted to the viewport and the open size is the
+      // viewport — the two have no common percentage basis.
+      const rest = restingPanel();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      fr.style.width = `${(rest.w + (vw - rest.w) * eased).toFixed(1)}px`;
+      fr.style.height = `${(rest.h + (vh - rest.h) * eased).toFixed(1)}px`;
 
       // The caption sits under the panel at rest and is swallowed as the
       // curtain opens — it has nowhere to go once the frame is full bleed.
@@ -100,9 +139,12 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
              around 0.10. The band reads this the same way it reads a
              collage plate. */
           data-lum="0.10"
+          /* The first painted frame has to be the resting panel already —
+             the rAF loop only takes over on the next tick, and the opening
+             sequence is running over the top of it. */
           style={{
-            width: `${START_W * 100}%`,
-            height: `${START_H * 100}%`,
+            width: 'var(--hero-w)',
+            aspectRatio: 'var(--hero-ar)',
             overflow: 'hidden',
             position: 'relative',
             background: 'var(--color-ink)',
