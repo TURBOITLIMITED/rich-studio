@@ -150,9 +150,19 @@ body {
      Padding opens the clip box out; the equal negative margin takes the
      layout back. Flex aligns the MARGIN box, so the content lands exactly
      where it did and only the clipping rectangle grows. Inline as well as
-     top, because the same argument applies to the sides. */
-  padding: 0.3em 0.06em 0;
-  margin: -0.3em -0.06em 0;
+     top, because the same argument applies to the sides.
+
+     0.1em is ~7x the overshoot actually measured (3 CSS px at 202px type,
+     and the figure is scale-invariant in em), and 0.025em a side is ~5x
+     what the ® needs — which is the only glyph that paints wider than its
+     advance width. Deliberately not the 0.3em/0.06em this started as:
+     that was 24x what was needed, which pushed every lid above the top of
+     the viewport and made adjacent lids overlap by 11.3px. Harmless,
+     since the boxes are transparent and no letter's ink reaches into its
+     neighbour's, but a lid that owns one letter's column is the whole
+     idea and it is worth keeping true. */
+  padding: 0.1em 0.025em 0;
+  margin: -0.1em -0.025em 0;
 }
 .wordmark-glyph > span {
   display: inline-block;
