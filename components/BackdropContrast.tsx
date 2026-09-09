@@ -46,6 +46,41 @@ const FLIP = 0.45;
 
 type Range = [number, number];
 
+/**
+ * The visible rect of a plate, allowing for clip-path.
+ *
+ * getBoundingClientRect() does NOT account for clipping, and during the
+ * opening sequence the showreel is clipped to a zero-height slit while
+ * still reporting its full box. The mark sits dead centre at that moment,
+ * concluded it was over dark footage, and painted itself paper on paper —
+ * invisible, at the exact moment it is meant to be introducing itself.
+ */
+function visibleRect(el: HTMLElement): DOMRect | null {
+  const r = el.getBoundingClientRect();
+  const clip = getComputedStyle(el).clipPath;
+  if (!clip || clip === 'none' || !clip.startsWith('inset(')) return r;
+
+  const parts = clip.slice(6, clip.indexOf(')')).trim().split(/\s+/);
+  if (!parts.length) return r;
+  const val = (raw: string, basis: number) => {
+    const n = parseFloat(raw);
+    if (Number.isNaN(n)) return 0;
+    return raw.trim().endsWith('%') ? (n / 100) * basis : n;
+  };
+  // CSS shorthand: 1, 2, 3 or 4 values.
+  const t = val(parts[0], r.height);
+  const rt = val(parts[1] ?? parts[0], r.width);
+  const b = val(parts[2] ?? parts[0], r.height);
+  const l = val(parts[3] ?? parts[1] ?? parts[0], r.width);
+
+  const top = r.top + t;
+  const bottom = r.bottom - b;
+  const left = r.left + l;
+  const right = r.right - rt;
+  if (bottom <= top || right <= left) return null;
+  return new DOMRect(left, top, right - left, bottom - top);
+}
+
 function merge(ranges: Range[]): Range[] {
   if (!ranges.length) return [];
   const sorted = ranges.slice().sort((a, b) => a[0] - b[0]);
@@ -66,11 +101,12 @@ export default function BackdropContrast() {
 
     const measure = () => {
       queued = false;
-      const plates = Array.from(document.querySelectorAll<HTMLElement>('[data-lum]'));
-      const rects = plates.map((p) => ({
-        r: p.getBoundingClientRect(),
-        lum: parseFloat(p.dataset.lum || '0.5') || 0.5,
-      }));
+      const rects: { r: DOMRect; lum: number }[] = [];
+      for (const plate of document.querySelectorAll<HTMLElement>('[data-lum]')) {
+        const r = visibleRect(plate);
+        if (!r || !r.width || !r.height) continue;
+        rects.push({ r, lum: parseFloat(plate.dataset.lum || '0.5') || 0.5 });
+      }
 
       // --- the band: a mask over the paper-coloured copy ---
       const band = document.querySelector<HTMLElement>('.ticker-layer');

@@ -33,15 +33,12 @@ type Row =
   | { kind: 'solo'; width: string }
   | { kind: 'pair' };
 
-/** After the opening plate the stack alternates full-width and two-up. */
+/** The stack alternates full-width and two-up. The small opening plate
+ *  that used to sit here is now the cover in the title column, which is
+ *  where the reference puts it — at x 7.5%, left of its own 8.3% column. */
 function rowsFor(count: number): Row[] {
   const rows: Row[] = [];
   let placed = 0;
-  // The opener is the small plate, at 31.3% of the column.
-  if (placed < count) {
-    rows.push({ kind: 'solo', width: '31.3%' });
-    placed += 1;
-  }
   let full = true;
   while (placed < count) {
     if (full || count - placed === 1) {
@@ -60,6 +57,8 @@ export default function Collage({
   images,
   altBase,
   softenLarge = false,
+  offset = 0,
+  total,
 }: {
   images: ProjectImage[];
   /** These are the work, not decoration, so they get real alt text.
@@ -68,7 +67,12 @@ export default function Collage({
   /** Ces Enfants ships at 1366x768 and falls apart at full width, so its
    *  section holds every plate to the two-up size. */
   softenLarge?: boolean;
+  /** How many of the project's images were used before this stack, so the
+   *  alt text still counts against the whole project. */
+  offset?: number;
+  total?: number;
 }) {
+  const count = total ?? images.length;
   const rows = rowsFor(images.length);
   let cursor = 0;
 
@@ -85,8 +89,8 @@ export default function Collage({
                 <Plate
                   key={img.src}
                   img={img}
-                  index={base + k}
-                  total={images.length}
+                  index={offset + base + k}
+                  total={count}
                   altBase={altBase}
                   width="47%"
                 />
@@ -102,8 +106,8 @@ export default function Collage({
           <Plate
             key={img.src}
             img={img}
-            index={index}
-            total={images.length}
+            index={offset + index}
+            total={count}
             altBase={altBase}
             width={width}
           />

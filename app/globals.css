@@ -58,6 +58,9 @@
 
   /* The page gutter. Theirs is 45px at 1700 wide. */
   --gutter: clamp(14px, 2.65vw, 48px);
+
+  /* The RSC mark's resting inset from the left edge. */
+  --mark-inset: clamp(14px, 2vw, 34px);
 }
 
 :root {
@@ -260,7 +263,9 @@ body {
    turns to mush at that size. Above everything, because it is furniture. */
 .mark-layer {
   position: fixed;
-  left: clamp(14px, 2vw, 34px);
+  /* Held in a variable because the opening sequence has to translate the
+     mark away from this exact inset and back to it. */
+  left: var(--mark-inset);
   top: 50%;
   transform: translateY(-50%);
   z-index: 70;
@@ -440,15 +445,41 @@ html[data-intro='done'] .hero-frame video {
   transition: transform 1100ms cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Furniture stays out of the way until the reveal is under way. The
-   caption is hidden rather than faded because HeroReveal writes its
+/* The RSC mark opens the page directly beneath the centred name — that is
+   where the reference puts its own circular monogram, from about 1.4s —
+   and then flies out to its resting place at the left edge on the same
+   curve and duration as the name's second move, so the two read as one
+   gesture rather than two.
+
+   It is the real mark travelling, not an intro copy that hands over. A
+   copy would be simpler, but the handover has to happen at the exact
+   moment the eye is on it, and any disagreement between the two shows.
+   The translate is written against --mark-inset so it tracks the resting
+   position at every viewport width instead of assuming a number. */
+html[data-intro] .mark-layer {
+  opacity: 0;
+  transform: translate(
+    calc(50vw - 50% - var(--mark-inset)),
+    calc(var(--wordmark-size) * 0.66 + 2svh)
+  );
+}
+html[data-intro='hold'] .mark-layer {
+  opacity: 1;
+  transition: opacity 420ms ease;
+}
+html[data-intro='open'] .mark-layer,
+html[data-intro='done'] .mark-layer {
+  opacity: 1;
+  transform: translateY(-50%);
+  transition: transform 910ms cubic-bezier(0.65, 0, 0.35, 1), opacity 420ms ease;
+}
+
+/* The band has nothing to do with the opening and simply arrives with it.
+   The caption is hidden rather than faded because HeroReveal writes its
    opacity inline every frame from the scroll position. */
-html[data-intro] .mark-layer,
 html[data-intro] .ticker-layer {
   opacity: 0;
 }
-html[data-intro='open'] .mark-layer,
-html[data-intro='done'] .mark-layer,
 html[data-intro='open'] .ticker-layer,
 html[data-intro='done'] .ticker-layer {
   opacity: 1;
@@ -545,6 +576,17 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
   padding-top: 37svh;
 }
 
+/* The cover under the pinned title. 18.3vw against the column's 16.7vw,
+   pulled 0.8vw left so it starts at 7.5vw — those are the reference's
+   numbers, and the overhang is what stops the column reading as a plain
+   left-aligned stack. Capped in height because his covers are landscape
+   where theirs are portrait. */
+.project-cover {
+  width: 18.3vw;
+  margin: clamp(20px, 3vh, 40px) 0 0 -0.8vw;
+  max-height: 34svh;
+}
+
 .project-stack {
   margin-left: 8.3%;
   width: 58.4%;
@@ -579,6 +621,7 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
   z-index: 50; /* in front of the wordmark — see .wordmark-layer */
 }
 
+.project-cover img,
 .plate-stack img {
   display: block;
   width: 100%;
@@ -592,6 +635,7 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
 
 /* With motion off the overscale is pointless cropping, so drop it. */
 @media (prefers-reduced-motion: reduce) {
+  .project-cover img,
   .plate-stack img {
     transform: none;
     will-change: auto;
@@ -623,7 +667,18 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
     padding-top: clamp(60px, 10vh, 120px);
     padding-inline: var(--gutter);
   }
-  .project-stack {
+  /* The cover under the pinned title. 18.3vw against the column's 16.7vw,
+   pulled 0.8vw left so it starts at 7.5vw — those are the reference's
+   numbers, and the overhang is what stops the column reading as a plain
+   left-aligned stack. Capped in height because his covers are landscape
+   where theirs are portrait. */
+.project-cover {
+  width: 18.3vw;
+  margin: clamp(20px, 3vh, 40px) 0 0 -0.8vw;
+  max-height: 34svh;
+}
+
+.project-stack {
     margin-left: 0;
     width: 100%;
     padding-inline: var(--gutter);

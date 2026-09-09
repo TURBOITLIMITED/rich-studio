@@ -37,6 +37,9 @@ export default function ProjectSection({
   project: Project;
   index: number;
 }) {
+  const cover = project.images.length >= 3 ? project.images[0] : null;
+  const rest = cover ? project.images.slice(1) : project.images;
+
   return (
     <section
       id={project.slug}
@@ -58,13 +61,38 @@ export default function ProjectSection({
           {project.kind}
           {project.credit ? ` · ${project.credit}` : ''}
         </p>
+
+        {/* The cover, under the title. The reference runs one here at
+            x 7.5% and 18.3% wide — slightly wider than its own 8.3%
+            column, so it sits a little proud of the type above it. A
+            project with only a couple of images keeps them all in the
+            stack rather than spending one on a thumbnail. */}
+        {cover ? (
+          <figure
+            data-parallax
+            data-lum={cover.lum ?? 0.5}
+            className="frame project-cover"
+            style={{ aspectRatio: cover.w && cover.h ? `${cover.w} / ${cover.h}` : '3 / 2' }}
+          >
+            <img
+              src={cover.sm}
+              width={cover.w}
+              height={cover.h}
+              alt={`${project.title} — image 1 of ${project.images.length}`}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        ) : null}
       </div>
 
       <div className="project-stack">
         <Collage
-          images={project.images}
+          images={rest}
           altBase={project.title}
           softenLarge={project.slug === 'ces-enfants'}
+          offset={cover ? 1 : 0}
+          total={project.images.length}
         />
       </div>
     </section>
