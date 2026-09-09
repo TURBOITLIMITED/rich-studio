@@ -685,6 +685,19 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
 .project-pin {
   position: sticky;
   top: 0;
+  /* position: sticky forms a stacking context whatever its z-index, so
+     the cover figure's own z-index: 50 was trapped inside this column and
+     could never beat the masthead's 40 — the left-hand image passed
+     BEHIND the letters while the right-hand stack, which sits in no such
+     context, passed in front. Raising the column itself is what lets the
+     cover out. Same trap as the hero video, which is inside a sticky
+     wrapper and needed the z-index on the wrapper rather than the frame.
+
+     On the reference the images cross in front of the masthead and the
+     small column copy passes behind it. Copy is ink and so is the
+     masthead, so where the two meet it is ink on ink either way and the
+     column's type reads the same at either level. */
+  z-index: 50;
   height: 100svh;
   margin-left: 8.3%;
   width: 16.7%;
