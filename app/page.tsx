@@ -78,11 +78,19 @@ export default function Home() {
       ))}
 
       {/* ---------- Everything else ---------- */}
+      {/* Asymmetric on purpose. This is the last thing before the footer, so
+          at the bottom of the page its DISTANCE FROM THE END is what decides
+          where it sits on screen — the padding above it does nothing there.
+          Closing up the bottom is what drops it down the window and fills
+          the empty band that used to sit between it and the rule. The space
+          above stays generous so it still arrives with room when you scroll
+          past it. */}
       <section
         aria-label="More work"
         style={{
           paddingInline: PAD,
-          paddingBlock: 'clamp(100px, 18vh, 240px)',
+          paddingTop: 'clamp(100px, 18vh, 240px)',
+          paddingBottom: 'clamp(50px, 9vh, 130px)',
           textAlign: 'center',
         }}
       >
