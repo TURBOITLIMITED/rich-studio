@@ -335,7 +335,12 @@ body {
   position: fixed;
   /* Held in a variable because the opening sequence has to translate the
      mark away from this exact inset and back to it. */
-  left: var(--mark-inset);
+  /* Right-hand edge, not left. On the left it sat in the pinned project
+     column's lane and the case-study copy ran straight over the rings.
+     The right edge is empty by construction — the image stack stops at
+     91.7% of the block and the masthead's last letter stops at the
+     gutter — so nothing crosses it there. */
+  right: var(--mark-inset);
   top: 50%;
   transform: translateY(-50%);
   z-index: 70;
@@ -646,8 +651,12 @@ html[data-intro='done'] .hero-frame video {
    together. 120px over 560ms on an ease-out puts the same move on ours. */
 html[data-intro] .mark-layer {
   opacity: 0;
+  /* Mirrored from the left-anchored version: the element's right edge is
+     now --mark-inset from the window's right, so reaching the centre is a
+     move LEFT of (50vw - 50% - inset), i.e. the negation of what it was.
+     Written out rather than negated so the sign is visible. */
   transform: translate(
-      calc(50vw - 50% - var(--mark-inset)),
+      calc(50% + var(--mark-inset) - 50vw),
       calc(50svh - 100% - 52px + 120px)
     )
     scale(1.43);
@@ -655,7 +664,7 @@ html[data-intro] .mark-layer {
 html[data-intro='hold'] .mark-layer {
   opacity: 1;
   transform: translate(
-      calc(50vw - 50% - var(--mark-inset)),
+      calc(50% + var(--mark-inset) - 50vw),
       calc(50svh - 100% - 52px)
     )
     scale(1.43);
@@ -787,7 +796,12 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
      column's type reads the same at either level. */
   z-index: 50;
   height: 100svh;
-  margin-left: 8.3%;
+  /* Nudged right from the reference's 8.3%. The space it gives back comes
+     off the gap before the image stack rather than off the right edge, so
+     the stack does not move: it stops at 91.7% and the RSC mark's lane now
+     starts at ~94%, and pushing the whole row right would have driven the
+     plates straight into the rings. */
+  margin-left: 11%;
   width: 16.7%;
   flex: 0 0 16.7%;
   /* Their sticky column starts 15dvh below the section top and the type
@@ -807,7 +821,9 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
 }
 
 .project-stack {
-  margin-left: 8.3%;
+  /* 5.6% + the pin's extra 2.7% = the 8.3% this used to be. The row still
+     ends exactly where it did. */
+  margin-left: 5.6%;
   width: 58.4%;
   flex: 0 0 58.4%;
 }

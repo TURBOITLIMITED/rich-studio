@@ -37,15 +37,16 @@ export default function Work() {
       </section>
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(80px, 14vh, 180px)' }}>
-        {/* The RSC mark is pinned at the left edge, vertically centred, so
-            the list is inset past it or the project titles run underneath
-            the rings. */}
+        {/* The RSC mark is pinned to the RIGHT edge, vertically centred, so
+            the list is inset past it on that side or the image counts —
+            which are right-aligned — run underneath the rings. The inset
+            was on the left while the mark was. */}
         <ul
           style={{
             listStyle: 'none',
             margin: 0,
             padding: 0,
-            paddingLeft: 'clamp(0px, 5.2vw, 88px)',
+            paddingRight: 'clamp(0px, 5.2vw, 88px)',
           }}
         >
           {projects.map((p, i) => (
