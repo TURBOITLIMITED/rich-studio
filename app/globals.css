@@ -82,6 +82,13 @@
   /* Held in a variable because the band's clipping boxes have to open up
      by a share of it — see .ticker-layer. */
   --ticker-size: clamp(13px, 1.15vw, 21px);
+  /* Everything the fixed band occupies at the foot of the window: how far
+     it is held off the bottom, plus its own height (0.5em of headroom
+     above a 1em line box, rounded up to 1.7 for the rule glyphs). Anything
+     that has to end clear of the band is written against this rather than
+     against a number somebody guessed, so it stays correct at every
+     window height instead of only at the one it was eyeballed on. */
+  --band-clear: calc(clamp(14px, 3.6vh, 38px) + var(--ticker-size) * 1.7);
 }
 
 :root {
@@ -372,8 +379,13 @@ body {
 /* The footer is the last thing in the scroll container, so it carries the
    clearance for the fixed ticker rather than every page shipping a spacer. */
 footer {
-  /* Clearance for the fixed band, which is not in the flow to push it. */
-  padding-bottom: clamp(70px, 10vh, 110px);
+  /* Clearance for the fixed band, which is not in the flow to push the
+     page down for itself. The old value was a flat clamp() that happened
+     to leave 25px at 887 tall and closed up from there — which is why the
+     bottom of the page read as a pile-up: the band sat almost on the nav
+     at rest, and crossed it at any scroll position short of the very end.
+     Band footprint plus a deliberate gap, so the two never meet. */
+  padding-bottom: calc(var(--band-clear) + clamp(28px, 5vh, 56px));
   position: relative;
   z-index: 50;
 }

@@ -14,7 +14,10 @@ export default function SiteFooter() {
       style={{
         paddingInline: 'var(--gutter)',
         paddingTop: 'clamp(60px, 12vh, 150px)',
-        paddingBottom: 'clamp(70px, 10vh, 110px)',
+        /* paddingBottom deliberately NOT set here. It is the band's
+           clearance and it lives in globals.css against --band-clear;
+           an inline copy would silently win over it and the two drifted
+           apart once already. */
         borderTop: '1px solid var(--color-rule)',
         display: 'flex',
         flexDirection: 'column',
