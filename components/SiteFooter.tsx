@@ -10,27 +10,16 @@ import { STUDIO_EMAIL } from '@/lib/contact';
  */
 export default function SiteFooter() {
   return (
-    <footer
-      style={{
-        paddingInline: 'var(--gutter)',
-        paddingTop: 'clamp(60px, 12vh, 150px)',
-        /* paddingBottom deliberately NOT set here. It is the band's
-           clearance and it lives in globals.css against --band-clear;
-           an inline copy would silently win over it and the two drifted
-           apart once already. */
-        borderTop: '1px solid var(--color-rule)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'clamp(28px, 5vh, 56px)',
-      }}
-    >
+    /* No inline layout. It all lives in the footer rule in globals.css —
+       the band clearance was written in both places once and the inline
+       copy won without saying so. */
+    <footer>
       <img
         src="/brand/wordmark-lockup.svg"
         alt="Rich Colvill Studio. Copyright, all rights reserved."
         width={1386}
         height={305}
         loading="lazy"
-        style={{ display: 'block', width: '100%', maxWidth: 900, height: 'auto' }}
       />
 
       <nav

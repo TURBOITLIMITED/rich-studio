@@ -378,16 +378,62 @@ body {
 
 /* The footer is the last thing in the scroll container, so it carries the
    clearance for the fixed ticker rather than every page shipping a spacer. */
+/* The whole footer layout lives here rather than half here and half
+   inline on the component, which is how the band clearance ended up
+   written twice with the inline copy silently winning. */
 footer {
-  /* Clearance for the fixed band, which is not in the flow to push the
-     page down for itself. The old value was a flat clamp() that happened
-     to leave 25px at 887 tall and closed up from there — which is why the
-     bottom of the page read as a pile-up: the band sat almost on the nav
-     at rest, and crossed it at any scroll position short of the very end.
-     Band footprint plus a deliberate gap, so the two never meet. */
-  padding-bottom: calc(var(--band-clear) + clamp(28px, 5vh, 56px));
+  padding-inline: var(--gutter);
+  /* The footer's HEIGHT is what decides how the page finishes, because
+     the last screenful is the footer: the taller it is, the further the
+     rule at its top rides up the window. At its old height the rule
+     landed on the RSC mark, which is fixed at the middle of the window
+     and therefore always in the same place, and it shoved "See the work"
+     up under the masthead. Trimmed so that at rest the mark clears the
+     rule with room and the section above it sits where it should. */
+  padding-top: clamp(48px, 9vh, 110px);
+  /* The nav row sits in the strip BELOW the band, hard at the foot of the
+     window. That tight bar — band, then links directly under it, both
+     running the full width — is the thing Rich means by inline and slick,
+     and pushing the links up above the band to "fix" an overlap took it
+     apart. So the last element in the flow clears the window edge by a
+     hair, and the space that keeps the band off his lockup is moved into
+     the gap above instead. */
+  /* 1.2vh, not 1.6: on a 700px-tall window the strip under the band is
+     only 25px and 1.6vh put the links flush against its bottom edge. */
+  padding-bottom: clamp(8px, 1.2vh, 18px);
+  display: flex;
+  flex-direction: column;
+  /* Band footprint plus air: this is what holds the lockup clear, since
+     the padding no longer does. */
+  gap: calc(var(--band-clear) + clamp(6px, 1.3vh, 20px));
+  border-top: 1px solid var(--color-rule);
   position: relative;
   z-index: 50;
+}
+
+/* The lockup is the only fixed-size thing in the footer, so on a short
+   window it is what makes the footer too tall and pushes the rule up into
+   the mark. Cap it by the window's HEIGHT as well as its width — 4.544 is
+   the artwork's own ratio (1386/305), so this is "no taller than 21vh"
+   expressed as a width. Costs ~50px of width at a normal window height
+   and nothing at all on a tall one. */
+footer img {
+  display: block;
+  width: 100%;
+  max-width: min(900px, calc(21vh * 4.544));
+  height: auto;
+}
+
+/* Narrow windows do not get the compact bar. The email address alone is
+   most of a phone's width, so the nav wraps to two lines and no longer
+   fits in the strip under the band — it would sit straight on top of it.
+   There the links go back above the band, which is the arrangement that
+   fits. */
+@media (max-width: 760px) {
+  footer {
+    padding-bottom: calc(var(--band-clear) + clamp(20px, 4vh, 40px));
+    gap: clamp(28px, 5vh, 56px);
+  }
 }
 
 /* No plate and no rule — just the text moving across the page, pinned to
@@ -894,6 +940,16 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
     bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
     transform: none;
     width: clamp(38px, 11vw, 52px);
+  }
+  /* On a phone the mark is not centred in the window, it is pinned near
+     the bottom-left — which is exactly where the footer's links end up.
+     Measured at 390x844: mark 721-760, nav 719-758, sitting on top of one
+     another. The footer has to clear the mark's whole footprint here, not
+     just the band's. */
+  footer {
+    padding-bottom: calc(
+      env(safe-area-inset-bottom, 0px) + 84px + clamp(52px, 13vw, 70px)
+    );
   }
 }
 
