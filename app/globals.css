@@ -1012,4 +1012,66 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
   html {
     scroll-behavior: auto;
   }
+  /* The preview still appears — seeing the work is the whole point of it
+     — it just stops rising and scaling into place. The follow is dropped
+     in the same breath in WorkList. */
+  .work-preview img {
+    transform: none;
+    transition: opacity 200ms ease;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   The /work index preview.
+
+   Rich on the index: "it's just all lists, obviously nobody knows what
+   any of those things are." The list is the right register — it reads
+   as a contents page — so the fix is not to turn it into a thumbnail
+   grid, it is to let a picture arrive under the cursor and leave again.
+
+   z-index 55 is deliberate and sits below the two fixed things it must
+   not fight: the running band (60) and the RSC mark (70). It is above
+   the list's own rules and type (nothing here raises them) so the
+   picture is never veiled by a project title. WorkList also keeps the
+   box clear of the band's top edge rather than relying on this z-index
+   — the band has no plate behind it and masks itself against the page's
+   dark images, so a dark preview passing underneath would erase it. --
+
+   The box is a fixed 4:3 rather than each image's own ratio. Rich's
+   archive runs portrait, landscape and square, and a preview that
+   changes shape row to row makes the reader watch the frame instead of
+   the work. object-fit: cover crops to the constant box. -------------- */
+.work-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: clamp(180px, 21vw, 320px);
+  aspect-ratio: 4 / 3;
+  z-index: 55;
+  pointer-events: none;
+  /* Transform is written every frame from rAF; promoting it keeps the
+     follow off the main thread's paint path. */
+  will-change: transform;
+}
+
+/* Every project that has been hovered stays mounted and stacked here —
+   swapping one <img>'s src instead would blank the preview on each move
+   between rows, which is the opposite of flowing in. */
+.work-preview img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: translateY(10px) scale(1.04);
+  transition:
+    opacity 380ms ease,
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.work-preview img[data-on] {
+  opacity: 1;
+  transform: none;
 }
