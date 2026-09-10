@@ -30,6 +30,7 @@ export default function Home() {
       {/* ---------- What the studio does. His words, justified. ---------- */}
       <section
         aria-label="What we do"
+        className="clears-mark"
         style={{ paddingInline: PAD, paddingBlock: 'clamp(80px, 16vh, 220px)' }}
       >
         <Block>

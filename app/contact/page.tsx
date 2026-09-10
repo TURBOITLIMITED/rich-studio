@@ -17,7 +17,7 @@ const PAD = 'var(--gutter)';
 
 export default function Contact() {
   return (
-    <div className="reads-in-front">
+    <div className="reads-in-front clears-mark">
       <section
         style={{
           marginTop: 'calc(var(--wordmark-size) * 1.15)',

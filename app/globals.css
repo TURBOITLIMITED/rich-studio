@@ -61,6 +61,9 @@
 
   /* The RSC mark's resting inset from the left edge. */
   --mark-inset: clamp(14px, 2vw, 34px);
+  /* Hoisted out of .mark-layer because the copy that has to clear the mark
+     is inset by exactly this plus the inset above — see .clears-mark. */
+  --mark-size: clamp(46px, 4.4vw, 74px);
 
   /* The resting showreel panel. Derived in HeroReveal from two
      measurements of the reference at different window sizes; these two
@@ -335,16 +338,15 @@ body {
   position: fixed;
   /* Held in a variable because the opening sequence has to translate the
      mark away from this exact inset and back to it. */
-  /* Right-hand edge, not left. On the left it sat in the pinned project
-     column's lane and the case-study copy ran straight over the rings.
-     The right edge is empty by construction — the image stack stops at
-     91.7% of the block and the masthead's last letter stops at the
-     gutter — so nothing crosses it there. */
-  right: var(--mark-inset);
+  /* Left edge, where Rich wants it. Nothing is moved out of its way by
+     hiding the mark somewhere emptier — the copy that would cross the
+     rings is inset past them instead, page by page. Images crossing it
+     are fine and deliberate: it flips to paper over dark plates. */
+  left: var(--mark-inset);
   top: 50%;
   transform: translateY(-50%);
   z-index: 70;
-  width: clamp(46px, 4.4vw, 74px);
+  width: var(--mark-size);
   display: block;
   /* viewBox is 332.3 x 304.6 */
   aspect-ratio: 332.3 / 304.6;
@@ -366,6 +368,44 @@ body {
   mask-position: center;
   -webkit-mask-size: contain;
   mask-size: contain;
+}
+
+/* Copy that would otherwise run under the RSC mark.
+
+   The mark is fixed at the left edge and vertically centred, so this is
+   not about any one element's position — every line of copy meets it
+   sooner or later as the page scrolls past. What matters is the LANE the
+   mark occupies, so the inset is derived from the mark's own inset and
+   width and tracks them at every width, rather than being a number that
+   happens to work at one.
+
+   padding-inline, not padding-left: a centred block (the home page's
+   statement is centred in its measure) would slide off-axis if only one
+   side moved. Costing the right-hand side the same margin is invisible.
+
+   Images are deliberately NOT given this. Rich wants them crossing the
+   mark, and it already flips to paper over dark plates so it stays
+   legible when they do. */
+.clears-mark {
+  /* MARGIN, not padding. Every one of these sections sets paddingInline
+     inline on the element, and an inline style beats a stylesheet rule —
+     the class applied, reported as applied, and did nothing, because the
+     property it set was already spoken for. Margin is untouched by those
+     inline styles, so it composes with the gutter instead of losing to
+     it: the copy ends up at margin + gutter from the edge. */
+  margin-inline: max(
+    0px,
+    calc(var(--mark-inset) + var(--mark-size) + 20px - var(--gutter))
+  );
+}
+
+/* Below 520px the mark is not in this lane at all — it is pinned near the
+   bottom-left, out of the running copy's way — and a phone cannot spare
+   70px of measure to dodge something that is not there. */
+@media (max-width: 520px) {
+  .clears-mark {
+    margin-inline: 0;
+  }
 }
 
 /* Toggled by BackdropContrast, from the same measurement the band uses. */
@@ -651,12 +691,8 @@ html[data-intro='done'] .hero-frame video {
    together. 120px over 560ms on an ease-out puts the same move on ours. */
 html[data-intro] .mark-layer {
   opacity: 0;
-  /* Mirrored from the left-anchored version: the element's right edge is
-     now --mark-inset from the window's right, so reaching the centre is a
-     move LEFT of (50vw - 50% - inset), i.e. the negation of what it was.
-     Written out rather than negated so the sign is visible. */
   transform: translate(
-      calc(50% + var(--mark-inset) - 50vw),
+      calc(50vw - 50% - var(--mark-inset)),
       calc(50svh - 100% - 52px + 120px)
     )
     scale(1.43);
@@ -664,7 +700,7 @@ html[data-intro] .mark-layer {
 html[data-intro='hold'] .mark-layer {
   opacity: 1;
   transform: translate(
-      calc(50% + var(--mark-inset) - 50vw),
+      calc(50vw - 50% - var(--mark-inset)),
       calc(50svh - 100% - 52px)
     )
     scale(1.43);

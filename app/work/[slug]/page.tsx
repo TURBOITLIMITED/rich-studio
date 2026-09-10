@@ -71,7 +71,10 @@ export default async function ProjectPage({
         </Link>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(50px, 10vh, 120px)' }}>
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'clamp(50px, 10vh, 120px)' }}
+      >
         <Block>
           <p className="t-body" style={{ maxWidth: '52ch' }}>
             {project.summary}
