@@ -33,8 +33,15 @@
 }
 
 @theme {
+  /* Rich's own values, given 2026-09-14. Paper was already right; the
+     black is his and replaces #0a0a0a.
+
+     Worth knowing rather than re-litigating later: #1a1b1e is very
+     slightly COOL — blue 30 against red 26 — and an earlier ink was
+     rejected for exactly that cast. This one is his, so it stands; the
+     note is here so nobody "corrects" it back to a neutral grey. */
   --color-paper: #f0f0ef;
-  --color-ink: #0a0a0a;
+  --color-ink: #1a1b1e;
   --color-ink-soft: #55565a;
   --color-magenta: #c5004b;
   --color-rule: #d6d6d4;
