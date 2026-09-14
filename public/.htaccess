@@ -1,0 +1,54 @@
+# Rich Colvill Studio — static export. TEMPORARY hand-uploaded copy on Hostinger.
+#
+# Canonical deploy is GitHub -> Cloudflare Pages (rich-colvill), which auto-
+# deploys on push. THIS COPY DOES NOT UPDATE ITSELF. When the nameservers move
+# to Cloudflare, delete this directory and cancel the hosting.
+#
+# public/_headers carries the same policy for Pages and is ignored by Apache,
+# so it is restated here. Keep the two in step if either changes.
+
+DirectoryIndex index.html
+Options -Indexes
+ErrorDocument 404 /404.html
+
+# WordPress's own .htaccess routed everything into index.php. It must not
+# survive in this directory or every page falls into a dead PHP front
+# controller. This replaces it.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # /about -> about.html, /work/silverstone -> work/silverstone.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.*)$ $1.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+
+  # Content-hashed build output and fonts — safe to pin for a year.
+  <FilesMatch "\.(woff2|woff|ttf|otf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # Imagery and video: stable but not content-hashed.
+  <FilesMatch "\.(webp|jpg|jpeg|png|svg|mp4)$">
+    Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
+  </FilesMatch>
+  # HTML must revalidate or a deploy is invisible to anyone who has visited.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# _next/static is content-hashed by the build, so it can outlive the rule above.
+<IfModule mod_headers.c>
+  <If "%{REQUEST_URI} =~ m#^/_next/static/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript application/json image/svg+xml
+</IfModule>
