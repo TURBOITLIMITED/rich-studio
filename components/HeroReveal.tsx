@@ -74,11 +74,17 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
      clipped to zero height — and the opening sequence holds the frame at
      clip-path: inset(50% 0 50% 0) for the first 1.7s. Measured: readyState
      4 (fully buffered) from 200ms, paused: true right up to 1874ms, when
-     the iris opened and playback finally began at currentTime 0. So the
-     slit tore open on frame zero of the reel, which is black for its first
-     0.9s. Asking for playback explicitly means the reel really is running
-     behind the closed curtain, the way the comment on the clip-path
-     always claimed it was. */
+     the iris opened and playback finally began at currentTime 0. Asking
+     for playback explicitly means the reel really is running behind the
+     closed curtain, the way the comment on the clip-path always claimed
+     it was.
+
+     This matters MORE since Rich's montage replaced the old reel, not
+     less. That reel opened on 0.9s of black, so a late start was merely
+     wasteful. The montage is eighteen stills at 0.2s on a 3.6s loop, so
+     without this the curtain would open on one frozen photograph and sit
+     there until playback caught up — the thing it is meant to prove is
+     moving would be the one thing standing still. */
   useEffect(() => {
     const v = video.current;
     if (!v) return;
@@ -180,8 +186,17 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
         >
           <video
             ref={video}
-            src="/video/reel.mp4"
-            poster="/video/reel-poster.jpg"
+            /* Rich's cut, 2026-09-14: "this should now be the video on
+               load." Eighteen pieces of work at 5fps, 0.2s each, 3.6s
+               round. He supplied it as a 12MB GIF; this is that file at
+               h264/yuv420p, cropped 1113 -> 1112 because h264 will not
+               take an odd dimension. New filenames rather than new bytes
+               at the old paths: Pages caches /public by name and a
+               replaced file can serve stale for a year.
+               2.1MB against the 3.9MB reel it replaces, so the hero got
+               lighter as well as newer. */
+            src="/video/reel-montage.mp4"
+            poster="/video/reel-montage-poster.jpg"
             autoPlay
             muted
             loop
