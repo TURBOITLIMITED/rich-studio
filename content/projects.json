@@ -8,7 +8,7 @@
   "kind": "CONCEPT",
   "credit": null,
   "home": true,
-  "order": 2,
+  "order": 3,
   "quality": 8,
   "images": [
    {
@@ -79,7 +79,7 @@
   "kind": "CLIENT",
   "credit": null,
   "home": true,
-  "order": 3,
+  "order": 4,
   "quality": 9,
   "images": [
    {
@@ -166,7 +166,7 @@
   "kind": "CLIENT",
   "credit": null,
   "home": true,
-  "order": 4,
+  "order": 5,
   "quality": 8,
   "images": [
    {
@@ -245,7 +245,7 @@
   "kind": "CLIENT",
   "credit": "RETOUCHING / ART DIRECTION",
   "home": true,
-  "order": 5,
+  "order": 6,
   "quality": 9,
   "images": [
    {
@@ -308,7 +308,7 @@
   "kind": "CONCEPT",
   "credit": null,
   "home": true,
-  "order": 6,
+  "order": 2,
   "quality": 9,
   "images": [
    {
