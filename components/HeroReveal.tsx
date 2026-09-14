@@ -188,15 +188,41 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
             ref={video}
             /* Rich's cut, 2026-09-14: "this should now be the video on
                load." Eighteen pieces of work at 5fps, 0.2s each, 3.6s
-               round. He supplied it as a 12MB GIF; this is that file at
+               round. Supplied as a 12MB GIF; this is that file at
                h264/yuv420p, cropped 1113 -> 1112 because h264 will not
-               take an odd dimension. New filenames rather than new bytes
-               at the old paths: Pages caches /public by name and a
-               replaced file can serve stale for a year.
-               2.1MB against the 3.9MB reel it replaces, so the hero got
-               lighter as well as newer. */
-            src="/video/reel-montage.mp4"
-            poster="/video/reel-montage-poster.jpg"
+               take an odd dimension.
+
+               CRF 20, and the number is the whole point. The first pass
+               shipped CRF 27 at 2.1MB because it made the hero LIGHTER
+               than the 3.9MB reel it replaced — the wrong thing to
+               optimise on a site whose client's standing complaint is
+               soft imagery. It cost 120KB a frame against the source's
+               679KB and it showed: waxy skin, smeared satin, hair detail
+               gone. Measured against the source frame, CRF 27 sits at
+               28.8dB and CRF 22 at 30.0 — that 1.1dB is the visible step.
+               Above CRF 20 the curve flattens (18 buys 0.3dB for another
+               1.4MB), so this is the knee, not a round number.
+
+               Forcing a keyframe per cut is the obvious idea and it is
+               wrong: every cut becomes a full intra frame and the file
+               goes to 13MB. Native 5fps is wrong too — with no duplicate
+               frames there is nothing to predict from, and it costs MORE
+               than 25fps at the same CRF. Let x264 find the cuts.
+
+               New filename again rather than new bytes at the old path.
+               Pages caches /public by name: reel.mp4 still answered 200
+               with its original 3.9MB after being deleted from the repo,
+               so overwriting would have served the old file for a year
+               and made this change look like it silently failed.
+
+               CEILING: the GIF holds 145 colours and is dithered, and is
+               named "animation-small ... ezgif.com-gif-to-mp4-converter",
+               so it is a downscaled export that has already been through
+               a lossy round trip. 1980px also upscales ~1.45x on a
+               retina laptop. Re-encoding cannot put back what is not in
+               the file — the real fix is Rich's original render. */
+            src="/video/montage-hq.mp4"
+            poster="/video/montage-hq-poster.jpg"
             autoPlay
             muted
             loop
