@@ -104,6 +104,55 @@
      against a number somebody guessed, so it stays correct at every
      window height instead of only at the one it was eyeballed on. */
   --band-clear: calc(clamp(14px, 3.6vh, 38px) + var(--ticker-size) * 1.7);
+
+  /* Where the last horizontal line on the page lands is decided entirely
+     by how TALL the footer is, because the footer is the last thing in
+     the scroll container: at rest the rule sits at 100vh minus the
+     footer's height. The RSC mark is fixed at the middle of the window,
+     so the two drift into each other on their own schedule. Rich,
+     2026-09-14: "at the bottom of the page where it ends i need the line
+     to be just below the logo on the left it runs through it currently."
+
+     Scaling the lockup up — his note earlier the same day — is what
+     pushed the footer past the mark. Measured at 1440 wide: the rule cut
+     through the rings at every window height from ~650 to ~1050 and only
+     cleared them at 1100+, on all four routes. His two notes pull in
+     opposite directions, so rather than trade one against the other with
+     a number that happens to work on one screen, the lockup is sized
+     from the space that is LEFT once the rule has been guaranteed its
+     place below the mark. It stays as big as it can be and it cannot
+     cross the mark again at any height.
+
+     The mark's centre is at 50vh (top:50% + translateY(-50%)) and it is
+     --mark-size wide at aspect 332.3/304.6, so its bottom edge sits
+     0.4583 * --mark-size below the middle of the window. */
+  /* Rich, 2026-09-14 (third note): "scale the bottom section up so it's
+     close to both sides not just right." That pulls against his previous
+     note: at 1440 wide a full-bleed lockup is 300px tall, and the height
+     the rule can afford at a 900px window is 254px. Air is the only
+     thing left to sell — 4.6vh down to 3.4vh, and the rule's clearance
+     from 3vh to 2.4vh — which buys the lockup ~55px of width back
+     before anything has to give. */
+  --foot-pad-top: clamp(20px, 3.4vh, 64px);
+  --foot-pad-bottom: clamp(8px, 1.2vh, 18px);
+  --foot-gap: calc(var(--band-clear) + clamp(6px, 1.3vh, 20px));
+  /* One line of 11px labels. They only wrap below 760px, and there the
+     mobile rule takes over and the mark is not centred anyway. */
+  --foot-nav: 16px;
+  /* "Just below": enough to read as a deliberate gap, not so much that
+     the line looks parked halfway down the page. */
+  --foot-rule-clear: clamp(16px, 2.4vh, 40px);
+  /* The floor matters on landscape phones, where half the window is not
+     enough to hold a footer at all and the subtraction would otherwise
+     go negative and invalidate the whole declaration. */
+  --foot-lockup-max: max(
+    96px,
+    calc(
+      50vh - var(--mark-size) * 0.4583 - var(--foot-rule-clear) -
+        var(--foot-pad-top) - var(--foot-pad-bottom) - var(--foot-gap) -
+        var(--foot-nav)
+    )
+  );
 }
 
 :root {
@@ -417,12 +466,15 @@ footer {
   padding-inline: var(--gutter);
   /* The footer's HEIGHT is what decides how the page finishes, because
      the last screenful is the footer: the taller it is, the further the
-     rule at its top rides up the window. At its old height the rule
-     landed on the RSC mark, which is fixed at the middle of the window
-     and therefore always in the same place, and it shoved "See the work"
-     up under the masthead. Trimmed so that at rest the mark clears the
-     rule with room and the section above it sits where it should. */
-  padding-top: clamp(48px, 9vh, 110px);
+     rule at its top rides up the window, and the RSC mark it has to
+     clear is fixed at the middle of the window and therefore always in
+     the same place. Every part of that height is now a token, because
+     the lockup's cap is computed from the sum of the others — see
+     --foot-lockup-max. Air is the cheapest of the three to give up, so
+     this is where the room for his bigger lockup comes from: it was
+     9vh (81px at a 900px window), and at 4.6vh it hands ~40px back to
+     the artwork without the rule moving up the page. */
+  padding-top: var(--foot-pad-top);
   /* The nav row sits in the strip BELOW the band, hard at the foot of the
      window. That tight bar — band, then links directly under it, both
      running the full width — is the thing Rich means by inline and slick,
@@ -432,12 +484,12 @@ footer {
      the gap above instead. */
   /* 1.2vh, not 1.6: on a 700px-tall window the strip under the band is
      only 25px and 1.6vh put the links flush against its bottom edge. */
-  padding-bottom: clamp(8px, 1.2vh, 18px);
+  padding-bottom: var(--foot-pad-bottom);
   display: flex;
   flex-direction: column;
   /* Band footprint plus air: this is what holds the lockup clear, since
      the padding no longer does. */
-  gap: calc(var(--band-clear) + clamp(6px, 1.3vh, 20px));
+  gap: var(--foot-gap);
   border-top: 1px solid var(--color-rule);
   position: relative;
   z-index: 50;
@@ -452,15 +504,23 @@ footer {
 footer img {
   display: block;
   width: 100%;
-  /* Rich, 2026-09-14: "scale up that bottom section © copyright block to
-     the right." Up from min(900px, 21vh * 4.544) — a third larger, and
-     still bounded by the window's HEIGHT as well as its width so a short
-     window cannot let the lockup push the nav row onto the band. 4.544 is
-     the lockup's own aspect, so the vh term stays true to its shape. */
-  max-width: min(1200px, calc(28vh * 4.544));
+  /* Rich asked for this three times in one day and the notes tighten each
+     time: "scale up that bottom section © copyright block to the right",
+     then the rule must sit below his mark, then "scale the bottom section
+     up so it's close to both sides not just right."
+     So there is no fixed ceiling left — no 900px, no 1200px. The artwork
+     runs the full measure between the gutters, and the ONLY thing that
+     can hold it back is the height the rule can spare (--foot-lockup-max,
+     converted through 4.544, the lockup's own aspect 1386/305).
+     Where that budget covers the full width the lockup is edge to edge,
+     which is what he is asking for: at 1440 wide that is every window
+     taller than ~980px, which includes the displays he reviews on.
+     Below that it is the tallest the rule allows and CENTRED — not
+     pushed right, because "not just right" is the half of the note that
+     still applies when it cannot have the whole measure. */
+  max-width: calc(var(--foot-lockup-max) * 4.544);
   height: auto;
-  /* And to the right. */
-  margin-left: auto;
+  margin-inline: auto;
 }
 
 /* Narrow windows do not get the compact bar. The email address alone is
