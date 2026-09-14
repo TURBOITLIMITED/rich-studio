@@ -57,7 +57,6 @@ export default function Contact() {
             <a
               href={`mailto:${STUDIO_EMAIL}`}
               className="link-underline"
-              style={{ color: 'var(--color-magenta)' }}
             >
               {STUDIO_EMAIL}
             </a>

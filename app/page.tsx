@@ -51,20 +51,17 @@ export default function Home() {
       {/* ---------- The outlined pull-quote. His line, not a written one. ---------- */}
       <section aria-label="Get in touch" style={{ paddingInline: PAD, paddingBottom: 'clamp(60px, 12vh, 160px)' }}>
         <Block>
-          <div
-            style={{
-              border: '1.5px solid var(--color-ink)',
-              maxWidth: 620,
-              marginInline: 'auto',
-              padding: 'clamp(22px, 3vw, 38px) clamp(18px, 3vw, 40px)',
-            }}
-          >
+          {/* No rule around it. Rich, 2026-09-14: "lose that box around that
+              get rich section at top. so its just copy." The measure and
+              the centring stay — they are what hold it as a block — but
+              the border and the padding it existed to create are gone. */}
+          <div style={{ maxWidth: 620, marginInline: 'auto' }}>
             <p className="t-quote m-0">
               Let’s get together, over e-mail, WhatsApp, Zoom, phone or even better
               over a beer, have a chat and see how we can take your brief to the
               next level.
             </p>
-            <p className="t-quote m-0" style={{ marginTop: '1.2em', color: 'var(--color-magenta)' }}>
+            <p className="t-quote m-0" style={{ marginTop: '1.2em' }}>
               <a href={`mailto:${STUDIO_EMAIL}`} className="link-underline">
                 Get ®Rich quick.
               </a>

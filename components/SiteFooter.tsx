@@ -32,7 +32,6 @@ export default function SiteFooter() {
         <a
           href={`mailto:${STUDIO_EMAIL}`}
           className="t-label link-underline"
-          style={{ color: 'var(--color-magenta)' }}
         >
           {STUDIO_EMAIL}
         </a>

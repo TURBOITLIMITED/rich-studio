@@ -42,7 +42,12 @@
      note is here so nobody "corrects" it back to a neutral grey. */
   --color-paper: #f0f0ef;
   --color-ink: #1a1b1e;
-  --color-ink-soft: #55565a;
+  /* Rich, 2026-09-14: "id do all grey bits in that too (the small copy
+     elements)" — following straight on from "always that black colour no
+     red". The grey is retired to his black rather than the token being
+     deleted, so every rule that reached for a softer ink still resolves
+     and there is one value to put back if he wants the grey again. */
+  --color-ink-soft: #1a1b1e;
   --color-magenta: #c5004b;
   --color-rule: #d6d6d4;
 
@@ -213,15 +218,17 @@ body {
   hyphens: none;
 }
 
-/* The running band. 19.55px, weight 700, NO letter-spacing and NO
-   uppercasing: theirs reads "2026 MAISON AUGE own the beauty" — caps
-   for the name, lowercase for the line. Ours was 10px tracked-out
-   uppercase, which is why it read as a legal footer instead of a band. */
+/* The running band. 19.55px, weight 700, no letter-spacing.
+   UPPERCASE by Rich's instruction, 2026-09-14: "lets do all uppercase
+   fonts, so that ticker strip." It was the one lowercase thing left on
+   the site — the reference sets its own line in lowercase and this
+   followed it there, which is exactly the borrowed register he does not
+   want. His doctrine is all caps, never lowercase. */
 .t-ticker {
   font-size: var(--ticker-size);
   line-height: 1;
   letter-spacing: normal;
-  text-transform: none;
+  text-transform: uppercase;
   font-weight: 700;
   color: var(--color-ink);
 }
@@ -445,8 +452,15 @@ footer {
 footer img {
   display: block;
   width: 100%;
-  max-width: min(900px, calc(21vh * 4.544));
+  /* Rich, 2026-09-14: "scale up that bottom section © copyright block to
+     the right." Up from min(900px, 21vh * 4.544) — a third larger, and
+     still bounded by the window's HEIGHT as well as its width so a short
+     window cannot let the lockup push the nav row onto the band. 4.544 is
+     the lockup's own aspect, so the vh term stays true to its shape. */
+  max-width: min(1200px, calc(28vh * 4.544));
   height: auto;
+  /* And to the right. */
+  margin-left: auto;
 }
 
 /* Narrow windows do not get the compact bar. The email address alone is

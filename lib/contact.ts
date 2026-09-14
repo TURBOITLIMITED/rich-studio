@@ -7,7 +7,9 @@
  * copies is how a wrong address gets back in.
  */
 
-export const STUDIO_EMAIL = 'letsdothis@richcolvill.com';
+/* Rich, 2026-09-14: "contact email is only rich@richcolvill.com". It
+   replaces letsdothis@ on every page, not just the contact one. */
+export const STUDIO_EMAIL = 'rich@richcolvill.com';
 
 export const HOURS = 'BY APPOINTMENT ONLY   11A – 4P MONDAY, THURSDAY';
 

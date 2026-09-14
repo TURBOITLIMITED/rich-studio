@@ -110,7 +110,7 @@ export default function About() {
 
       <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
         <Block>
-          <a href={`mailto:${STUDIO_EMAIL}`} className="t-label link-underline" style={{ color: 'var(--color-magenta)' }}>
+          <a href={`mailto:${STUDIO_EMAIL}`} className="t-label link-underline">
             Get ®Rich quick.
           </a>
         </Block>
