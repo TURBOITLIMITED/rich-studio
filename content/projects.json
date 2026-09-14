@@ -1938,6 +1938,14 @@
         "lum": 0.164
       },
       {
+        "src": "/projects/silverstone/brand-book.webp",
+        "sm": "/projects/silverstone/brand-book-sm.webp",
+        "w": 2000,
+        "h": 1333,
+        "orient": "landscape",
+        "lum": 0.344
+      },
+      {
         "src": "/projects/silverstone/paddock.webp",
         "sm": "/projects/silverstone/paddock-sm.webp",
         "w": 2000,
