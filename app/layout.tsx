@@ -73,7 +73,7 @@ export default function RootLayout({
             for ever on a centred name over a closed slit. */}
         <noscript>
           <style>{`html[data-intro] .wordmark-layer,
-                   html[data-intro] .wordmark-glyph > span,
+                   html[data-intro] .wordmark-art,
                    html[data-intro] .hero-frame,
                    html[data-intro] .hero-frame video { transform: none !important; clip-path: none !important; }
                    html[data-intro] .mark-layer,
@@ -106,7 +106,7 @@ export default function RootLayout({
               Lenis scrolls this container by scrollTop rather than by a
               transform, so position:fixed still resolves to the
               viewport and the masthead stays pinned. */}
-          <Wordmark text="Rich Colvill" />
+          <Wordmark />
           <main id="main">{children}</main>
           <SiteFooter />
         </ScrollRoot>

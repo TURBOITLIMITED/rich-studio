@@ -140,63 +140,36 @@ body {
   white-space: nowrap;
 }
 
-/* The masthead is set edge to edge, not centred: one flex item per
-   character, spread with space-between across the gutters. That is how
-   the reference makes an 11-character word fill 1620 of 1700px — the
-   glyphs alone only measure ~1342. */
-/* One clipping box per character. No height and no layout of its own —
-   just a lid, so nothing shows at rest and the reveal has something to
-   slide out from. The natural line box puts that lid ~0.24em below the
-   baseline; the reference's sits ~0.28em below its own, which is near
-   enough that giving these boxes an explicit height (and shifting the
-   whole masthead's centring by 0.15em to get it) buys nothing. */
-.wordmark-glyph {
-  display: inline-block;
-  flex: 0 0 auto;
-  overflow: hidden;
-  white-space: pre;
-  /* The lid has to sit BELOW the glyph and nowhere near the top of it.
-     At line-height 1 the line box is exactly 1em, but Nimbus Sans is
-     taller than that between its ascender and descender, so the negative
-     half-leading lands the box's top edge right on the cap line — and
-     round letters overshoot it. C and O are drawn a hair taller than R
-     and H so they LOOK the same height, and clipping at the box shaved
-     exactly that hair off: flat-topped Cs and Os with the flat letters
-     beside them untouched.
+/* The masthead is Rich's own wordmark, set edge to edge.
 
-     Padding opens the clip box out; the equal negative margin takes the
-     layout back. Flex aligns the MARGIN box, so the content lands exactly
-     where it did and only the clipping rectangle grows. Inline as well as
-     top, because the same argument applies to the sides.
+   It used to be one flex item per character, spread with space-between so
+   a 12-letter word filled the gutter-to-gutter box the way the reference
+   does. That was type standing in for his logo, and his logo is a
+   different drawing: caps, bold, ® at the end, and letterforms 1.27x
+   narrower than the face we were setting it in (his ink 1292.1 x 137.2,
+   ratio 9.42, against Nimbus Sans Bold's 11.97). The difference is in the
+   glyphs, so tracking could never have closed it.
 
-     0.1em is ~7x the overshoot actually measured (3 CSS px at 202px type,
-     and the figure is scale-invariant in em), and 0.025em a side is ~5x
-     what the ® needs — which is the only glyph that paints wider than its
-     advance width. Deliberately not the 0.3em/0.06em this started as:
-     that was 24x what was needed, which pushed every lid above the top of
-     the viewport and made adjacent lids overlap by 11.3px. Harmless,
-     since the boxes are transparent and no letter's ink reaches into its
-     neighbour's, but a lid that owns one letter's column is the whole
-     idea and it is worth keeping true. */
-  padding: 0.1em 0.025em 0;
-  margin: -0.1em -0.025em 0;
-}
-.wordmark-glyph > span {
-  display: inline-block;
-  white-space: pre;
+   His artwork has its own internal spacing, so there is nothing to
+   justify — it simply spans the measure and its height follows from his
+   own proportions. */
+.wordmark-art {
+  display: block;
+  /* Edge to edge, which is the point of the masthead. On a short window
+     that would make it far too tall, so the height caps and it centres —
+     the same 30vh ceiling --wordmark-size already uses. 9.4176 is his
+     ink's own ratio, so the cap is expressed in his proportions. */
+  width: min(100%, calc(30vh * 9.4176));
+  height: auto;
+  margin-inline: auto;
 }
 
 .wordmark-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   padding-inline: var(--gutter);
-  /* Set in em so it tracks the type. Nimbus Sans puts its cap top much
-     closer to the top of the line box than Neue Montreal does, so at
-     line-height 1 the caps sat 7px from the viewport edge and read as
-     sliced off. Theirs clears by ~34px; 0.115em restores that. */
-  padding-top: 0.115em;
-  white-space: nowrap;
+  /* Was 0.115em of the type's own size. The em is gone with the type, so
+     the same figure is taken from the token directly — it is what clears
+     the cap top from the viewport edge. */
+  padding-top: calc(var(--wordmark-size) * 0.115);
 }
 
 .t-label {
@@ -625,14 +598,18 @@ html[data-intro='hold'] .wordmark-layer {
    the eye actually reads. The 380ms delay puts the first letter on the
    move at ~513ms from navigation against their ~500ms, and the last one
    landing at ~1465ms against their ~1470ms. */
-html[data-intro='boot'] .wordmark-glyph > span {
-  transform: translateY(172%);
+html[data-intro='boot'] .wordmark-art {
+  clip-path: inset(0 100% 0 0);
 }
-html[data-intro='rise'] .wordmark-glyph > span,
-html[data-intro='hold'] .wordmark-glyph > span {
-  transform: translateY(0);
-  transition: transform 760ms cubic-bezier(0.65, 0, 0.35, 1);
-  transition-delay: calc(380ms + var(--i) * 16ms);
+/* One wipe where there were thirteen lids. Timed to the sweep it
+   replaces: the first letter used to start at 380ms and the last landed
+   at ~1332ms, so this runs 950ms from the same 380ms delay and finishes
+   in the same place, on the same curve. */
+html[data-intro='rise'] .wordmark-art,
+html[data-intro='hold'] .wordmark-art {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 950ms cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: 380ms;
 }
 
 /* Then the whole block goes up to the masthead's own place — the one move
