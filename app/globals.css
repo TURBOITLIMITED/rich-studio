@@ -153,6 +153,41 @@
         var(--foot-nav)
     )
   );
+
+  /* ---- Page composition -------------------------------------------------
+     Geometry here was already tokenised; page COMPOSITION was not, and
+     every page hand-picked its own heading size and section rhythm. About
+     and Contact carry identical class lists and shared not one number —
+     6.4vw vs 7vw, 160px vs 150px, .t-statement vs .t-body. That drift is
+     what Rich means by About being "the wrong format". These are the
+     shared values; a page that wants a different rhythm now has to say so
+     deliberately instead of drifting into one. */
+
+  /* Sentence headings — About's and Contact's h1. NOT the masthead: see
+     .t-display for why these cannot borrow .t-wordmark. */
+  --display-size: clamp(2rem, 6.6vw, 5.6rem);
+
+  --section-gap-lead: clamp(50px, 10vh, 120px);
+  --section-gap: clamp(60px, 12vh, 150px);
+  /* The LAST section on a route. The ticker is fixed to the foot of the
+     window with nothing behind it, so anything ending level with it gets
+     a running headline printed through it. The mark has had a clearance
+     mechanism (.clears-mark) since the beginning; the band never did, on
+     any route, at any width — which is why About's client list has a
+     ticker running through it. Derived from the band's own footprint, not
+     guessed: 150.6px at 1440x900, 120.0px at 390x844. */
+  --section-gap-end: calc(var(--band-clear) + clamp(40px, 8vh, 90px));
+
+  /* Below 520px the mark leaves the left edge and pins near the bottom-
+     left corner, where the footer nav and the hero caption live. Its
+     footprint was written as a bare 84px in two places; naming it means
+     anything that has to clear it can be derived from it. 0.9166 is the
+     artwork's aspect (304.6/332.3). */
+  --mark-narrow: clamp(38px, 11vw, 52px);
+  --mark-foot: calc(env(safe-area-inset-bottom, 0px) + 84px);
+  --mark-foot-clear: calc(
+    var(--mark-foot) + var(--mark-narrow) * 0.9166 + clamp(10px, 2vh, 18px)
+  );
 }
 
 :root {
@@ -192,6 +227,27 @@ body {
   text-transform: uppercase;
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* Sentence headings — About's "A team of creative creatures.", Contact's.
+   They were set in .t-wordmark with an inline font-size override, and
+   .t-wordmark carries `white-space: nowrap` because the MASTHEAD must
+   never break: --wordmark-size was derived against that guarantee.
+   Borrowed onto a sentence, nowrap does exactly what it promises and
+   shoves the tail off the screen. About's h1 ran 151px past the right
+   edge at 390 and 286px at 1440, invisibly, because .scroll-root hides
+   overflow-x — the heading simply appeared to have been cut off
+   mid-word. That is the first thing Rich named.
+   So: same face, same weight, same caps, and a normal wrap. Do not fix
+   this by relaxing .t-wordmark's nowrap. */
+.t-display {
+  font-size: var(--display-size);
+  line-height: 0.92;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: normal;
+  text-wrap: balance;
 }
 
 /* The masthead is Rich's own wordmark, set edge to edge.
@@ -267,6 +323,18 @@ body {
   hyphens: none;
 }
 
+/* Justification needs a measure to work with. At 390 the clamp bottoms
+   out at 16.8px in a 362px column — about 35 characters a line against
+   desktop's 65 — and justifying bold all-caps at that width tears rivers
+   of white space down the paragraph. Ragged right is the honest setting
+   below the point where there are enough words in a line to distribute.
+   Not a token: this is the measure failing, not the rhythm changing. */
+@media (max-width: 520px) {
+  .t-statement {
+    text-align: left;
+  }
+}
+
 /* The running band. 19.55px, weight 700, no letter-spacing.
    UPPERCASE by Rich's instruction, 2026-09-14: "lets do all uppercase
    fonts, so that ticker strip." It was the one lowercase thing left on
@@ -336,6 +404,31 @@ body {
   height: 100%;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* The footer's entire band-clearance apparatus (--foot-gap, its
+     padding-bottom, --foot-lockup-max) assumes the footer IS the last
+     screenful. On a SHORT page — /contact/ on a phone — the content runs
+     out early, the footer stops mid-window, and the ticker (fixed to the
+     foot of the viewport, independent of the flow) cuts straight across
+     the lockup. Measured at 430x932: 14,183px^2 of overlap.
+     Pushing the footer to the bottom of the container is what makes every
+     clearance value on it true again. .wordmark-layer is position:fixed
+     and out of flow, so it is unaffected. */
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll-root > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.scroll-root main {
+  flex: 1 0 auto;
+}
+
+.scroll-root footer {
+  flex: 0 0 auto;
 }
 .scroll-root::-webkit-scrollbar {
   display: none;
@@ -439,8 +532,43 @@ body {
    bottom-left, out of the running copy's way — and a phone cannot spare
    70px of measure to dodge something that is not there. */
 @media (max-width: 520px) {
+  /* Below here the mark is no longer beside the copy, so insetting the
+     copy buys nothing — it just narrows an already narrow measure. */
   .clears-mark {
     margin-inline: 0;
+  }
+
+  /* But it has not gone away: it relocates to the bottom-LEFT corner, on
+     top of wherever the page happens to end. So the clearance that was
+     horizontal above this width becomes vertical below it. Without this
+     the last section of /about/ ends under the rings. Same idea as
+     .clears-mark, rotated 90 degrees. */
+  :root {
+    --section-gap-end: calc(
+      var(--band-clear) + var(--mark-foot-clear) + clamp(20px, 4vh, 44px)
+    );
+  }
+
+  /* And the mark itself comes off below this width.
+     This is a judgement call, and it reverses a decision made higher up
+     this file ("Nothing is moved out of its way by hiding the mark
+     somewhere emptier — the copy that would cross the rings is inset past
+     them instead"). That rule works because on a wide window there IS a
+     left margin to inset into. At 390px there is not: .clears-mark is
+     zeroed six lines above precisely because a 60px inset would eat a
+     sixth of an already-narrow measure. So on a phone the mark has no
+     clearance mechanism at all, it is fixed to the viewport, and body
+     copy scrolls under it continuously — ink on ink, which is the one
+     case BackdropContrast cannot rescue, since it flips the mark against
+     the PLATE behind it and paper-with-text is still paper.
+     Measured on /about/ at 390x844: the rings printed through ODEON and
+     WALL'S in the client list, then through PENHALIGON'S once that list
+     became a run. That is what Rich reported.
+     The masthead already carries his wordmark full-width on every route,
+     so the identity is not lost — only the monogram is, and only on
+     phones. Delete this block to put it back. */
+  .mark-layer {
+    display: none;
   }
 }
 
@@ -980,14 +1108,32 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
    ------------------------------------------------------------ */
 
 /* 2.16:1 is a cinema strip; at 80vw of a 390px phone that is 144px tall
-   and the showreel becomes a letterbox slot. Nothing about the
-   reference's mobile layout was ever measured, so this is our call rather
-   than a copy: the panel takes the source clip's own 16:9 and a little
-   more width. HeroReveal carries the same numbers for the scroll loop. */
-@media (max-width: 760px) {
+   and the showreel becomes a letterbox slot. 16/9 was barely better:
+   343x193 at 390x844, 7.4% of the window's area against desktop's 47.4%.
+   4:5 gives 343x429 — 44.7% of the area, opening 2.24x against desktop's
+   2.11x. Same dominance, same gesture, which is what parity means on a
+   portrait screen.
+   HeroReveal.tsx carries the SAME two numbers for the scroll loop and the
+   two must move together: this token paints the first frame before the
+   rAF loop takes over, so a mismatch flashes the old geometry for a
+   frame. */
+/* The condition is PORTRAIT, not narrow. 768x1024 (iPad held upright) is
+   769px wide, clears a max-width:760 rule by nine pixels, and gets the
+   desktop cinema strip on a screen a third taller than it is wide: 614x284,
+   28% of the window's height. That is the same letterbox-in-a-field the
+   phone had. A landscape phone (844x390) is the opposite case and correctly
+   keeps the wide panel, because there the strip suits the window. */
+@media (max-width: 760px), (orientation: portrait) and (max-width: 900px) {
   :root {
-    --hero-w: 88vw;
-    --hero-ar: 16 / 9;
+    /* 88vw alone gave an iPad 676x845 — 82% of the window's height, which
+       overshoots as badly in the other direction as 16/9 undershot. The
+       height cap keeps DOMINANCE flat across devices instead of letting it
+       swing with the screen's aspect: 51% on a phone, 58% on a tablet,
+       59% on the desktop. 46.4svh is the 58% ceiling expressed as a width
+       through the 4:5 aspect (0.58 x 0.8). svh, not vh, so a phone's
+       collapsing address bar does not resize the panel mid-scroll. */
+    --hero-w: min(88vw, 46.4svh);
+    --hero-ar: 4 / 5;
   }
 }
 
@@ -1047,9 +1193,14 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
 @media (max-width: 520px) {
   .mark-layer {
     top: auto;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+    /* Same computed position as the 84px/clamp() pair that was written
+       here twice; now derived from --mark-foot / --mark-narrow so that
+       anything needing to clear the mark (the hero caption, the footer)
+       can be written against the same numbers instead of repeating them
+       and drifting. */
+    bottom: var(--mark-foot);
     transform: none;
-    width: clamp(38px, 11vw, 52px);
+    width: var(--mark-narrow);
   }
   /* On a phone the mark is not centred in the window, it is pinned near
      the bottom-left — which is exactly where the footer's links end up.
@@ -1057,9 +1208,7 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
      another. The footer has to clear the mark's whole footprint here, not
      just the band's. */
   footer {
-    padding-bottom: calc(
-      env(safe-area-inset-bottom, 0px) + 84px + clamp(52px, 13vw, 70px)
-    );
+    padding-bottom: calc(var(--mark-foot) + clamp(52px, 13vw, 70px));
   }
 }
 

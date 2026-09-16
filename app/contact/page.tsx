@@ -17,22 +17,26 @@ const PAD = 'var(--gutter)';
 
 export default function Contact() {
   return (
-    <div className="reads-in-front clears-mark">
+    <div className="reads-in-front">
+      {/* Headings at the gutter, in register with the fixed mark rather
+          than inset past it. clears-mark moved off the page root and onto
+          the sections whose copy actually runs beside the rings — the same
+          change About needed, and for the same reason. */}
       <section
         style={{
           marginTop: 'calc(var(--wordmark-size) * 1.15)',
           paddingInline: PAD,
-          paddingBottom: 'clamp(50px, 10vh, 120px)',
+          paddingBottom: 'var(--section-gap-lead)',
         }}
       >
         <Block>
           <p className="t-meta m-0">Contact</p>
         </Block>
         <Block>
-          <h1
-            className="t-wordmark m-0"
-            style={{ fontSize: 'clamp(2rem, 7vw, 6rem)', lineHeight: 0.92, marginTop: 18 }}
-          >
+          {/* .t-display, not .t-wordmark: the masthead class is
+              white-space:nowrap and a sentence set in it runs off the
+              screen. About's h1 was clipped mid-word by exactly this. */}
+          <h1 className="t-display m-0" style={{ marginTop: 18 }}>
             Get ®Rich quick.
           </h1>
         </Block>
@@ -45,7 +49,10 @@ export default function Contact() {
         </Block>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(60px, 12vh, 150px)' }}>
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'var(--section-gap)' }}
+      >
         <Block>
           <p className="t-meta" style={{ marginBottom: 10 }}>
             Email to arrange a time
@@ -67,7 +74,13 @@ export default function Contact() {
         </Block>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
+      {/* Last section on the route, so it carries the band clearance —
+          without it the desk list ends level with the fixed ticker and the
+          running headline prints straight through it. */}
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'var(--section-gap-end)' }}
+      >
         <ul
           style={{
             listStyle: 'none',

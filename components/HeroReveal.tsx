@@ -46,17 +46,47 @@ const MAX_VH = 1.4256;
 
 /* 2.16:1 is a cinema strip, and on a phone 80vw of it is 144px tall — the
    showreel would be a letterbox slot. Nothing about the reference's mobile
-   layout was ever measured, so this is our call, not a copy: below 760px
-   the panel takes the source clip's own 16:9 and a little more width. */
+   layout was ever measured, so this is our call, not a copy.
+
+   It was 16/9, and 16/9 was still a letterbox slot. Measured at 390x844:
+   343x193, 22.9% of the window's height and 7.4% of its AREA, marooned in
+   274px of dead space above and 233px below, and irising open 4.97x.
+   Desktop's panel is 47.4% of the area and opens 2.11x. That is not the
+   same picture at a smaller size, it is a different picture — which is
+   exactly what Rich said when he saw it: "mobile looks nothing like the
+   desktop."
+
+   "The same as desktop" cannot mean the same rectangle on a portrait
+   screen. It means the same DOMINANCE and the same GESTURE. 4:5 at 88vw
+   gives 343x429 — 50.8% of the height, 44.7% of the area, opening 2.24x.
+   Both within three points of desktop. Dead space collapses to 156/54.
+
+   The montage is 16:9 and object-fit:cover, so a 4:5 aperture crops its
+   sides. That is already true at 16/9 and worse than it looks — see the
+   note on the video element, which is sized to the VIEWPORT rather than
+   to this frame. Changing the aperture does not make that worse. */
 const NARROW = 760;
-const NARROW_AR = 16 / 9;
+const NARROW_AR = 4 / 5;
 const NARROW_VW = 0.88;
+/* Height ceiling, as a share of the viewport height, so the panel's
+   dominance stays flat across devices rather than swinging with the
+   screen's aspect. 0.58 x NARROW_AR: a phone is width-limited and lands
+   at 51%, an iPad is height-limited and lands at 58%, desktop is 59%. */
+const NARROW_MAX_VH = 0.58 * NARROW_AR;
+
+/* Mirrors the media query in globals.css — the two MUST agree, because the
+   CSS token paints the first frame and this takes over from the rAF loop.
+   Portrait, not merely narrow: an iPad upright is 768 wide and would
+   otherwise take the desktop strip on a screen taller than it is wide. */
+function isPortraitPanel(vw: number, vh: number) {
+  return vw <= NARROW || (vh > vw && vw <= 900);
+}
 
 function restingPanel() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  if (vw <= NARROW) {
-    const w = NARROW_VW * vw;
+  if (isPortraitPanel(vw, vh)) {
+    const w = Math.min(NARROW_VW * vw, NARROW_MAX_VH * vh);
     return { w, h: w / NARROW_AR };
   }
   const w = Math.min(MAX_VW * vw, MAX_VH * vh);
@@ -262,7 +292,16 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
                the window and is not in the flow to push this off it. At
                26px the two overlapped by 7px and the caption read as a
                second line of the band. */
-            bottom: 'clamp(62px, 9.4vh, 104px)',
+            /* Below 520px the mark leaves the left edge and pins near the
+               bottom-left corner — which is where this caption sits. They
+               overlapped: measured at 390x844 the rings (y 721-760) printed
+               through "BRANDING / DESIGN / CREATIVE PRODUCTION" (y 751.7-
+               764.7). --mark-foot-clear is the mark's own footprint plus
+               air, so the caption is lifted by exactly what the mark
+               occupies rather than by a number that looked about right.
+               max() means desktop is untouched: above 520px the clamp is
+               always the larger value. */
+            bottom: 'max(clamp(62px, 9.4vh, 104px), var(--mark-foot-clear))',
             left: 0,
             right: 0,
             textAlign: 'center',

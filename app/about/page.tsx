@@ -11,7 +11,34 @@ export const metadata: Metadata = {
 /* Everything on this page is copy Rich has written elsewhere on his own
    site. Nothing is invented. He still owes a real studio bio and a
    portrait — the slots are noted in the handover, not filled with
-   placeholder prose. */
+   placeholder prose.
+
+   Rich, 2026-09-16: "about needs to change, wrong format, everything
+   looks off compared to the rest of the site — positioning of the logo on
+   the left and the lines at the bottom." All three were real:
+
+   1. THE LOGO ON THE LEFT. `clears-mark` was on the page ROOT, so the
+      meta label and the h1 were inset 112px with the running copy. Every
+      other route puts headings at the gutter and insets only the copy and
+      lists that would actually run through the rings (/work/ sets its h1
+      at 38px and insets the list separately). So About alone sat shifted
+      right, out of register with the fixed mark at x 28.8–92.2. The class
+      now goes on the sections that need it, which is the site's own
+      convention rather than a new one.
+
+   2. THE LINES AT THE BOTTOM. The client list was fifteen cells, each
+      with its own `border-top`, which at 1440 resolved into three
+      full-width rules in 11px caps — the same register as the running
+      ticker band, stacked directly above it. It read as extra rows of the
+      ticker. It is now one justified run, the idiom already used for the
+      statement above it and on the home page: same names, no rules, and
+      nothing left that mimics the band.
+
+   3. THE FORMAT. The h1 was .t-wordmark (the MASTHEAD class, which is
+      `white-space: nowrap`) with an inline font-size, so it ran off the
+      right edge and was clipped mid-word. It is now .t-display, and the
+      section rhythm comes from the shared tokens instead of three
+      hand-picked clamps that matched no other page. */
 
 const CLIENTS = [
   'SILVERSTONE', 'ADIDAS', 'ODEON', "WALL'S", 'PERNOD RICARD',
@@ -28,28 +55,31 @@ const PAD = 'var(--gutter)';
 
 export default function About() {
   return (
-    <div className="reads-in-front clears-mark">
+    <div className="reads-in-front">
+      {/* Headings sit at the gutter, in register with the mark rather than
+          pushed off it. No clears-mark here — the mark is beside the copy
+          below, not beside the masthead. */}
       <section
         style={{
           marginTop: 'calc(var(--wordmark-size) * 1.15)',
           paddingInline: PAD,
-          paddingBottom: 'clamp(50px, 10vh, 120px)',
+          paddingBottom: 'var(--section-gap-lead)',
         }}
       >
         <Block>
           <p className="t-meta m-0">About</p>
         </Block>
         <Block>
-          <h1
-            className="t-wordmark m-0"
-            style={{ fontSize: 'clamp(1.9rem, 6.4vw, 5.4rem)', lineHeight: 0.92, marginTop: 18 }}
-          >
+          <h1 className="t-display m-0" style={{ marginTop: 18 }}>
             A team of creative creatures.
           </h1>
         </Block>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'var(--section-gap)' }}
+      >
         <Block>
           <p className="t-statement" style={{ maxWidth: '70ch' }}>
             We help businesses stand out through creative production. — Rich
@@ -60,7 +90,10 @@ export default function About() {
         </Block>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'var(--section-gap)' }}
+      >
         <Block>
           <p className="t-meta" style={{ marginBottom: 18 }}>
             Sectors
@@ -84,31 +117,28 @@ export default function About() {
         </Block>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(70px, 12vh, 160px)' }}>
+      {/* One run, not a ruled grid. Every name is still here; what has gone
+          is fifteen border-tops resolving into three full-width rules in
+          the ticker's own register, directly above the ticker. */}
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'var(--section-gap)' }}
+      >
         <Block>
           <p className="t-meta" style={{ marginBottom: 18 }}>
             Selected clients
           </p>
-          <ul
-            style={{
-              listStyle: 'none',
-              margin: 0,
-              padding: 0,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 190px), 1fr))',
-              gap: '10px 26px',
-            }}
-          >
-            {CLIENTS.map((c) => (
-              <li key={c} className="t-label" style={{ borderTop: '1px solid var(--color-rule)', paddingTop: 10 }}>
-                {c}
-              </li>
-            ))}
-          </ul>
+          <p className="t-statement m-0" style={{ maxWidth: '70ch' }}>
+            {CLIENTS.join(' — ')}.
+          </p>
         </Block>
       </section>
 
-      <section style={{ paddingInline: PAD, paddingBottom: 'clamp(90px, 16vh, 200px)' }}>
+      {/* Last section on the route, so it carries the band clearance. */}
+      <section
+        className="clears-mark"
+        style={{ paddingInline: PAD, paddingBottom: 'var(--section-gap-end)' }}
+      >
         <Block>
           <a href={`mailto:${STUDIO_EMAIL}`} className="t-label link-underline">
             Get ®Rich quick.
