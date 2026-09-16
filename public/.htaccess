@@ -16,11 +16,21 @@ ErrorDocument 404 /404.html
 # controller. This replaces it.
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  # /about -> about.html, /work/silverstone -> work/silverstone.html
+  # /about -> about.html, /work/silverstone/ -> work/silverstone.html
+  #
+  # The !-d test that belongs in the textbook version of this rule MUST NOT be
+  # here. The export writes BOTH about.html AND an about/ directory, and that
+  # directory holds only Next's RSC payload (__next.*.txt) -- there is no
+  # index.html in it. With !-d the rule declines to fire for /about/, the
+  # server treats it as a directory, finds no DirectoryIndex, and returns 403.
+  # Every sub-page on this site did exactly that. Cloudflare Pages maps
+  # extensionless paths to .html itself, which is why this only bites on
+  # Apache/LiteSpeed.
+  # So: match whenever the .html twin exists, directory or not. The optional
+  # trailing slash in the pattern is what lets /about/ and /about both land.
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^(.*)$ $1.html [L]
+  RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+  RewriteRule ^(.+?)/?$ /$1.html [L]
 </IfModule>
 
 <IfModule mod_headers.c>
