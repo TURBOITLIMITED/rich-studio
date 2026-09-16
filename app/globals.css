@@ -549,26 +549,40 @@ body {
     );
   }
 
-  /* And the mark itself comes off below this width.
-     This is a judgement call, and it reverses a decision made higher up
-     this file ("Nothing is moved out of its way by hiding the mark
-     somewhere emptier — the copy that would cross the rings is inset past
-     them instead"). That rule works because on a wide window there IS a
-     left margin to inset into. At 390px there is not: .clears-mark is
-     zeroed six lines above precisely because a 60px inset would eat a
-     sixth of an already-narrow measure. So on a phone the mark has no
-     clearance mechanism at all, it is fixed to the viewport, and body
-     copy scrolls under it continuously — ink on ink, which is the one
-     case BackdropContrast cannot rescue, since it flips the mark against
-     the PLATE behind it and paper-with-text is still paper.
-     Measured on /about/ at 390x844: the rings printed through ODEON and
-     WALL'S in the client list, then through PENHALIGON'S once that list
-     became a run. That is what Rich reported.
-     The masthead already carries his wordmark full-width on every route,
-     so the identity is not lost — only the monogram is, and only on
-     phones. Delete this block to put it back. */
+  /* The mark is the HOME LINK, not decoration — <Link href="/"> in
+     RscMark.tsx — and on a phone it is the only navigation affordance on
+     the page. It was briefly hidden here to stop it printing through body
+     copy; that fixed the collision by deleting the button, which Rich
+     noticed immediately ("ive lost my home button on the left").
+
+     So it comes back, with a ground of its own. The collision was never
+     that the mark overlaps content — that is deliberate everywhere else
+     on the site, and BackdropContrast exists to keep it readable over
+     plates. It is that over BODY COPY it is ink on ink, the one case the
+     luminance flip cannot solve, because paper-with-text is still paper.
+     A ground solves what a colour flip cannot: it OCCLUDES the text
+     instead of competing with it.
+
+     The ground flips with the glyph. Over the page it is paper, so it is
+     invisible against the ground it sits on and only ever shows up as a
+     clean hole punched in whatever text is passing beneath. Over a dark
+     plate both invert and the same relationship holds. Nothing new is
+     introduced to the page's colour language — it is the two values the
+     site already has.
+
+     Sized as a real target while we are here: 43px of glyph plus 9px of
+     padding is a 61x57 tap area, comfortably past the 44px minimum. The
+     bare glyph was under it. */
   .mark-layer {
-    display: none;
+    display: block;
+    background: var(--color-paper);
+    padding: 9px;
+    box-sizing: content-box;
+    border-radius: 999px;
+  }
+
+  .mark-layer.on-dark {
+    background: var(--color-ink);
   }
 }
 
@@ -1137,38 +1151,71 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
   }
 }
 
-/* The two-column block is a desktop device. Below 860px there is no room
-   to pin a title beside the work, so the block stacks: the title runs
-   above its images and stops being sticky, and every plate goes full
-   width — a 47% plate on a 390px phone is 180px, smaller than the
-   thumbnail it was cropped from. */
+/* The two-column HOLD is the site's signature move: the title and its
+   cover stand still while the work scrolls past them, and one title is
+   shoved off the top as the next arrives. This block used to throw all of
+   that away below 860px — display:block, position:static — so on a phone
+   the title scrolled off like any other paragraph and the page became a
+   plain vertical list of pictures. Rich: "we need it the same look where
+   the image on the left holds with the title etc and the images flick
+   over it."
+
+   It is kept, re-proportioned rather than re-designed. The desktop column
+   is 16.7% of the window, which is 65px on a 390px phone and cannot hold
+   a word, so the pin takes a third and the stack keeps the rest. Measured
+   at 390: pin 129px (105px of content), stack 261px (247px of plate).
+   That plate is 63% of the window against desktop's 58% — the same
+   composition, not a smaller copy of it. */
 @media (max-width: 860px) {
   .project-block {
-    display: block;
+    display: flex;
+    align-items: flex-start;
   }
   .project-pin {
-    position: static;
-    height: auto;
-    width: auto;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    /* Same reason as the desktop rule: sticky forms a stacking context
+       whatever its z-index, so the cover's own z-index is trapped inside
+       this column unless the column itself is raised. This is what lets
+       the images pass in FRONT of the masthead. */
+    z-index: 50;
     margin-left: 0;
-    padding-top: clamp(60px, 10vh, 120px);
-    padding-inline: var(--gutter);
+    width: 36%;
+    flex: 0 0 36%;
+    padding-left: var(--gutter);
+    padding-right: clamp(10px, 2.5vw, 20px);
+    /* Higher in the window than desktop's 37svh. The column is far taller
+       relative to its width here, and at 37% the title sat below the
+       middle with its cover pushed off the bottom edge. */
+    padding-top: 22svh;
   }
-  /* The cover under the pinned title. 18.3vw against the column's 16.7vw,
-   pulled 0.8vw left so it starts at 7.5vw — those are the reference's
-   numbers, and the overhang is what stops the column reading as a plain
-   left-aligned stack. Capped in height because his covers are landscape
-   where theirs are portrait. */
-.project-cover {
-  width: 18.3vw;
-  margin: clamp(20px, 3vh, 40px) 0 0 -0.8vw;
-  max-height: 34svh;
-}
-
-.project-stack {
-    margin-left: 0;
+  .project-cover {
+    /* Fills its column. 18.3vw is a DESKTOP number and it had been pasted
+       into this media query unchanged, so the cover rendered at 18.3% of
+       the PHONE — a 71px thumbnail under the title. That is most of why
+       the mobile block looked nothing like the desktop one. */
     width: 100%;
-    padding-inline: var(--gutter);
+    margin: clamp(12px, 2vh, 22px) 0 0 0;
+    max-height: 26svh;
+  }
+  .project-stack {
+    margin-left: 0;
+    width: 64%;
+    flex: 0 0 64%;
+    padding-right: var(--gutter);
+  }
+
+  /* The titles are single unbreakable words and the column is narrow, so
+     the type has to be sized against the COLUMN rather than left at the
+     1rem floor of its desktop clamp. Measured at 390: "SILVERSTONE" wants
+     114px in a 105px column and bled into the plates; at 360 "ABSOLUT
+     HALLOWEEN" did too. 3.6vw fits the longest of them at both widths with
+     room to spare. break-word is a backstop only — it does nothing to the
+     names we actually have, and stops a future long one bleeding out. */
+  .t-project {
+    font-size: clamp(0.85rem, 3.6vw, 1.05rem);
+    overflow-wrap: break-word;
   }
   .plate-stack {
     gap: clamp(30px, 7vh, 70px);

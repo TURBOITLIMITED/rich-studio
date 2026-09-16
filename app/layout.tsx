@@ -66,7 +66,23 @@ export default function RootLayout({
               "(function(){var d=document.documentElement;try{var p=location.pathname;" +
               "var home=p==='/'||p==='/index.html';" +
               "var rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;" +
-              "if(!home||rm){d.removeAttribute('data-intro')}}catch(e){d.removeAttribute('data-intro')}})()",
+              "if(!home||rm){d.removeAttribute('data-intro')}}catch(e){d.removeAttribute('data-intro')}" +
+              // THE BACKSTOP. data-intro ships in the server HTML and, until
+              // this existed, ONLY Intro.tsx ever removed it -- while
+              // `html[data-intro]:not([data-intro='done']) .scroll-root`
+              // sets overflow:hidden. So any failure that stopped that
+              // component from running left the page permanently frozen on
+              // the hero with scrolling dead: one JS chunk lost to a flaky
+              // network, an extension, a hydration error. Reproduced by
+              // aborting a single chunk: 6000px of wheel input moved the
+              // page 0px. The <noscript> block below only covers JS being
+              // DISABLED, which is the one case that was never the problem.
+              // This runs inline in <head>, so it fires even when no bundle
+              // loads at all. 6s is comfortably past the sequence's own
+              // 3.88s finish, and if a slow device is still mid-intro the
+              // cost is the masthead snapping to its final position -- a
+              // glitch, against a page nobody can scroll.
+              "setTimeout(function(){d.removeAttribute('data-intro')},6000);})()",
           }}
         />
         {/* Without JS the sequence can never advance, and the page would sit
