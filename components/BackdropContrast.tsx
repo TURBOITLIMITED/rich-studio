@@ -155,6 +155,27 @@ export default function BackdropContrast() {
           }
           const mean = (sum + Math.max(0, area - covered) * PAPER) / area;
           mark.classList.toggle('on-dark', mean < FLIP);
+
+          /* Whether the mark needs a GROUND, which is a different question
+             from what colour it should be.
+
+             Over imagery it must not have one. A solid disc can only be
+             invisible against a flat colour; over a photograph it is a blob
+             whatever value you give it, and "images crossing the mark" is
+             the intended effect here — the colour flip above is what keeps
+             it readable there, and it is enough.
+
+             Over the PAGE it must have one. That is the one case the flip
+             cannot solve: paper with body copy on it is still paper, so the
+             mark stays ink, and ink lands on ink. A ground occludes the
+             text instead of competing with it, and being paper on paper it
+             shows up as nothing at all.
+
+             So: ground by default, dropped as soon as a plate is really
+             behind it. A quarter covered is the switch — text does not run
+             under imagery, so anything meaningfully over a plate is over
+             imagery and wants the bare glyph. */
+          mark.classList.toggle('on-plate', covered / area > 0.25);
         }
       }
     };

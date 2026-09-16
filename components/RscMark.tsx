@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 /**
  * Rich's RSC monogram — the three interlocking rings — fixed at the left
@@ -26,33 +26,21 @@ import { useEffect, useRef } from 'react';
 export default function RscMark() {
   const ref = useRef<HTMLAnchorElement>(null);
 
-  useEffect(() => {
-    const el = ref.current;
-    const root = document.querySelector('[data-scroll-root]');
-    if (!el) return;
+  /* No colour logic here. BackdropContrast.tsx owns the `on-dark` class,
+     and it does the job properly: an area-weighted mean of every [data-lum]
+     plate actually under the mark.
 
-    const update = () => {
-      const dark = document.querySelector('[data-dark]');
-      if (!dark) {
-        el.classList.remove('on-dark');
-        return;
-      }
-      const m = el.getBoundingClientRect();
-      const d = dark.getBoundingClientRect();
-      const cx = m.left + m.width / 2;
-      const cy = m.top + m.height / 2;
-      const over = cx >= d.left && cx <= d.right && cy >= d.top && cy <= d.bottom;
-      el.classList.toggle('on-dark', over);
-    };
+     This component used to toggle the SAME class off a much dumber test —
+     is the mark's centre inside the ONE element carrying [data-dark], which
+     is the hero frame and nothing else. Two owners of one class, and this
+     one ran last on every scroll event, so it stripped the class straight
+     back off the moment you scrolled past the hero onto a dark project
+     plate. The mark stayed in its light state over dark imagery, which is
+     what turned its new ground into a white blob on a photograph. On
+     /work/ and /about/ there is no [data-dark] element at all, so it
+     removed the class unconditionally and the flip could never fire.
 
-    update();
-    root?.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      root?.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-    };
-  }, []);
+     One owner. */
 
   return (
     <Link

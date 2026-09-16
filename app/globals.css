@@ -185,6 +185,12 @@
      artwork's aspect (304.6/332.3). */
   --mark-narrow: clamp(38px, 11vw, 52px);
   --mark-foot: calc(env(safe-area-inset-bottom, 0px) + 84px);
+  /* The home button's ground extends this far past the artwork on every
+     side. The LAYER is then pulled back by the same amount, so the rings
+     stay exactly where they were and only the ground grows outward —
+     otherwise the padding walks the logo down and to the right, out of
+     register with the gutter every other element lines up on. */
+  --mark-pad: 9px;
   --mark-foot-clear: calc(
     var(--mark-foot) + var(--mark-narrow) * 0.9166 + clamp(10px, 2vh, 18px)
   );
@@ -576,13 +582,24 @@ body {
   .mark-layer {
     display: block;
     background: var(--color-paper);
-    padding: 9px;
+    padding: var(--mark-pad);
     box-sizing: content-box;
     border-radius: 999px;
+    /* Pulled back by exactly the padding, so the ARTWORK still sits at
+       --mark-inset from the left and --mark-foot from the bottom. Without
+       this the rings shift 9px right and 9px up from where every other
+       element on the page is aligned, which reads as the logo being off
+       even though the box is centred. */
+    left: calc(var(--mark-inset) - var(--mark-pad));
+    bottom: calc(var(--mark-foot) - var(--mark-pad));
   }
 
-  .mark-layer.on-dark {
-    background: var(--color-ink);
+  /* Over imagery the ground comes off entirely — see BackdropContrast.
+     A disc can only hide against a flat colour, so on a photograph any
+     value at all reads as a blob. There the colour flip alone carries it,
+     which is the design's own intent. */
+  .mark-layer.on-plate {
+    background: transparent;
   }
 }
 
