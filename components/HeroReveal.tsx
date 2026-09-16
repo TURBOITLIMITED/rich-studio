@@ -292,16 +292,13 @@ export default function HeroReveal({ children }: { children?: React.ReactNode })
                the window and is not in the flow to push this off it. At
                26px the two overlapped by 7px and the caption read as a
                second line of the band. */
-            /* Below 520px the mark leaves the left edge and pins near the
-               bottom-left corner — which is where this caption sits. They
-               overlapped: measured at 390x844 the rings (y 721-760) printed
-               through "BRANDING / DESIGN / CREATIVE PRODUCTION" (y 751.7-
-               764.7). --mark-foot-clear is the mark's own footprint plus
-               air, so the caption is lifted by exactly what the mark
-               occupies rather than by a number that looked about right.
-               max() means desktop is untouched: above 520px the clamp is
-               always the larger value. */
-            bottom: 'max(clamp(62px, 9.4vh, 104px), var(--mark-foot-clear))',
+            /* The caption no longer has to dodge the mark. It was lifted by
+               --mark-foot-clear while the mark sat in the bottom-left
+               corner on top of it; the mark now sits directly under the
+               hero panel, above this line, so the original offset is
+               correct again on every width. Measured at 390x844: mark ends
+               at 708, caption runs 752-765, clear by 44px. */
+            bottom: 'clamp(62px, 9.4vh, 104px)',
             left: 0,
             right: 0,
             textAlign: 'center',

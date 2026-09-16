@@ -191,6 +191,25 @@
      otherwise the padding walks the logo down and to the right, out of
      register with the gutter every other element lines up on. */
   --mark-pad: 9px;
+  /* The button's full painted height: artwork (0.9166 is the aspect,
+     304.6/332.3) plus its ground on both sides. */
+  --mark-narrow-h: calc(var(--mark-narrow) * 0.9166 + var(--mark-pad) * 2);
+  /* WHERE THE MARK SITS ON A PHONE.
+     On desktop it is vertically centred at the left edge, level with the
+     middle of the hero panel, sitting in the 144px margin beside it. On a
+     phone that margin is 23px and the mark is 61px, so beside is not
+     available at any width -- measured 23/26/22px at 390/430/360.
+     Rich: "on mobile I'd like the logo underneath where the image is so
+     it's in the middle still, need to make it as symmetrical to the
+     desktop version as possible." Directly below the panel is the closest
+     thing to level-with-it, and it keeps the left edge desktop uses.
+     Derived from the panel rather than eyeballed: the panel is centred on
+     50svh at every width (measured 50.0/50.05/50.0%), and its height is
+     min(88vw,46.4svh) x 5/4 = min(110vw,58svh), so its bottom edge is
+     50svh + half of that. This was 87% of the window in the corner; it is
+     now 80%, and it reads as part of the composition instead of an
+     afterthought. */
+  --mark-top-narrow: calc(50svh + min(55vw, 29svh) + clamp(12px, 2vh, 20px));
   --mark-foot-clear: calc(
     var(--mark-foot) + var(--mark-narrow) * 0.9166 + clamp(10px, 2vh, 18px)
   );
@@ -550,9 +569,9 @@ body {
      the last section of /about/ ends under the rings. Same idea as
      .clears-mark, rotated 90 degrees. */
   :root {
-    --section-gap-end: calc(
-      var(--band-clear) + var(--mark-foot-clear) + clamp(20px, 4vh, 44px)
-    );
+    /* The mark no longer ends up in the bottom-left corner, so the last
+       section only has to clear the running band again. */
+    --section-gap-end: calc(var(--band-clear) + clamp(24px, 5vh, 50px));
   }
 
   /* The mark is the HOME LINK, not decoration — <Link href="/"> in
@@ -591,7 +610,6 @@ body {
        element on the page is aligned, which reads as the logo being off
        even though the box is centred. */
     left: calc(var(--mark-inset) - var(--mark-pad));
-    bottom: calc(var(--mark-foot) - var(--mark-pad));
   }
 
   /* Over imagery the ground comes off entirely — see BackdropContrast.
@@ -1262,7 +1280,9 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
        anything needing to clear the mark (the hero caption, the footer)
        can be written against the same numbers instead of repeating them
        and drifting. */
-    bottom: var(--mark-foot);
+    /* Below the panel, not in the corner. bottom:auto so the top wins. */
+    top: calc(var(--mark-top-narrow) - var(--mark-pad));
+    bottom: auto;
     transform: none;
     width: var(--mark-narrow);
   }
@@ -1271,8 +1291,20 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
      Measured at 390x844: mark 721-760, nav 719-758, sitting on top of one
      another. The footer has to clear the mark's whole footprint here, not
      just the band's. */
+  /* The mark now floats at 80% of the window, which on the last screenful
+     is exactly where the footer's lockup ends — measured up to 2678px² of
+     his own "RICH COLVILL STUDIO." artwork sitting under the rings.
+     So the footer opens a lane for it: the gap between the lockup and the
+     nav row is widened to hold the mark's whole band plus air on both
+     sides, which puts the rings in the space BETWEEN the two rather than
+     on top of either. Derived from the mark, so it tracks --mark-narrow.
+     The nav then keeps its own modest clearance of the running band. */
   footer {
-    padding-bottom: calc(var(--mark-foot) + clamp(52px, 13vw, 70px));
+    padding-bottom: calc(var(--band-clear) + clamp(18px, 3.5vh, 34px));
+    /* The GAP, set as the property and not as --foot-gap: the 760px block
+       above assigns `gap` directly, so overriding the token alone does
+       nothing here — it computed 42.2px while the token said 103.7px. */
+    gap: calc(var(--mark-narrow-h) + clamp(34px, 7vh, 66px));
   }
 }
 
