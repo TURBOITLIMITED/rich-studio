@@ -1285,6 +1285,16 @@ html[data-intro]:not([data-intro='done']) .scroll-root {
     bottom: auto;
     transform: none;
     width: var(--mark-narrow);
+    /* Stated, not derived from aspect-ratio. The base rule sizes this box
+       with `aspect-ratio: 332.3/304.6`, and once padding is added for the
+       ground the two engines disagree: Chromium resolves the content
+       height to 39.3px (correct), WebKit to 75.3px — it applies the ratio
+       to the BORDER box and then treats the answer as the CONTENT height,
+       counting the 9px padding twice. Measured on the live site: the
+       button was 61x57 in Chromium and 61x93 in Safari, which is the
+       phone Rich actually reviews on, and it pushed the rings down into
+       the caption. 0.9166 is the artwork's own aspect (304.6/332.3). */
+    height: calc(var(--mark-narrow) * 0.9166);
   }
   /* On a phone the mark is not centred in the window, it is pinned near
      the bottom-left — which is exactly where the footer's links end up.
