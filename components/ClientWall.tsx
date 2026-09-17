@@ -1,109 +1,57 @@
-import { STUDIO_EMAIL } from '@/lib/contact';
-
 /**
- * The client wall — Rich's own deck slide, rebuilt as a section.
+ * The client wall — Rich's slide, placed as artwork.
  *
- * He sent the slide and said he liked it "towards the bottom of the page".
- * Unlike the scatter band, this is not a third-party reference to adapt:
- * it is his own artwork, so the job is to reproduce its structure in the
- * site's materials rather than to decide which parts transfer.
+ * He sent the slide and asked for it "towards the bottom of the page".
+ * This was first rebuilt as markup: his portrait, his copy, and the 25
+ * clients set as TYPE, because the logo files have never arrived. That was
+ * wrong twice over — it used a different photograph, and setting the
+ * clients as words threw away the one thing the section exists for, which
+ * is the logos. His answer: "the logos have gone, drop the image in."
  *
- * What the slide does, measured off it (1390x732, ground #0c0f14):
- *   - it INVERTS. The whole page is paper; this one band is ink, which is
- *     what makes it read as a closing statement rather than another
- *     section. The site already owns both values, so nothing new is
- *     introduced.
- *   - a portrait fills the left half, bled to the edges
- *   - the right half carries his line about 25 years, then GET (R)RICH
- *     QUICK. spread across the measure, then the clients
- *   - the clients sit in a 5 x 5 grid between two hairlines
+ * So the slide goes in whole. It is his own artwork, so there is nothing
+ * to adapt: the photograph, the line-art, the copy, the rules and all 25
+ * marks are exactly as he drew them, because they ARE his file.
  *
- * THE LOGOS ARE TYPE, AND THAT IS TEMPORARY. The slide shows 25 real
- * client marks; we have none of them — the Logos/ folder Rich shared on
- * 2026-09-14 held only his own three. Rather than block the section on an
- * asset delivery, the names are set in the site's own face, which is
- * Helvetica bold caps for everything already, so the grid reads as
- * deliberate rather than as a placeholder. Swapping in real marks is then
- * a drop-in: replace the <span> in each cell with an <img>, keep the grid.
- * Ask Rich for all 25 as SVG.
+ * WHAT THIS COSTS, so that it is a decision rather than an accident:
+ *  - It is a 1390x732 JPEG. Full-bleed that is native at a 1390px window
+ *    and roughly a 2x upscale on a retina laptop. It gets sharper only if
+ *    he sends the artwork bigger — an export around 2800px wide would be
+ *    exact.
+ *  - The copy inside it is pixels: it cannot reflow, cannot be selected,
+ *    and is invisible to search. The alt text carries the whole sentence
+ *    and all 25 client names so the content still exists for anything that
+ *    cannot see the picture.
+ *  - A 1.9:1 slide holding 25 marks cannot stay legible on a phone at any
+ *    sane height. Below 860px it simply scales to the width and gets
+ *    smaller; if that is not good enough the answer is a second, portrait
+ *    artwork from him rather than CSS.
  *
- * THE PORTRAIT IS LIFTED OUT OF THE SLIDE ITSELF, and that is a
- * compromise with a shelf life. The first cut used the arms-folded shot
- * from his Dropbox because it was the only portrait we had at full size;
- * it is a DIFFERENT FRAME from the one he designed with, and he spotted
- * that immediately. The slide's frame — looking down, working, with his
- * white line-art crossing the left — is the one the composition was made
- * around, so it wins even though the only copy available is the 645x732
- * region of a 1390px JPEG.
- *
- * That means the large variant is a 2.05x upscale (Lanczos, restrained
- * unsharp). It survives because the photograph is almost entirely in
- * shadow and the artefacts hide there, but it is NOT what this should
- * ship as. The small variant is deliberately left at its native 645px and
- * declared 645w, so anything that can use the real pixels does.
- * ASK RICH FOR THIS PHOTOGRAPH AT FULL SIZE, and for the line-art element
- * separately if he wants it controllable rather than baked in.
+ * Going back to markup later is a contained job — this component is the
+ * only thing that would change.
  */
 
-/* The 25 from his slide, in his order, read left-to-right off the artwork.
-   Two on the site's older About list are NOT here — Adidas and Pernod
-   Ricard — and twelve here were not there. His slide is the newer source,
-   so it wins; the About page keeps its own longer run. */
-const CLIENTS = [
-  'Birra Moretti', 'Cloud Nine', 'Odeon', "Wall's", 'Vivienne Westwood',
-  'Sony', 'Molton Brown', 'Nestlé', "Penhaligon's", 'Lego',
-  'Absolut', 'Silverstone', 'Henkel', 'BP', 'BBC',
-  'Virgin', 'Hisense', "Hellmann's", 'Sika', 'Strongbow',
-  'Johnson & Johnson', 'Jägermeister', 'Sellotape', 'DHL', 'Costa',
-];
+const CLIENTS =
+  'Birra Moretti, Cloud Nine, Odeon, Wall’s, Vivienne Westwood, Sony, ' +
+  'Molton Brown, Nestlé, Penhaligon’s, Lego, Absolut, Silverstone, Henkel, ' +
+  'BP, BBC, Virgin, Hisense, Hellmann’s, Sika, Strongbow, Johnson & Johnson, ' +
+  'Jägermeister, Sellotape, DHL, Costa';
 
 export default function ClientWall() {
   return (
-    /* data-lum on the WHOLE band, not just the portrait. BackdropContrast
-       reads [data-lum] rects to decide the fixed mark's and the running
-       ticker's colour, and without it this section is invisible to that
-       system: the mark stayed ink on an ink ground and disappeared for the
-       height of the band. 0.10 is the ink itself (#1a1b1e = 0.108); the
-       portrait measures 0.136, so a single value covers both halves and
-       the mark flips to paper across the whole thing. */
-    <section className="wall" aria-label="Selected clients" data-lum={0.1}>
-      <div className="wall-portrait">
-        <img
-          src="/about/rich-working.webp"
-          srcSet="/about/rich-working-sm.webp 645w, /about/rich-working.webp 1344w"
-          sizes="(max-width: 860px) 100vw, 46vw"
-          width={1344}
-          height={1525}
-          alt="Rich Colvill"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
-
-      <div className="wall-body">
-        <p className="wall-lead m-0">
-          With over 25 years industry experience, I’ve been lucky enough to work
-          across a variety of categories and brands shown below.
-        </p>
-
-        {/* His own line, set the way the slide sets it: three parts pushed
-            apart across the full measure rather than a centred phrase. */}
-        <p className="wall-cta m-0">
-          <a href={`mailto:${STUDIO_EMAIL}`} className="link-underline">
-            <span>Get</span>
-            <span>®Rich</span>
-            <span>quick.</span>
-          </a>
-        </p>
-
-        <ul className="wall-grid">
-          {CLIENTS.map((c) => (
-            <li key={c} className="wall-client">
-              <span>{c}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+    /* data-lum so BackdropContrast colours the fixed mark and the running
+       ticker against it — the slide's ground is #0c0f14, and without this
+       the mark stays ink on ink and disappears for the height of the band. */
+    <section className="wall" aria-label="Selected clients" data-lum={0.12}>
+      <img
+        src="/about/client-wall.webp"
+        srcSet="/about/client-wall-sm.webp 900w, /about/client-wall.webp 1390w"
+        sizes="100vw"
+        width={1390}
+        height={732}
+        alt={`With over 25 years industry experience, I’ve been lucky enough to work across a variety of categories and brands shown below. Clients: ${CLIENTS}.`}
+        loading="lazy"
+        decoding="async"
+      />
     </section>
   );
 }
