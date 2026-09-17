@@ -39,10 +39,16 @@ type Frame = { el: HTMLElement; img: HTMLElement };
 type Drifter = {
   el: HTMLElement;
   factor: number;
+  /** Untransformed position/size, cached so the per-frame maths never
+   *  reads a rect this loop has itself just moved. */
   base: number;
-  /** Cursor-parallax factor, signed. See MOUSE below. */
+  left: number;
+  w: number;
+  h: number;
+  /** Magnetic strength, signed: negative pushes the tile away from the
+   *  cursor, positive pulls it toward. See MOUSE below. */
   mx: number;
-  /** Current eased offset, lerped toward the target each frame. */
+  /** Current eased offset, chased toward the target each frame. */
   cx: number;
   cy: number;
 };
@@ -67,22 +73,34 @@ const RISE = 40;
    appearing to come loose from the page. */
 const DRIFT = 64;
 
-/* MOUSE. Measured off the reference rather than invented, after a first
-   pass wrongly concluded it had no cursor motion at all — that test moved
-   the pointer in ONE jump, which does not produce the incremental
-   mousemove events the effect needs. Swept properly in 40 steps, all nine
-   of its tiles move.
-   What it does: a linear parallax off the viewport centre. Each tile has
-   its own SIGNED factor, so some travel with the cursor and some against
-   it and the overlaps shear. Measured factors across its nine tiles:
-   -0.069, +0.024, -0.069, +0.038, -0.021, +0.038, -0.021, -0.048, +0.015,
-   with the vertical consistently ~0.8x the horizontal. At the corners that
-   is 9-43px of travel. Ours use the same range and the same 0.8 ratio.
-   Eased rather than snapped: the raw value jitters with the pointer. */
-const MOUSE_Y_RATIO = 0.8;
-/** How fast the eased offset chases the cursor. 0.08 is ~12 frames to
- *  close most of the gap — enough to feel attached without whipping. */
-const EASE = 0.08;
+/* MOUSE. Each tile answers the cursor ON ITS OWN, by proximity — not by
+   a shared parallax off the middle of the window.
+
+   The first cut did the shared version: every tile displaced by its own
+   factor times the cursor's offset from centre. It matched the reference's
+   numbers and was still wrong for what was asked, because ONE mouse
+   movement anywhere moves ALL EIGHT tiles at once. Rich: "each one needs
+   to move, not them all at the same time." What he wants — and what
+   "hovering near them" meant the message before — is a tile that reacts
+   when the cursor approaches IT and stays put when the cursor is nowhere
+   near it.
+
+   So: a radius of influence around each tile. Inside it the tile is
+   displaced along the axis between its own centre and the cursor,
+   smoothstepped from nothing at the rim to full at the centre. Outside it,
+   the tile does not move at all. Tiles carry a SIGNED strength so some
+   shove away from the pointer and some lean into it, which shears the
+   overlaps instead of sliding neighbours in parallel.
+
+   The radius scales with the tile so a 37.5vw plate has a bigger field
+   than a 25vw one, plus a fixed reach so small tiles are not inert until
+   the pointer is on top of them. */
+const MOUSE_PULL = 58;
+const REACH = 210;
+/** How fast the eased offset chases its target. 0.11 is ~9 frames to close
+ *  most of the gap: attached to the pointer without whipping, and it damps
+ *  the jitter that writing the raw value produces. */
+const EASE = 0.11;
 
 export default function ScrollMotion() {
   useEffect(() => {
@@ -102,31 +120,41 @@ export default function ScrollMotion() {
       el,
       factor: parseFloat(el.dataset.drift || '0') || 0,
       mx: parseFloat(el.dataset.mouse || '0') || 0,
+      left: 0,
+      w: 0,
+      h: 0,
       cx: 0,
       cy: 0,
       // Measured BEFORE anything is transformed, so it is the true resting
       // position. Re-measured on resize, where the vw layout changes.
-      base: el.getBoundingClientRect().top + (scroller?.scrollTop ?? 0),
+      base: 0,
     }));
 
     const remeasure = () => {
       for (const d of drifters) {
         const held = d.el.style.transform;
         d.el.style.transform = 'none';
-        d.base = d.el.getBoundingClientRect().top + (scroller?.scrollTop ?? 0);
+        const r = d.el.getBoundingClientRect();
+        d.base = r.top + (scroller?.scrollTop ?? 0);
+        d.left = r.left;
+        d.w = r.width;
+        d.h = r.height;
         d.el.style.transform = held;
       }
     };
+    remeasure();
 
     /* Cursor position relative to the middle of the window. Only on a real
        pointer: a touch screen has no hover, and reading touch coordinates
        would jerk every tile on each tap. */
     const fine = window.matchMedia('(pointer: fine)').matches;
-    let mouseX = 0;
-    let mouseY = 0;
+    // Viewport coordinates, because proximity is measured against each
+    // tile's own box, not against the middle of the window.
+    let mouseX = -9999;
+    let mouseY = -9999;
     const onMove = (e: MouseEvent) => {
-      mouseX = e.clientX - window.innerWidth / 2;
-      mouseY = e.clientY - window.innerHeight / 2;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
     };
     if (fine) window.addEventListener('mousemove', onMove, { passive: true });
 
@@ -137,9 +165,29 @@ export default function ScrollMotion() {
       // so it travels the whole way across as the band is scrolled through.
       const q = Math.max(-1, Math.min(1, (top / vh) * 2 - 1));
 
-      // Chase the cursor target rather than jump to it.
-      const tx = fine ? d.mx * mouseX : 0;
-      const ty = fine ? d.mx * MOUSE_Y_RATIO * mouseY : 0;
+      // --- proximity, per tile ---
+      let tx = 0;
+      let ty = 0;
+      if (fine && d.w) {
+        // The tile's own centre, at rest: base/left are untransformed, and
+        // the scroll drift is added back so the field follows the tile as
+        // it moves rather than lagging where it started.
+        const cxT = d.left + d.w / 2;
+        const cyT = d.base - (scroller?.scrollTop ?? 0) + d.h / 2 + d.factor * DRIFT * q;
+        const dx = mouseX - cxT;
+        const dy = mouseY - cyT;
+        const dist = Math.hypot(dx, dy) || 1;
+        const radius = Math.max(d.w, d.h) * 0.55 + REACH;
+        if (dist < radius) {
+          const n = 1 - dist / radius;
+          // smoothstep, so a tile eases into its field instead of
+          // twitching the instant the pointer crosses the rim.
+          const e = n * n * (3 - 2 * n);
+          const push = e * MOUSE_PULL * d.mx;
+          tx = (dx / dist) * push;
+          ty = (dy / dist) * push;
+        }
+      }
       d.cx += (tx - d.cx) * EASE;
       d.cy += (ty - d.cy) * EASE;
 
