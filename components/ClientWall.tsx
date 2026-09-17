@@ -27,10 +27,22 @@ import { STUDIO_EMAIL } from '@/lib/contact';
  * a drop-in: replace the <span> in each cell with an <img>, keep the grid.
  * Ask Rich for all 25 as SVG.
  *
- * The portrait is the shot he supplied, centre-cropped to the slide's
- * panel. It is a different frame from the one on the slide but the same
- * session and wardrobe, and it measures 0.136 luminance — already dark
- * enough to sit on ink without a scrim.
+ * THE PORTRAIT IS LIFTED OUT OF THE SLIDE ITSELF, and that is a
+ * compromise with a shelf life. The first cut used the arms-folded shot
+ * from his Dropbox because it was the only portrait we had at full size;
+ * it is a DIFFERENT FRAME from the one he designed with, and he spotted
+ * that immediately. The slide's frame — looking down, working, with his
+ * white line-art crossing the left — is the one the composition was made
+ * around, so it wins even though the only copy available is the 645x732
+ * region of a 1390px JPEG.
+ *
+ * That means the large variant is a 2.05x upscale (Lanczos, restrained
+ * unsharp). It survives because the photograph is almost entirely in
+ * shadow and the artefacts hide there, but it is NOT what this should
+ * ship as. The small variant is deliberately left at its native 645px and
+ * declared 645w, so anything that can use the real pixels does.
+ * ASK RICH FOR THIS PHOTOGRAPH AT FULL SIZE, and for the line-art element
+ * separately if he wants it controllable rather than baked in.
  */
 
 /* The 25 from his slide, in his order, read left-to-right off the artwork.
@@ -57,11 +69,11 @@ export default function ClientWall() {
     <section className="wall" aria-label="Selected clients" data-lum={0.1}>
       <div className="wall-portrait">
         <img
-          src="/about/rich-portrait.webp"
-          srcSet="/about/rich-portrait-sm.webp 864w, /about/rich-portrait.webp 1344w"
+          src="/about/rich-working.webp"
+          srcSet="/about/rich-working-sm.webp 645w, /about/rich-working.webp 1344w"
           sizes="(max-width: 860px) 100vw, 46vw"
           width={1344}
-          height={1400}
+          height={1525}
           alt="Rich Colvill"
           loading="lazy"
           decoding="async"
