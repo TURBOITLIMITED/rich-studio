@@ -2,7 +2,8 @@ import Link from 'next/link';
 import HeroReveal from '@/components/HeroReveal';
 import ProjectSection from '@/components/ProjectSection';
 import Block from '@/components/Block';
-import { homeProjects, indexProjects } from '@/lib/projects';
+import WorkScatter from '@/components/WorkScatter';
+import { homeProjects, restProjects } from '@/lib/projects';
 import { STUDIO_EMAIL } from '@/lib/contact';
 
 /* Every word on this page is Rich's own, from richcolvill.com. The
@@ -13,7 +14,7 @@ const PAD = 'var(--gutter)';
 
 export default function Home() {
   const featured = homeProjects();
-  const rest = indexProjects();
+  const rest = restProjects();
 
   return (
     <>
@@ -75,16 +76,25 @@ export default function Home() {
         <ProjectSection key={p.slug} project={p} index={i} />
       ))}
 
-      {/* ---------- Everything else ---------- */}
+      {/* ---------- The next eight, scattered ---------- */}
+      {/* Asked for off redsofa.com. Eight more projects, 06-13, overlapping
+          rather than listed — see WorkScatter for what was measured off the
+          reference, what was deliberately not copied, and why each plate is
+          the one it is. startIndex continues the featured five's numbering
+          instead of hardcoding 6. */}
+      <WorkScatter startIndex={featured.length} />
+
+      {/* ---------- The doorway to everything else ---------- */}
       {/* Asymmetric on purpose. This is the last thing before the footer, so
           at the bottom of the page its DISTANCE FROM THE END is what decides
           where it sits on screen — the padding above it does nothing there.
           Closing up the bottom is what drops it down the window and fills
-          the empty band that used to sit between it and the rule. The space
-          above stays generous so it still arrives with room when you scroll
-          past it. */}
+          the empty band that used to sit between it and the rule.
+          The count is restProjects(), NOT indexProjects(): eight of them are
+          now on screen immediately above this, and offering 22 more would be
+          counting them twice. */}
       <section
-        aria-label="More work"
+        aria-label="The full index"
         style={{
           paddingInline: PAD,
           paddingTop: 'clamp(100px, 18vh, 240px)',
@@ -96,9 +106,9 @@ export default function Home() {
           <p className="t-meta" style={{ marginBottom: 18 }}>
             {rest.length} more projects
           </p>
-          <p className="t-wordmark m-0" style={{ fontSize: 'clamp(2rem, 7vw, 6rem)', lineHeight: 0.9 }}>
+          <p className="t-display m-0">
             <Link href="/work" className="link-underline">
-              See the work
+              View more work
             </Link>
           </p>
         </Block>

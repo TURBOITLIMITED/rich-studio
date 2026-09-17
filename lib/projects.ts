@@ -49,6 +49,26 @@ export function indexProjects(): Project[] {
     .sort((a, b) => b.quality - a.quality || a.title.localeCompare(b.title));
 }
 
+/** The eight projects in the home page's scatter band, 06-13.
+ *
+ *  An explicit list rather than indexProjects().slice(0, 8): each tile's
+ *  plate, its width and the corner its number sits in were chosen against
+ *  that ONE image, so the composition must not silently re-order itself
+ *  the day somebody edits a quality score. It equals the first eight
+ *  today — see WorkScatter for how each was picked. */
+export const SCATTER_SLUGS = [
+  'hayton', 'physio-action', 'sika', 'annabelles',
+  'apollo-financial', 'berry-s', 'burgo', 'by-bryony',
+] as const;
+
+/** What is left for the index once the band has already shown eight. The
+ *  doorway copy counts THIS, not indexProjects() — otherwise it offers 22
+ *  more projects while eight of them are on screen directly above it. */
+export function restProjects(): Project[] {
+  const shown = new Set<string>(SCATTER_SLUGS);
+  return indexProjects().filter((p) => !shown.has(p.slug));
+}
+
 export function getProject(slug: string): Project | undefined {
   return projects.find((p) => p.slug === slug);
 }

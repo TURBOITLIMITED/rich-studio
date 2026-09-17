@@ -700,6 +700,111 @@ footer img {
   margin-inline: auto;
 }
 
+/* ------------------------------------------------------------
+   THE SCATTER BAND — projects 06-13 on the home page.
+   Tiles are absolutely positioned in vw so their overlap is fixed at
+   every width rather than reflowing; the section's height is computed
+   in WorkScatter from the same table that places them.
+   ------------------------------------------------------------ */
+
+.scatter {
+  position: relative;
+  /* No padding-inline: the tiles carry their own x, snapped to the page's
+     twelfths, and the leftmost sits at 8.33vw which is already past the
+     gutter at every width. */
+  margin-top: clamp(90px, 16vh, 220px);
+  /* NOTHING here may create a stacking context — no transform, filter,
+     opacity < 1, isolation or position:sticky on this element or on
+     anything between it and <main>. The tiles carry z-index 50 to pass in
+     FRONT of the fixed masthead (z-index 40), and a stacking context
+     anywhere above them traps that z-index inside it. This is the exact
+     trap .project-pin documents: its cover figure's z-index was held
+     captive by the sticky column until the column itself was raised. */
+}
+
+.scatter-tile {
+  position: absolute;
+  display: block;
+  /* Above the masthead, like every other plate on the site. */
+  z-index: 50;
+}
+
+/* The number, and the project it belongs to, on its own ink tab.
+   The featured five carry 01-05 in .t-meta above their titles; this
+   continues that sequence rather than inventing a second way of counting.
+
+   THE TAB IS NOT DECORATION, it is what makes the label possible at all.
+   Type straight onto the plate was tried first and cannot work here, for
+   two reasons that pull against each other:
+     - the corners that survive the overlap are the TOP-left ones (measured:
+       every other corner of tiles 07-11 is covered by a later tile), and
+     - the top-left of those same plates is the LIGHT end of most of them.
+   Measured paper-on-plate contrast at top-left: 2.4:1 on Physio Action,
+   3.3:1 Sika, 3.4:1 Apollo, 1.6:1 By Bryony — all below 4.5:1, and By
+   Bryony fails at the bottom too, so there was no corner to retreat to.
+   An ink ground makes the label independent of whatever is behind it, and
+   ink-and-paper is this site's own language rather than a new device. */
+.scatter-num {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 0.75em 0.95em 0.7em;
+  /* Above the PLATE, which carries z-index 50 — they are siblings inside
+     the tile, so anything lower puts the label behind the picture.
+     Outside .frame rather than inside it for two reasons: overflow:hidden
+     would clip it, and [data-parallax] transforms the frame on every
+     scroll frame, which would drag the label around with the image. */
+  z-index: 51;
+  pointer-events: none;
+}
+
+/* The title rides with the number but only from the width where there is
+   room for it — below that the number alone carries the sequence and the
+   plate does the talking. */
+.scatter-title {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .scatter-title {
+    display: inline;
+  }
+}
+
+/* Below the width every other block on this site collapses at, the
+   overlap stops being a composition and becomes a pile: NARROW is 25vw,
+   which is 215px at 861 and 97px at 390 — smaller than the thumbnail it
+   was cropped from. So it becomes one column, in the .plate-stack idiom
+   the case studies already use, rather than a new pattern. */
+@media (max-width: 860px) {
+  .scatter {
+    /* The inline height is a vw figure for the absolute layout; once the
+       tiles are in flow it has to go. */
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(30px, 7vh, 70px);
+    padding-inline: var(--gutter);
+    margin-top: clamp(70px, 12vh, 160px);
+  }
+
+  .scatter-tile {
+    position: static;
+    width: 100% !important;
+    left: auto !important;
+    top: auto !important;
+  }
+
+  /* Without this Physio Action's portrait is 1091px tall at 768 — a whole
+     screen of one image. The same ceiling Collage applies. */
+  .scatter-tile .frame {
+    height: auto !important;
+    max-height: 78svh;
+  }
+}
+
 /* Narrow windows do not get the compact bar. The email address alone is
    most of a phone's width, so the nav wraps to two lines and no longer
    fits in the strip under the band — it would sit straight on top of it.
