@@ -93,17 +93,21 @@ type Tile = {
    *  OPPOSING signs so their overlap opens and closes — tiles all drifting
    *  the same way move in lockstep and read as no motion at all. */
   drift: number;
+  /** Cursor-parallax factor, signed, against the measured reference range
+   *  of -0.069 to +0.038. Neighbours get opposing signs so moving the
+   *  mouse shears the overlaps rather than sliding the whole band. */
+  mouse: number;
 };
 
 const TILES: Tile[] = [
-  { slug: 'hayton', img: 0, x: 2, top: 0, wide: true, drift: -0.85 },
-  { slug: 'physio-action', img: 2, x: 33, top: 11.1, wide: false, drift: 0.55 },
-  { slug: 'sika', img: 0, x: 52, top: 15.2, wide: true, drift: -0.35 },
-  { slug: 'annabelles', img: 0, x: 5, top: 34.9, wide: false, drift: 0.9 },
-  { slug: 'apollo-financial', img: 1, x: 29, top: 38.0, wide: true, drift: -0.6 },
-  { slug: 'berry-s', img: 0, x: 74, top: 45.6, wide: false, drift: 0.75 },
-  { slug: 'burgo', img: 5, x: 11, top: 49.7, wide: false, drift: -0.45 },
-  { slug: 'by-bryony', img: 3, x: 53, top: 56.0, wide: true, drift: 0.65 },
+  { slug: 'hayton', img: 0, x: 2, top: 0, wide: true, drift: -0.85, mouse: -0.069 },
+  { slug: 'physio-action', img: 2, x: 33, top: 11.1, wide: false, drift: 0.55, mouse: 0.038 },
+  { slug: 'sika', img: 0, x: 52, top: 15.2, wide: true, drift: -0.35, mouse: -0.048 },
+  { slug: 'annabelles', img: 0, x: 5, top: 34.9, wide: false, drift: 0.9, mouse: 0.024 },
+  { slug: 'apollo-financial', img: 1, x: 29, top: 38.0, wide: true, drift: -0.6, mouse: -0.069 },
+  { slug: 'berry-s', img: 0, x: 74, top: 45.6, wide: false, drift: 0.75, mouse: 0.038 },
+  { slug: 'burgo', img: 5, x: 11, top: 49.7, wide: false, drift: -0.45, mouse: -0.021 },
+  { slug: 'by-bryony', img: 3, x: 53, top: 56.0, wide: true, drift: 0.65, mouse: 0.030 },
 ];
 
 export default function WorkScatter({ startIndex }: { startIndex: number }) {
@@ -136,6 +140,7 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
           href={`/work/${t.slug}`}
           className="scatter-tile"
           data-drift={t.drift}
+          data-mouse={t.mouse}
           style={{ left: `${t.x}vw`, top: `${t.top}vw`, width: `${w}vw` }}
         >
           <figure
