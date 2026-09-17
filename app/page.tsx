@@ -3,6 +3,7 @@ import HeroReveal from '@/components/HeroReveal';
 import ProjectSection from '@/components/ProjectSection';
 import Block from '@/components/Block';
 import WorkScatter from '@/components/WorkScatter';
+import ClientWall from '@/components/ClientWall';
 import { homeProjects, restProjects } from '@/lib/projects';
 import { STUDIO_EMAIL } from '@/lib/contact';
 
@@ -113,6 +114,12 @@ export default function Home() {
           </p>
         </Block>
       </section>
+
+      {/* ---------- Who he has worked for ---------- */}
+      {/* Rich's own deck slide, which he asked to see "towards the bottom
+          of the page". It closes the page: the one inverted band on the
+          site, his portrait, his line about 25 years, and the clients. */}
+      <ClientWall />
 
     </>
   );
