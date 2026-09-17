@@ -727,6 +727,20 @@ footer img {
   display: block;
   /* Above the masthead, like every other plate on the site. */
   z-index: 50;
+  /* ScrollMotion writes a translate3d here every frame. A transform makes
+     this element a stacking context for its OWN children, which is fine —
+     the trap is a stacking context BETWEEN a tile and <main>, which would
+     trap this z-index. The tile itself still compares at 50 against the
+     masthead's 40. */
+  will-change: transform;
+}
+
+/* Rounded. Measured off the reference Rich sent: 32px on an 1866px-wide
+   capture, so ~24px at 1440. The radius has to be on .frame as well as the
+   tile — .frame is the element with overflow:hidden, and a square clip
+   would put sharp image corners back on top of a rounded box. */
+.scatter-tile .frame {
+  border-radius: clamp(12px, 1.7vw, 26px);
 }
 
 /* The number, and the project it belongs to, on its own ink tab.
@@ -751,6 +765,10 @@ footer img {
   background: var(--color-ink);
   color: var(--color-paper);
   padding: 0.75em 0.95em 0.7em;
+  /* Sits inside the rounded corner: square top-left against a 26px radius
+     leaves the tab hanging off the plate. */
+  border-radius: clamp(12px, 1.7vw, 26px) 0 clamp(8px, 1vw, 14px) 0;
+  margin: 0;
   /* Above the PLATE, which carries z-index 50 — they are siblings inside
      the tile, so anything lower puts the label behind the picture.
      Outside .frame rather than inside it for two reasons: overflow:hidden

@@ -15,11 +15,14 @@ import { getProject } from '@/lib/projects';
  * what [data-parallax] already does on this site, so the entrance is ours
  * rather than a new primitive.
  *
+ * The corners ARE rounded, and that was measured off Rich's own reference
+ * screenshot rather than argued about: 32px on an 1866px-wide capture, so
+ * ~24px at a 1440 viewport. An earlier cut of this shipped square corners
+ * on the reasoning that the site is otherwise square — that was overriding
+ * what was actually asked for with a preference, and it was wrong.
+ *
  * WHAT WAS DELIBERATELY NOT COPIED:
  *
- *  - Rounded corners. The reference rounds a wrapper; the images themselves
- *    measure border-radius 0. Square is both faithful and this site's own
- *    language, so there was nothing to trade.
  *  - Free-roaming x. Tiles here snap to the page's OWN twelfths — 8.33vw
  *    units, the grid .project-pin (16.7%) and .project-stack (58.4%) are
  *    already measured on. So this reads as that grid loosened, not as a
@@ -60,21 +63,26 @@ type Tile = {
   /** Top, in vw, from the band's top. */
   top: number;
   wide: boolean;
+  /** How far and which way this tile drifts as the band scrolls past,
+   *  -1 to 1 against ScrollMotion's 64px amplitude. Neighbours get
+   *  OPPOSING signs so their overlap opens and closes — tiles all drifting
+   *  the same way move in lockstep and read as no motion at all. */
+  drift: number;
 };
 
 const TILES: Tile[] = [
-  { slug: 'hayton', img: 0, col: 1.0, top: 0, wide: true },
-  { slug: 'physio-action', img: 2, col: 3.25, top: 9.17, wide: false },
-  { slug: 'sika', img: 0, col: 4.5, top: 12.57, wide: true },
-  { slug: 'annabelles', img: 0, col: 6.0, top: 28.89, wide: false },
-  { slug: 'apollo-financial', img: 1, col: 6.5, top: 31.46, wide: true },
-  { slug: 'berry-s', img: 0, col: 7.5, top: 37.71, wide: false },
-  { slug: 'burgo', img: 5, col: 8.0, top: 41.11, wide: false },
+  { slug: 'hayton', img: 0, col: 1.0, top: 0, wide: true, drift: -0.85 },
+  { slug: 'physio-action', img: 2, col: 3.25, top: 9.17, wide: false, drift: 0.55 },
+  { slug: 'sika', img: 0, col: 4.5, top: 12.57, wide: true, drift: -0.35 },
+  { slug: 'annabelles', img: 0, col: 6.0, top: 28.89, wide: false, drift: 0.9 },
+  { slug: 'apollo-financial', img: 1, col: 6.5, top: 31.46, wide: true, drift: -0.6 },
+  { slug: 'berry-s', img: 0, col: 7.5, top: 37.71, wide: false, drift: 0.75 },
+  { slug: 'burgo', img: 5, col: 8.0, top: 41.11, wide: false, drift: -0.45 },
   // The eighth closes the composition rather than extending it: the drift
   // runs left-to-right down the page and leaves the bottom-left empty, so
   // this fills it and overlaps Physio Action on the way. It adds only
   // 0.9vw to the band's height.
-  { slug: 'by-bryony', img: 3, col: 1.0, top: 42.0, wide: false },
+  { slug: 'by-bryony', img: 3, col: 1.0, top: 42.0, wide: false, drift: 0.65 },
 ];
 
 export default function WorkScatter({ startIndex }: { startIndex: number }) {
@@ -106,6 +114,7 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
           key={t.slug}
           href={`/work/${t.slug}`}
           className="scatter-tile"
+          data-drift={t.drift}
           style={{ left: `${t.col * COL}vw`, top: `${t.top}vw`, width: `${w}vw` }}
         >
           <figure

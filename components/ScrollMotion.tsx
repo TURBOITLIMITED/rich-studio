@@ -32,12 +32,31 @@ import { useEffect } from 'react';
  */
 
 type Frame = { el: HTMLElement; img: HTMLElement };
+/** A scatter tile that drifts at its own rate. `base` is its untransformed
+ *  position in the scroll container, cached once so the per-frame maths
+ *  never reads a rect it has itself just transformed — that feeds back and
+ *  the tile runs away down the page. */
+type Drifter = { el: HTMLElement; factor: number; base: number };
 
 const SETTLED = 1.1;
 const ENTER = 1.2;
 /** Fraction of the run over which the scale finishes: 400px of 860px. */
 const SCALE_RUN = 0.45;
 const RISE = 40;
+
+/* THE SCATTER BAND'S OWN MOTION, and the one place this file's "no
+   continuous drift" rule is deliberately broken.
+   Everywhere else that rule is right: the reference settles an image and
+   stops, and drifting every frame reads as a different site. The scatter
+   band is not that. Its tiles overlap, and Rich asked for them "all moving
+   about" — the point is that they move RELATIVE TO EACH OTHER, so the
+   overlaps open and close as you scroll and the pile reads as depth rather
+   than as a flat collage. A single shared rate would move them in lockstep
+   and look like nothing at all.
+   Amplitude is per-tile, signed, set as data-drift. 64px at the extremes
+   is roughly a fifth of a NARROW tile's height — visible without anything
+   appearing to come loose from the page. */
+const DRIFT = 64;
 
 export default function ScrollMotion() {
   useEffect(() => {
@@ -49,7 +68,37 @@ export default function ScrollMotion() {
       const img = el.querySelector<HTMLElement>('img, video');
       return { el, img: img ?? el };
     });
-    if (!frames.length) return;
+    const scroller = document.querySelector<HTMLElement>('[data-scroll-root]');
+
+    const drifters: Drifter[] = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-drift]'),
+    ).map((el) => ({
+      el,
+      factor: parseFloat(el.dataset.drift || '0') || 0,
+      // Measured BEFORE anything is transformed, so it is the true resting
+      // position. Re-measured on resize, where the vw layout changes.
+      base: el.getBoundingClientRect().top + (scroller?.scrollTop ?? 0),
+    }));
+
+    const remeasure = () => {
+      for (const d of drifters) {
+        const held = d.el.style.transform;
+        d.el.style.transform = 'none';
+        d.base = d.el.getBoundingClientRect().top + (scroller?.scrollTop ?? 0);
+        d.el.style.transform = held;
+      }
+    };
+
+    const applyDrift = (d: Drifter) => {
+      const vh = window.innerHeight;
+      const top = d.base - (scroller?.scrollTop ?? 0);
+      // +1 when the tile sits at the bottom of the window, -1 at the top,
+      // so it travels the whole way across as the band is scrolled through.
+      const q = Math.max(-1, Math.min(1, (top / vh) * 2 - 1));
+      d.el.style.transform = `translate3d(0, ${(d.factor * DRIFT * q).toFixed(2)}px, 0)`;
+    };
+
+    if (!frames.length && !drifters.length) return;
 
     const apply = (f: Frame) => {
       const r = f.el.getBoundingClientRect();
@@ -97,12 +146,16 @@ export default function ScrollMotion() {
     let raf = 0;
     const tick = () => {
       live.forEach(apply);
+      drifters.forEach(applyDrift);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
 
+    window.addEventListener('resize', remeasure);
+
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener('resize', remeasure);
       io.disconnect();
     };
   }, []);
