@@ -5,6 +5,30 @@ import { getProject } from '@/lib/projects';
  * The scatter band — eight projects, 06 to 13, overlapping, between the last
  * pinned project and the doorway to the index.
  *
+ * SPREAD. The first cut snapped every x to the page's twelfths and kept
+ * the reference's vertical steps unchanged. Both were wrong and Rich said
+ * so: "they are not spread out good enough." Measured, the horizontal
+ * spread was actually fine (x std-dev 21.5vw against the reference's
+ * 23.6vw) — the fault was VERTICAL. The reference steps ~9.1vw between
+ * tiles at its size; ours were averaging 6vw with tiles a fifth LARGER,
+ * so they piled up instead of descending. The steps are now scaled by
+ * that size ratio (1.21x) and x runs free from 2vw to 99vw. The band goes
+ * from 56vw tall to 77vw, and every tile still touches a neighbour.
+ *
+ * THE LEFT EDGE goes to 2vw, the reference's own, and tiles DO cross the
+ * fixed RSC mark there. That is deliberate on this site — BackdropContrast
+ * flips the mark to paper over a dark plate — and it was verified rather
+ * than assumed: across the whole band, zero scroll positions where the
+ * mark sits on a plate with the wrong colour.
+ *
+ * Worth recording because it cost a round trip: an earlier check said the
+ * flip was broken and tiles were pulled right to avoid the mark. That
+ * check was wrong. It scrolled ~700ms after load, while the opening
+ * sequence still had the mark translated mid-flight — it measured the mark
+ * at x 153-221 instead of its resting 29-92, so it was testing a plate the
+ * mark was not actually over. Any probe touching the mark, the masthead or
+ * the hero must wait out the intro (3.88s) first.
+ *
  * Asked for off redsofa.com's scattered work section. Measured there at
  * 1440x900 before copying anything: twelve tiles at two widths, 448px and
  * 290px (a 1.545x ratio), leftmost x 29px, and top-to-top steps of
@@ -23,10 +47,6 @@ import { getProject } from '@/lib/projects';
  *
  * WHAT WAS DELIBERATELY NOT COPIED:
  *
- *  - Free-roaming x. Tiles here snap to the page's OWN twelfths — 8.33vw
- *    units, the grid .project-pin (16.7%) and .project-stack (58.4%) are
- *    already measured on. So this reads as that grid loosened, not as a
- *    second website pasted into the page.
  *  - Its 0.67-1.78 aspect spread. Six of these eight projects are honestly
  *    16:9; only Physio Action (0.667), Sika (1.133) and Annabelles (1.333)
  *    have another shape in the archive at all. Cropping Rich's framing to
@@ -47,9 +67,11 @@ import { getProject } from '@/lib/projects';
  * band.
  */
 
-/** The page's twelfth. */
+/** Two widths, 1.50x apart, against the reference's 1.545x. They stay
+ *  derived from the page's twelfth even though x no longer snaps to it —
+ *  the SIZES relating to the grid is what keeps this in the family, and
+ *  it is the positions that needed to be free. */
 const COL = 100 / 12;
-/** Two widths, 1.50x apart, against the reference's 1.545x. */
 const WIDE = COL * 4.5;
 const NARROW = COL * 3;
 
@@ -58,8 +80,11 @@ type Tile = {
   /** Index into the project's own images — several of these are NOT the
    *  cover, because the cover does not always read at 300-450px wide. */
   img: number;
-  /** Left edge, in twelfths of the viewport. */
-  col: number;
+  /** Left edge, in vw. Free of the twelfths grid: snapping to it clustered
+   *  everything into the middle band and Rich's note was "they are not
+   *  spread out good enough". The grid bought tidiness the eye cannot see
+   *  and cost the spread, which it can. */
+  x: number;
   /** Top, in vw, from the band's top. */
   top: number;
   wide: boolean;
@@ -71,18 +96,14 @@ type Tile = {
 };
 
 const TILES: Tile[] = [
-  { slug: 'hayton', img: 0, col: 1.0, top: 0, wide: true, drift: -0.85 },
-  { slug: 'physio-action', img: 2, col: 3.25, top: 9.17, wide: false, drift: 0.55 },
-  { slug: 'sika', img: 0, col: 4.5, top: 12.57, wide: true, drift: -0.35 },
-  { slug: 'annabelles', img: 0, col: 6.0, top: 28.89, wide: false, drift: 0.9 },
-  { slug: 'apollo-financial', img: 1, col: 6.5, top: 31.46, wide: true, drift: -0.6 },
-  { slug: 'berry-s', img: 0, col: 7.5, top: 37.71, wide: false, drift: 0.75 },
-  { slug: 'burgo', img: 5, col: 8.0, top: 41.11, wide: false, drift: -0.45 },
-  // The eighth closes the composition rather than extending it: the drift
-  // runs left-to-right down the page and leaves the bottom-left empty, so
-  // this fills it and overlaps Physio Action on the way. It adds only
-  // 0.9vw to the band's height.
-  { slug: 'by-bryony', img: 3, col: 1.0, top: 42.0, wide: false, drift: 0.65 },
+  { slug: 'hayton', img: 0, x: 2, top: 0, wide: true, drift: -0.85 },
+  { slug: 'physio-action', img: 2, x: 33, top: 11.1, wide: false, drift: 0.55 },
+  { slug: 'sika', img: 0, x: 52, top: 15.2, wide: true, drift: -0.35 },
+  { slug: 'annabelles', img: 0, x: 5, top: 34.9, wide: false, drift: 0.9 },
+  { slug: 'apollo-financial', img: 1, x: 29, top: 38.0, wide: true, drift: -0.6 },
+  { slug: 'berry-s', img: 0, x: 74, top: 45.6, wide: false, drift: 0.75 },
+  { slug: 'burgo', img: 5, x: 11, top: 49.7, wide: false, drift: -0.45 },
+  { slug: 'by-bryony', img: 3, x: 53, top: 56.0, wide: true, drift: 0.65 },
 ];
 
 export default function WorkScatter({ startIndex }: { startIndex: number }) {
@@ -115,7 +136,7 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
           href={`/work/${t.slug}`}
           className="scatter-tile"
           data-drift={t.drift}
-          style={{ left: `${t.col * COL}vw`, top: `${t.top}vw`, width: `${w}vw` }}
+          style={{ left: `${t.x}vw`, top: `${t.top}vw`, width: `${w}vw` }}
         >
           <figure
             className="frame"
