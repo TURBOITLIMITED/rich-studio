@@ -701,30 +701,6 @@ footer img {
 }
 
 /* ------------------------------------------------------------
-   THE CLIENT WALL — Rich's own slide, dropped in whole near the foot of
-   the home page. Artwork, not markup: see ClientWall.tsx for why, and for
-   what that costs.
-   ------------------------------------------------------------ */
-
-.wall {
-  /* The slide's own ground, so the band and the picture are one field
-     even while the image is still decoding. */
-  background: #0c0f14;
-  display: block;
-  margin-top: clamp(90px, 16vh, 220px);
-  position: relative;
-  /* In front of the fixed masthead, like every other full-bleed plate. */
-  z-index: 50;
-  line-height: 0;
-}
-
-.wall img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ------------------------------------------------------------
    THE SCATTER BAND — projects 06-13 on the home page.
    Tiles are absolutely positioned in vw so their overlap is fixed at
    every width rather than reflowing; the section's height is computed
