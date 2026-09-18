@@ -47,13 +47,12 @@ import { getProject } from '@/lib/projects';
  *
  * WHAT WAS DELIBERATELY NOT COPIED:
  *
- *  - Its 0.67-1.78 aspect spread. Six of these eight projects are honestly
- *    16:9; only Physio Action (0.667), Sika (1.133) and Annabelles (1.333)
- *    have another shape in the archive at all. Cropping Rich's framing to
- *    manufacture variety is the one move this page must not make — he is a
- *    designer and the framing is the work. Three real shapes across eight
- *    tiles is what there is; the rhythm comes from SIZE and POSITION
- *    instead, which is where most of the reference's life comes from anyway.
+ *  - Its aspect spread. Every tile here is SQUARE, at Rich's instruction,
+ *    so the rhythm comes from SIZE and POSITION only. An earlier cut kept
+ *    each plate's real aspect on the argument that cropping a designer's
+ *    framing is not ours to do; he asked for square, so square it is. The
+ *    crop is real — a 16:9 plate loses 44% of its width — so any tile whose
+ *    subject is not centred carries its own `focus`.
  *
  * Each tile is a real plate at its real aspect, picked for reading small:
  * several of the obvious covers are near-white and would dissolve into
@@ -100,17 +99,19 @@ type Tile = {
    *  way. Bigger plates take the stronger values — a 37.5vw tile barely
    *  reads a 20px nudge, a 25vw one does. */
   mouse: number;
+  /** Where the square crop is taken from, when centre cuts the subject. */
+  focus?: string;
 };
 
 const TILES: Tile[] = [
   { slug: 'hayton', img: 0, x: 2, top: 0, wide: true, drift: -0.85, mouse: -1.0 },
-  { slug: 'physio-action', img: 2, x: 33, top: 11.1, wide: false, drift: 0.55, mouse: 0.8 },
-  { slug: 'sika', img: 0, x: 52, top: 15.2, wide: true, drift: -0.35, mouse: -0.85 },
-  { slug: 'annabelles', img: 0, x: 5, top: 34.9, wide: false, drift: 0.9, mouse: 0.7 },
-  { slug: 'apollo-financial', img: 1, x: 29, top: 38.0, wide: true, drift: -0.6, mouse: -1.0 },
-  { slug: 'berry-s', img: 0, x: 74, top: 45.6, wide: false, drift: 0.75, mouse: 0.8 },
-  { slug: 'burgo', img: 5, x: 11, top: 49.7, wide: false, drift: -0.45, mouse: -0.65 },
-  { slug: 'by-bryony', img: 3, x: 53, top: 56.0, wide: true, drift: 0.65, mouse: 0.9 },
+  { slug: 'physio-action', img: 2, x: 33, top: 14, wide: false, drift: 0.55, mouse: 0.8 },
+  { slug: 'sika', img: 0, x: 52, top: 24, wide: true, drift: -0.35, mouse: -0.85 },
+  { slug: 'annabelles', img: 0, x: 6, top: 40, wide: false, drift: 0.9, mouse: 0.7 },
+  { slug: 'apollo-financial', img: 1, x: 26, top: 52, wide: true, drift: -0.6, mouse: -1.0 },
+  { slug: 'berry-s', img: 0, x: 68, top: 66, wide: false, drift: 0.75, mouse: 0.8 },
+  { slug: 'burgo', img: 5, x: 10, top: 76, wide: false, drift: -0.45, mouse: -0.65 },
+  { slug: 'by-bryony', img: 3, x: 42, top: 84, wide: true, drift: 0.65, mouse: 0.9 },
 ];
 
 export default function WorkScatter({ startIndex }: { startIndex: number }) {
@@ -120,6 +121,10 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
     const img = p.images[t.img];
     if (!img) throw new Error(`WorkScatter: ${t.slug} has no image ${t.img}`);
     const w = t.wide ? WIDE : NARROW;
+    /* SQUARE. Rich asked for these to match the rest of the page's plates;
+       the frame is 1:1 and object-fit:cover takes the centre of whatever
+       the real aspect is. That DOES crop — a 16:9 plate loses 44% of its
+       width — which is why the per-tile object-position below exists. */
     /* The -sm variant is generated to a 900px LONG EDGE, so on a portrait
        its WIDTH is not 900 — Physio Action's is 600x900. A hardcoded
        "900w" descriptor there tells the browser the file is half again
@@ -127,7 +132,7 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
        the soft-image complaint this site has had before. Derived from the
        real aspect instead. */
     const smW = img.w >= img.h ? 900 : Math.round((900 * img.w) / img.h);
-    return { t, p, img, w, h: w / (img.w / img.h), smW };
+    return { t, p, img, w, h: w, smW };
   });
 
   /* Absolutely positioned tiles do not size their parent, so the band's
@@ -150,7 +155,7 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
             className="frame"
             data-parallax
             data-lum={img.lum ?? 0.5}
-            style={{ aspectRatio: `${img.w} / ${img.h}`, margin: 0, height: `${h}vw` }}
+            style={{ aspectRatio: '1 / 1', margin: 0, height: `${h}vw` }}
           >
             <img
               src={img.src}
@@ -158,6 +163,9 @@ export default function WorkScatter({ startIndex }: { startIndex: number }) {
               sizes={`(max-width: 860px) 100vw, ${Math.round(w)}vw`}
               width={img.w}
               height={img.h}
+              /* object-fit lives in the stylesheet; only the per-tile
+                 focus point belongs here. */
+              style={{ objectPosition: t.focus ?? '50% 50%' }}
               alt={`${p.title} — ${p.category}`}
               loading="lazy"
               decoding="async"

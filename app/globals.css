@@ -767,6 +767,18 @@ footer img {
   border-radius: clamp(12px, 1.7vw, 26px);
 }
 
+/* Fill the square. There is no generic `.frame img` rule in this file —
+   sizing is per context (.project-cover img, .plate-stack img) — so
+   without this the image keeps its natural height inside a 1:1 frame and
+   the frame's own grey shows through beneath it. object-fit needs a height
+   to fit TO; setting it on the element alone does nothing. */
+.scatter-tile .frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* The number, and the project it belongs to, on its own ink tab.
    The featured five carry 01-05 in .t-meta above their titles; this
    continues that sequence rather than inventing a second way of counting.
