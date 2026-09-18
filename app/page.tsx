@@ -93,12 +93,30 @@ export default function Home() {
           The count is restProjects(), NOT indexProjects(): eight of them are
           now on screen immediately above this, and offering 22 more would be
           counting them twice. */}
+      {/* A full screen of its own, and the reason is that nothing smaller
+          is reliable. Scrolled to the very bottom, this section plus the
+          footer are all that is on screen, and together they fell short of
+          a viewport at every size tested — so the last scatter tile hung
+          137-244px into the top of the window. Rich: "when I'm all the way
+          at the bottom I can see number 13 at the top still."
+          The obvious fix is a min-height tuned against the footer's share
+          of the window, and it does not hold: the footer measures 44% of
+          the viewport at 1440x900 but 29% at 768x1024, because its lockup
+          is width-driven. 58svh left 16px showing, 63svh still failed on an
+          iPad. So this is 100svh instead — the doorway alone fills the
+          window, which guarantees the band is off-screen at EVERY size
+          without estimating anything. The content centres in it rather
+          than sitting under a big pad, so the extra height reads as a
+          deliberate closing page instead of a gap. */}
       <section
         aria-label="The full index"
         style={{
           paddingInline: PAD,
-          paddingTop: 'clamp(100px, 18vh, 240px)',
-          paddingBottom: 'clamp(50px, 9vh, 130px)',
+          paddingBlock: 'clamp(50px, 9vh, 130px)',
+          minHeight: '100svh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
           textAlign: 'center',
         }}
       >
